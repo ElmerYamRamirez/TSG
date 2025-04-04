@@ -1,0 +1,54 @@
+/* Variables de color para la tabla */
+:root {
+  --table-border-color: #e5e7eb;
+  --table-header-bg: #f9fafb;
+  --table-header-text: #6b7280;
+  --table-row-hover: #f3f4f6;
+  --table-text-primary: #111827;
+  --table-text-secondary: #6b7280;
+  --table-divide-color: #e5e7eb;
+}
+
+/* Estilos base de la tabla */
+.table-container {
+  @apply w-full overflow-hidden;
+  border-radius: 0.5rem;
+  border: 1px solid var(--table-border-color);
+}
+
+.table-header {
+  background-color: var(--table-header-bg);
+}
+
+.table-header th {
+  @apply px-6 py-3 text-left;
+  color: var(--table-header-text);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.table-row {
+  @apply transition-colors duration-150 ease-in-out;
+  border-bottom: 1px solid var(--table-divide-color);
+}
+
+.table-row:hover {
+  background-color: var(--table-row-hover);
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm;
+  color: var(--table-text-secondary);
+}
+
+.table-cell-primary {
+  color: var(--table-text-primary);
+  font-weight: 500;
+}
+
+.table-footer {
+  background-color: var(--table-header-bg);
+  border-top: 1px solid var(--table-divide-color);
+}
