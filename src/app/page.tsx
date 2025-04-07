@@ -18,6 +18,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentDate] = useState<string>(getFridayDate());
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -204,33 +205,44 @@ export default function Page() {
   const ShipmentsTable = ({ envios }: { envios: Envio[] }) => {
     const columns = [
       {
-        header: 'Fecha',
-        accessor: (envio: Envio) => new Date(envio.Fecha_programada).toLocaleDateString("es-MX"),
+        header: "Fecha",
+        accessor: (envio: Envio) =>
+          new Date(envio.Fecha_programada).toLocaleDateString("es-MX"),
       },
       {
-        header: 'Comentario',
-        accessor: (envio: Envio) => envio.Comentario || "-",
+        header: "Destino",
+        accessor: (envio: Envio) => envio.Nombre_destino || "-",
       },
       {
-        header: 'Sueldo',
+        header: "Sueldo",
         accessor: (envio: Envio) => (
           <span className="font-medium text-gray-900">
-            ${envio.Sueldo?.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+            $
+            {envio.Sueldo?.toLocaleString("es-MX", {
+              minimumFractionDigits: 2,
+            })}
           </span>
         ),
       },
     ];
 
-    const footerContent = envios.length > 0 ? (
-      <>
-        <td colSpan={2} className="px-6 py-3 text-right text-sm font-medium text-gray-500">
-          Total:
-        </td>
-        <td className="px-6 py-3 whitespace-nowrap text-sm font-bold text-gray-900">
-          ${totalViajes().toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-        </td>
-      </>
-    ) : null;
+    const footerContent =
+      envios.length > 0 ? (
+        <>
+          <td
+            colSpan={2}
+            className="px-6 py-3 text-right text-sm font-medium text-gray-500"
+          >
+            Total:
+          </td>
+          <td className="px-6 py-3 whitespace-nowrap text-sm font-bold text-gray-900">
+            $
+            {totalViajes().toLocaleString("es-MX", {
+              minimumFractionDigits: 2,
+            })}
+          </td>
+        </>
+      ) : null;
 
     return (
       <Table
@@ -248,20 +260,57 @@ export default function Page() {
   const totalDescuentoPrestamos = useMemo(() => {
     return prestamo.length > 0
       ? prestamo
-        .filter(item => item.Status == "EN VIGOR")
-        .reduce(
-          (total, item) => total + (item.Descuento_por_semana || 0),
-          0
-        )
+          .filter((item) => item.Status == "EN VIGOR")
+          .reduce((total, item) => total + (item.Descuento_por_semana || 0), 0)
       : 0;
   }, [prestamo]);
 
   const handlePrint = () => window.print();
 
+  const ConfirmDialog = () => {
+    if (!showConfirmDialog) return null;
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 print:hidden">
+        <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Confirmación de Nómina
+          </h3>
+          <p className="text-gray-600 mb-6">
+            Está a punto de autorizar la información mostrada y se actualizarán
+            los registros. Le recomendamos descargar el ticket antes de
+            continuar.
+          </p>
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={handlePrint}
+              className="px-4 py-2 text-indigo-600 bg-white border border-indigo-600 rounded hover:bg-indigo-50"
+            >
+              Descargar Ticket
+            </button>
+            <button
+              onClick={() => {
+                setShowConfirmDialog(false);
+                handleConfirm();
+              }}
+              className="px-4 py-2 text-white bg-indigo-600 rounded hover:bg-indigo-700"
+            >
+              Acepto
+            </button>
+            <button
+              onClick={() => setShowConfirmDialog(false)}
+              className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const handleConfirm = async () => {
     try {
       setLoading(true);
-
       // 1. Actualizar adelantos (marcar como descontados)
       if (adelanto.length > 0) {
         await Promise.all(
@@ -278,7 +327,7 @@ export default function Page() {
                 }),
               }
             );
-            console.info(response)
+            console.info(response);
             if (!response.ok)
               throw new Error(`Error al actualizar adelanto ${item.uniqueId}`);
           })
@@ -305,28 +354,29 @@ export default function Page() {
                   Status: isFullyPaid ? "PAGADO" : "EN VIGOR",
                   Numero_de_pagos: isFullyPaid
                     ? (item.Numero_de_pagos || 0) + 1
-                    : item.Numero_de_pagos + 1
+                    : item.Numero_de_pagos + 1,
                 }),
               }
             );
-            console.info(isFullyPaid)
-            console.info(isFullyPaid
-              ? (item.Numero_de_pagos || 0) + 1
-              : item.Numero_de_pagos + 1)
+            console.info(isFullyPaid);
+            console.info(
+              isFullyPaid
+                ? (item.Numero_de_pagos || 0) + 1
+                : item.Numero_de_pagos + 1
+            );
             if (!response.ok)
               throw new Error(`Error al actualizar préstamo ${item.uniqueId}`);
           })
         );
       }
-
-      alert("✅ Nómina confirmada correctamente");
-
       window.location.reload();
+      alert("✅ Pago confirmado con éxito");
+
     } catch (err) {
       console.error("Error al confirmar pago:", err);
       alert(
         "❌ Error al confirmar el pago: " +
-        (err instanceof Error ? err.message : String(err))
+          (err instanceof Error ? err.message : String(err))
       );
     } finally {
       setLoading(false);
@@ -397,10 +447,11 @@ export default function Page() {
                 {filteredPersonal.map((operator) => (
                   <div
                     key={operator.uniqueId}
-                    className={`cursor-pointer hover:bg-indigo-50 px-4 py-2 ${operator.uniqueId == selectedPersonalId
+                    className={`cursor-pointer hover:bg-indigo-50 px-4 py-2 ${
+                      operator.uniqueId == selectedPersonalId
                         ? "bg-indigo-100"
                         : ""
-                      }`}
+                    }`}
                     onClick={() => handleOperatorSelect(operator.uniqueId)}
                   >
                     <div className="flex items-center">
@@ -489,33 +540,37 @@ export default function Page() {
                   COMENTARIOS, PRÉSTAMOS DE LA SEMANA
                 </h4>
                 <Table
-                  data={prestamo.filter(p => p.Status == "EN VIGOR")}
+                  data={Array.isArray(prestamo) ? prestamo.filter((p) => p.Status === "EN VIGOR") : []}
                   columns={[
                     {
-                      header: 'FECHA ALTA',
-                      accessor: (prestamo) => formatDateTime(prestamo.Fec_Alta) || "-",
-                      className: 'print:px-1 print:py-0.5'
+                      header: "FECHA ALTA",
+                      accessor: (prestamo) =>
+                        formatDateTime(prestamo.Fec_Alta) || "-",
+                      className: "print:px-1 print:py-0.5",
                     },
                     {
-                      header: 'PAGO',
-                      accessor: (prestamo) => (
-                        `${prestamo.Numero_de_pagos} - ${Math.ceil(
-                          prestamo.Monto_de_prestamo / prestamo.Descuento_por_semana
-                        ) || 0}`
-                      ),
-                      className: 'print:px-1 print:py-0.5'
+                      header: "PAGO",
+                      accessor: (prestamo) =>
+                        `${prestamo.Numero_de_pagos + 1} - ${
+                          Math.ceil(
+                            prestamo.Monto_de_prestamo /
+                              prestamo.Descuento_por_semana
+                          ) || 0
+                        }`,
+                      className: "print:px-1 print:py-0.5",
                     },
                     {
-                      header: 'SALDO',
+                      header: "SALDO",
                       accessor: (prestamo) => (
                         <span className="font-medium">
-                          ${prestamo.Saldo?.toLocaleString("es-MX", {
+                          $
+                          {prestamo.Saldo?.toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
                         </span>
                       ),
-                      className: 'print:px-1 print:py-0.5'
-                    }
+                      className: "print:px-1 print:py-0.5",
+                    },
                   ]}
                   emptyMessage="No hay préstamos vigentes"
                   className="text-sm print:text-xs mt-2"
@@ -527,44 +582,50 @@ export default function Page() {
                 <h4 className="font-medium text-gray-700 border-b pb-1 print:text-sm">
                   ESTATUS DE PRÉSTAMOS
                 </h4>
-<Table
-  data={prestamo}
-  columns={[
-    {
-      header: 'MONTO ORIGINAL',
-      accessor: (prestamo) => (
-        `$${prestamo.Monto_de_prestamo?.toLocaleString("es-MX", {
-          minimumFractionDigits: 2,
-        })}`
-      ),
-      className: 'print:px-1 print:py-0.5'
-    },
-    {
-      header: 'PAGO SEMANAL',
-      accessor: (prestamo) => (
-        `$${prestamo.Descuento_por_semana?.toLocaleString("es-MX", {
-          minimumFractionDigits: 2,
-        })}`
-      ),
-      className: 'print:px-1 print:py-0.5'
-    },
-    {
-      header: 'ESTATUS',
-      accessor: (prestamo) => (
-        <div className="flex items-center">
-          {prestamo.Status}
-          <span
-            className={`inline-block w-2 h-2 rounded-full ml-2 ${
-              prestamo.Status == "EN VIGOR" ? "bg-green-500" : "bg-red-500"
-            }`}
-          />
-        </div>
-      ),
-      className: 'print:px-1 print:py-0.5'
-    }
-  ]}
-  className="min-w-full text-sm print:text-xs mt-2"
-/>
+                <Table
+                  data={prestamo}
+                  columns={[
+                    {
+                      header: "MONTO ORIGINAL",
+                      accessor: (prestamo) =>
+                        `$${prestamo.Monto_de_prestamo?.toLocaleString(
+                          "es-MX",
+                          {
+                            minimumFractionDigits: 2,
+                          }
+                        )}`,
+                      className: "print:px-1 print:py-0.5",
+                    },
+                    {
+                      header: "PAGO SEMANAL",
+                      accessor: (prestamo) =>
+                        `$${prestamo.Descuento_por_semana?.toLocaleString(
+                          "es-MX",
+                          {
+                            minimumFractionDigits: 2,
+                          }
+                        )}`,
+                      className: "print:px-1 print:py-0.5",
+                    },
+                    {
+                      header: "ESTATUS",
+                      accessor: (prestamo) => (
+                        <div className="flex items-center">
+                          {prestamo.Status}
+                          <span
+                            className={`inline-block w-2 h-2 rounded-full ml-2 ${
+                              prestamo.Status == "EN VIGOR"
+                                ? "bg-green-500"
+                                : "bg-red-500"
+                            }`}
+                          />
+                        </div>
+                      ),
+                      className: "print:px-1 print:py-0.5",
+                    },
+                  ]}
+                  className="min-w-full text-sm print:text-xs mt-2"
+                />
               </div>
             </div>
           </div>
@@ -594,15 +655,15 @@ export default function Page() {
                     </h4>
 
                     <InfoRow
-                      label="Sueldo Base"
-                      value={`$${(sueldos.Sueldo || 0).toLocaleString("es-MX", {
+                      label="depósito 1"
+                      value={`$${(sueldos.NETO || 0).toLocaleString("es-MX", {
                         minimumFractionDigits: 2,
                       })}`}
                     />
 
                     <InfoRow
-                      label="Séptimo Día"
-                      value={`$${(sueldos.Septimo_dia || 0).toLocaleString(
+                      label="depósito 2"
+                      value={`$${(sueldos.sueldo_real || 0).toLocaleString(
                         "es-MX",
                         { minimumFractionDigits: 2 }
                       )}`}
@@ -710,6 +771,7 @@ export default function Page() {
                       />
                     )}
 
+                    {/* Mostrar prestamo como deducción */}
                     {totalDescuentoPrestamos > 0 && (
                       <InfoRow
                         label="Préstamo"
@@ -746,23 +808,23 @@ export default function Page() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">
-                          Sueldo Base
+                          Deposito 1
                         </span>
                         <span className="text-xl font-bold text-green-600">
                           $
-                          {(sueldos?.Sueldo || 0).toLocaleString("es-MX", {
+                          {(sueldos?.NETO || 0).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">
-                          Depósito Extra
+                          Depósito 2
                         </span>
                         <span className="text-xl font-bold text-green-600">
                           $
                           {(
-                            totalViajes() - (sueldos?.Sueldo || 0)
+                            totalViajes() - (sueldos?.NETO || 0)
                           ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
@@ -793,7 +855,9 @@ export default function Page() {
                       <span className="text-2xl font-bold text-green-600">
                         $
                         {(
-                          (sueldos?.NETO || 0) -
+                          (sueldos?.NETO +
+                            (sueldos.sueldo_real - sueldos.NETO) +
+                            sueldos.extra || 0) -
                           (totalDescuentoPrestamos || 0) -
                           (adelantoTotal || 0)
                         ).toLocaleString("es-MX", {
@@ -820,19 +884,22 @@ export default function Page() {
               <PrinterIcon className="w-5 h-5 mr-2" />
               Imprimir
             </button>
-            <button
-              onClick={handleConfirm}
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center"
-            >
-              <CheckIcon className="w-5 h-5 mr-2" />
-              Confirmar Pago
-            </button>
+            {/* Botón de confirmar pago */}
+              <button
+                onClick={() => setShowConfirmDialog(true)}
+                className="px-6 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition flex items-center"
+              >
+                <CheckIcon className="w-5 h-5 mr-2" />
+                Confirmar Pago
+              </button>
           </div>
         </div>
       </div>
+      <ConfirmDialog/>
     </div>
+    
   );
-};
+}
 
 // Componentes auxiliares
 const LoadingSpinner = () => (
@@ -880,14 +947,15 @@ const InfoRow = ({
   <div>
     <p className="text-sm font-medium text-gray-500">{label}</p>
     <p
-      className={`mt-1 text-sm ${highlight
+      className={`mt-1 text-sm ${
+        highlight
           ? negative
             ? "font-semibold text-red-600"
             : "font-semibold text-indigo-600"
           : negative
-            ? "text-red-600"
-            : "text-gray-900"
-        }`}
+          ? "text-red-600"
+          : "text-gray-900"
+      }`}
     >
       {value || "-"}
     </p>

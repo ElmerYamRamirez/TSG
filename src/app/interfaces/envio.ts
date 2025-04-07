@@ -9,4 +9,5 @@ export interface Envio {
     Operador: string;
     Sueldo: number;
     Unidad: string;
+    Nombre_destino: string;
 }
