@@ -260,8 +260,8 @@ export default function Page() {
   const totalDescuentoPrestamos = useMemo(() => {
     return prestamo.length > 0
       ? prestamo
-          .filter((item) => item.Status == "EN VIGOR")
-          .reduce((total, item) => total + (item.Descuento_por_semana || 0), 0)
+        .filter((item) => item.Status == "EN VIGOR")
+        .reduce((total, item) => total + (item.Descuento_por_semana || 0), 0)
       : 0;
   }, [prestamo]);
 
@@ -376,7 +376,7 @@ export default function Page() {
       console.error("Error al confirmar pago:", err);
       alert(
         "❌ Error al confirmar el pago: " +
-          (err instanceof Error ? err.message : String(err))
+        (err instanceof Error ? err.message : String(err))
       );
     } finally {
       setLoading(false);
@@ -447,11 +447,10 @@ export default function Page() {
                 {filteredPersonal.map((operator) => (
                   <div
                     key={operator.uniqueId}
-                    className={`cursor-pointer hover:bg-indigo-50 px-4 py-2 ${
-                      operator.uniqueId == selectedPersonalId
+                    className={`cursor-pointer hover:bg-indigo-50 px-4 py-2 ${operator.uniqueId == selectedPersonalId
                         ? "bg-indigo-100"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => handleOperatorSelect(operator.uniqueId)}
                   >
                     <div className="flex items-center">
@@ -551,11 +550,10 @@ export default function Page() {
                     {
                       header: "PAGO",
                       accessor: (prestamo) =>
-                        `${prestamo.Numero_de_pagos + 1} - ${
-                          Math.ceil(
-                            prestamo.Monto_de_prestamo /
-                              prestamo.Descuento_por_semana
-                          ) || 0
+                        `${prestamo.Numero_de_pagos + 1} - ${Math.ceil(
+                          prestamo.Monto_de_prestamo /
+                          prestamo.Descuento_por_semana
+                        ) || 0
                         }`,
                       className: "print:px-1 print:py-0.5",
                     },
@@ -613,11 +611,10 @@ export default function Page() {
                         <div className="flex items-center">
                           {prestamo.Status}
                           <span
-                            className={`inline-block w-2 h-2 rounded-full ml-2 ${
-                              prestamo.Status == "EN VIGOR"
+                            className={`inline-block w-2 h-2 rounded-full ml-2 ${prestamo.Status == "EN VIGOR"
                                 ? "bg-green-500"
                                 : "bg-red-500"
-                            }`}
+                              }`}
                           />
                         </div>
                       ),
@@ -663,17 +660,18 @@ export default function Page() {
 
                     <InfoRow
                       label="depósito 2"
-                      value={`$${(sueldos.sueldo_real || 0).toLocaleString(
-                        "es-MX",
-                        { minimumFractionDigits: 2 }
-                      )}`}
+                      value={`$${(
+                        totalViajes() - (sueldos?.NETO || 0)
+                      ).toLocaleString("es-MX", {
+                        minimumFractionDigits: 2,
+                      })}`}
                     />
 
                     <div className="pt-2 border-t">
                       <InfoRow
                         label="Total Percepciones"
-                        value={`$${(
-                          sueldos.Percepcion_total || 0
+                        value={`${(
+                          ((totalViajes() || 0) - (sueldos?.NETO || 0)) + (sueldos.NETO || 0)
                         ).toLocaleString("es-MX", {
                           minimumFractionDigits: 2,
                         })}`}
@@ -804,27 +802,27 @@ export default function Page() {
                 {/* Total Neto */}
                 <div className="bg-gray-50 px-6 py-4 border-t">
                   {selectedOperator?.Foraneo == 1 &&
-                  totalViajes() > (sueldos?.Sueldo || 0) ? (
+                    totalViajes() > (sueldos?.Sueldo || 0) ? (
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">
-                          Deposito 1
+                          Total percepciones
                         </span>
                         <span className="text-xl font-bold text-green-600">
                           $
-                          {(sueldos?.NETO || 0).toLocaleString("es-MX", {
+                          {( ((totalViajes() || 0) - (sueldos?.NETO || 0)) + (sueldos.NETO || 0) ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">
-                          Depósito 2
+                          Total deducciones
                         </span>
                         <span className="text-xl font-bold text-green-600">
                           $
                           {(
-                            totalViajes() - (sueldos?.NETO || 0)
+                            (totalDescuentoPrestamos || 0) - (adelantoTotal || 0)
                           ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
@@ -885,19 +883,19 @@ export default function Page() {
               Imprimir
             </button>
             {/* Botón de confirmar pago */}
-              <button
-                onClick={() => setShowConfirmDialog(true)}
-                className="px-6 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition flex items-center"
-              >
-                <CheckIcon className="w-5 h-5 mr-2" />
-                Confirmar Pago
-              </button>
+            <button
+              onClick={() => setShowConfirmDialog(true)}
+              className="px-6 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition flex items-center"
+            >
+              <CheckIcon className="w-5 h-5 mr-2" />
+              Confirmar Pago
+            </button>
           </div>
         </div>
       </div>
-      <ConfirmDialog/>
+      <ConfirmDialog />
     </div>
-    
+
   );
 }
 
@@ -947,15 +945,14 @@ const InfoRow = ({
   <div>
     <p className="text-sm font-medium text-gray-500">{label}</p>
     <p
-      className={`mt-1 text-sm ${
-        highlight
+      className={`mt-1 text-sm ${highlight
           ? negative
             ? "font-semibold text-red-600"
             : "font-semibold text-indigo-600"
           : negative
-          ? "text-red-600"
-          : "text-gray-900"
-      }`}
+            ? "text-red-600"
+            : "text-gray-900"
+        }`}
     >
       {value || "-"}
     </p>
