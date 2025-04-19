@@ -18,7 +18,7 @@ const formatDateTime = (dateString: string | undefined): string => {
 
 export default function PrestamoC({ prestamo }: { prestamo: any[] }) { //  change any by Concept[]
   return (
-    <div className="space-y-4 print:space-y-2">
+    <div className="space-y-4 print:space-y-2 md:col-span-2">
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 print:text-base print:pb-1">
                 Detalles de Préstamos
               </h3>
@@ -110,6 +110,17 @@ export default function PrestamoC({ prestamo }: { prestamo: any[] }) { //  chang
                           />
                         </div>
                       ),
+                      className: "print:px-1 print:py-0.5",
+                    },
+                    {
+                      header: "Comentario",
+                      accessor: (prestamo) =>
+                        `${prestamo.Comentario?.toLocaleString(
+                          "es-MX",
+                          {
+                            minimumFractionDigits: 2,
+                          }
+                        )}`,
                       className: "print:px-1 print:py-0.5",
                     },
                   ]}
