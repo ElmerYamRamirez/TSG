@@ -43,3 +43,19 @@ export const executeQuery = async (query: string, params: {name: string, value: 
         throw error;
     }
 };
+
+//Elmer code
+
+const poolPromise = new sql.ConnectionPool(config)
+  .connect()
+  .then((pool) => {
+    console.log('MSSQL conectado');
+    return pool;
+  })
+  .catch((err) => {
+    console.error('Error al conectar con MSSQL', err);
+    throw err;
+  });
+
+
+export {sql, poolPromise}
