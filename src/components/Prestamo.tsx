@@ -1,5 +1,6 @@
 //import { Concept } from "@/types"; //importa clase concep
 import { Table } from "./Table";
+import { Prestamo } from "components/app/interfaces/prestamo";
 
 const formatDateTime = (dateString: string | undefined): string => {
   if (!dateString) return "-";
@@ -16,7 +17,7 @@ const formatDateTime = (dateString: string | undefined): string => {
   return new Date(dateString).toLocaleString("es-MX", options);
 };
 
-export default function PrestamoC({ prestamo }: { prestamo: any[] }) { //  change any by Concept[]
+export default function PrestamoC({ prestamo }: { prestamo: Prestamo[] }) { //  change any by Concept[]
   return (
     <div className="space-y-4 print:space-y-2 md:col-span-2">
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 print:text-base print:pb-1">
@@ -115,12 +116,7 @@ export default function PrestamoC({ prestamo }: { prestamo: any[] }) { //  chang
                     {
                       header: "Comentario",
                       accessor: (prestamo) =>
-                        `${prestamo.Comentario?.toLocaleString(
-                          "es-MX",
-                          {
-                            minimumFractionDigits: 2,
-                          }
-                        )}`,
+                        `${prestamo.Comentario?.toString()}`,
                       className: "print:px-1 print:py-0.5",
                     },
                   ]}

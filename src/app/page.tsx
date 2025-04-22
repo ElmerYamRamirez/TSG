@@ -12,6 +12,7 @@ import { prestamo_pago } from "./interfaces/prestamo_pago";
 import { nomina_prestamo } from "./interfaces/nomina_prestamo";
 import { deduccion } from "./interfaces/deduccion";
 import { percepcion } from "./interfaces/percepcion";
+//import html2pdf from 'html2pdf.js';
 
 export default function Page() {
   // Estados principales
@@ -25,7 +26,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [currentDate] = useState<string>(getFridayDate());
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [nomina, setNomina] = useState<any>();
+  //const [nomina, setNomina] = useState<any>();
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -396,7 +397,7 @@ export default function Page() {
       //Hacer la llamada a POST /nominas para poder crear una nueva nomina
       const requestBodyNomina = buildNominaBody();
       console.log(requestBodyNomina);
-      const createNomina = await fetch('/ticket-nomina/api/nominas/', {
+      await fetch('/ticket-nomina/api/nominas/', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -404,7 +405,7 @@ export default function Page() {
         body: JSON.stringify(requestBodyNomina),
       })
 
-      //window.location.reload();
+      window.location.reload();
       alert("✅ Pago confirmado con éxito");
 
     } catch (err) {
@@ -423,7 +424,8 @@ export default function Page() {
     0: "Local",
   };
 
-  const formatDateTime = (dateString: string | undefined): string => {
+  /*Elmer: se comento por que no se usa, no elimine por que es codigo de cristopher
+    const formatDateTime = (dateString: string | undefined): string => {
     if (!dateString) return "-";
 
     const options: Intl.DateTimeFormatOptions = {
@@ -436,7 +438,7 @@ export default function Page() {
     };
 
     return new Date(dateString).toLocaleString("es-MX", options);
-  };
+  };*/
 
   // Estados de carga
   if (loading) return <LoadingSpinner />;
@@ -628,11 +630,12 @@ export default function Page() {
             </div>
           </div>
           {/* Información del período */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg print:bg-transparent print:border-b print:pb-4">
-            <h3 className="text-lg font-semibold text-blue-800 print:text-gray-800">
+          <div className="grid grid-cols-3 mb-6 p-4 bg-blue-50 rounded-lg print:bg-transparent print:border-b print:pb-4">
+            <h3 className="col-span-3 text-lg font-semibold text-blue-800 print:text-gray-800">
               Período de Pago
             </h3>
-            <p className="text-blue-600 print:text-gray-700">{currentDate}</p>
+            <p className="col-span-2 text-blue-600 print:text-gray-700">{currentDate}</p>
+            <p className="col-span-1 text-blue-600 justify-self-end print:text-gray-700">{'Folio:xxx'}</p>
           </div>
 
           {/* Grid de información */}
