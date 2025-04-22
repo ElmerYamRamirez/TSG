@@ -6,6 +6,13 @@ import { Envio } from "./interfaces/envio";
 import { Sueldo } from "./interfaces/sueldo";
 import { Prestamo } from "./interfaces/prestamo";
 import { Table } from "../components/Table";
+import PrestamoC from "components/components/Prestamo";
+import { nomina } from "./interfaces/nomina";
+import { prestamo_pago } from "./interfaces/prestamo_pago";
+import { nomina_prestamo } from "./interfaces/nomina_prestamo";
+import { deduccion } from "./interfaces/deduccion";
+import { percepcion } from "./interfaces/percepcion";
+//import html2pdf from 'html2pdf.js';
 
 export default function Page() {
   // Estados principales
@@ -19,6 +26,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [currentDate] = useState<string>(getFridayDate());
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  //const [nomina, setNomina] = useState<any>();
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,6 +48,8 @@ export default function Page() {
   }, [personal, selectedPersonalId]);
 
   // Obtener datos iniciales
+
+  //personal
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,6 +72,7 @@ export default function Page() {
     fetchData();
   }, []);
 
+  //adelantos
   useEffect(() => {
     const fetchAdelantos = async () => {
       if (!selectedPersonalId) {
@@ -92,6 +103,7 @@ export default function Page() {
     fetchAdelantos();
   }, [selectedPersonalId]);
 
+  //prestamos
   useEffect(() => {
     const fetchPrestamos = async () => {
       if (!selectedPersonalId) {
@@ -115,6 +127,7 @@ export default function Page() {
     fetchPrestamos();
   }, [selectedPersonalId]);
 
+  //envios
   useEffect(() => {
     const fetchEnvios = async () => {
       if (selectedOperator?.Foraneo == 0 || !selectedPersonalId) {
@@ -158,6 +171,7 @@ export default function Page() {
     fetchEnvios();
   }, [selectedPersonalId, selectedOperator?.Foraneo]);
 
+  //sueldos
   useEffect(() => {
     const fetchSueldos = async () => {
       if (!selectedPersonalId) {
@@ -207,7 +221,7 @@ export default function Page() {
       {
         header: "Fecha",
         accessor: (envio: Envio) =>
-          new Date(envio.Fecha_programada).toLocaleDateString("es-MX"),
+          envio.Fecha_programada ? new Date(envio.Fecha_programada).toLocaleDateString("es-MX") : "Sin fecha",
       },
       {
         header: "Destino",
@@ -260,8 +274,8 @@ export default function Page() {
   const totalDescuentoPrestamos = useMemo(() => {
     return prestamo.length > 0
       ? prestamo
-          .filter((item) => item.Status == "EN VIGOR")
-          .reduce((total, item) => total + (item.Descuento_por_semana || 0), 0)
+        .filter((item) => item.Status == "EN VIGOR")
+        .reduce((total, item) => total + (item.Descuento_por_semana || 0), 0)
       : 0;
   }, [prestamo]);
 
@@ -312,6 +326,11 @@ export default function Page() {
     try {
       setLoading(true);
       // 1. Actualizar adelantos (marcar como descontados)
+      // El problema de este codigo que si alguna actualizacion falla, 
+      // manda un mensage de error pero las demas actualizaciones ya no se revierten
+      // en mi parecer se tiene que crear un nuevo endpoint 
+      // donde se mande un array de "Adelantos" y hacer la actualizacion con una transsaccion SQL
+      // esto permitira hacer una actualizacion de un todo o nada. 
       if (adelanto.length > 0) {
         await Promise.all(
           adelanto.map(async (item) => {
@@ -335,6 +354,11 @@ export default function Page() {
       }
 
       // 2. Actualizar préstamos (verificar si se completó el pago)
+      /* El problema de este codigo que si alguna actualizacion falla, 
+       manda un mensage de error pero las demas actualizaciones ya no se revierten
+       en mi parecer se tiene que crear un nuevo endpoint 
+       donde se mande un array de "Prestamos" y hacer la actualizacion con una transsaccion SQL
+      esto permitira hacer una actualizacion de un todo o nada.*/
       if (prestamo.length > 0) {
         await Promise.all(
           prestamo.map(async (item) => {
@@ -369,6 +393,18 @@ export default function Page() {
           })
         );
       }
+
+      //Hacer la llamada a POST /nominas para poder crear una nueva nomina
+      const requestBodyNomina = buildNominaBody();
+      console.log(requestBodyNomina);
+      await fetch('/ticket-nomina/api/nominas/', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBodyNomina),
+      })
+
       window.location.reload();
       alert("✅ Pago confirmado con éxito");
 
@@ -376,7 +412,7 @@ export default function Page() {
       console.error("Error al confirmar pago:", err);
       alert(
         "❌ Error al confirmar el pago: " +
-          (err instanceof Error ? err.message : String(err))
+        (err instanceof Error ? err.message : String(err))
       );
     } finally {
       setLoading(false);
@@ -388,7 +424,8 @@ export default function Page() {
     0: "Local",
   };
 
-  const formatDateTime = (dateString: string | undefined): string => {
+  /*Elmer: se comento por que no se usa, no elimine por que es codigo de cristopher
+    const formatDateTime = (dateString: string | undefined): string => {
     if (!dateString) return "-";
 
     const options: Intl.DateTimeFormatOptions = {
@@ -401,12 +438,110 @@ export default function Page() {
     };
 
     return new Date(dateString).toLocaleString("es-MX", options);
-  };
+  };*/
 
   // Estados de carga
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorDisplay message={error} />;
   if (personal.length == 0) return <EmptyState />;
+
+  //crear nomina body request
+  const buildNominaBody = (): nomina => {
+    const periodoPago = getPeriodoPago();
+    const totalPercepciones = (totalViajes() > (sueldos?.NETO || 0)) ? ( totalViajes()) : (sueldos?.NETO || 0);
+    const totalDeducciones = (sueldos?.Total_de_deducciones || 0) + (adelantoTotal || 0) + (totalDescuentoPrestamos || 0);
+    const deducciones: deduccion[] = [];
+    const percepciones: percepcion[] = [];
+
+    if ((sueldos?.I_S_R___mes_ || 0) > 0) {
+      deducciones.push({ nombre: "ISR", monto: sueldos?.I_S_R___mes_ });
+    }
+    if ((sueldos?.I_M_S_S_ || 0) > 0) {
+      deducciones.push({ nombre: "IMSS", monto: sueldos?.I_M_S_S_ });
+    }
+    if ((sueldos?.Pension_Alimenticia || 0) > 0) {
+      deducciones.push({
+        nombre: "Pensión Alimenticia",
+        monto: sueldos?.Pension_Alimenticia,
+      });
+    }
+    if ((sueldos?.Prestamo_infonavit__FD_ ||0 )> 0) {
+      deducciones.push({
+        nombre: "Infonavit (FD)",
+        monto: sueldos?.Prestamo_infonavit__FD_,
+      });
+    }
+    if ((sueldos?.Prestamo_Infonavit__CF_ || 0 ) > 0) {
+      deducciones.push({
+        nombre: "Infonavit (CF)",
+        monto: sueldos?.Prestamo_Infonavit__CF_,
+      });
+    }
+    if ((sueldos?.Prestamo_Infonavit__PORC_ || 0 ) > 0) {
+      deducciones.push({
+        nombre: "Infonavit %",
+        monto: sueldos?.Prestamo_Infonavit__PORC_,
+      });
+    }
+    if (adelantoTotal > 0 ){
+      deducciones.push({
+        nombre: "Adelanto",
+        monto: adelantoTotal,
+      })
+    }
+
+    if (totalDescuentoPrestamos > 0 ){
+      deducciones.push({
+        nombre: "Préstamo",
+        monto: totalDescuentoPrestamos,
+      })
+    }
+
+    if((sueldos?.NETO || 0) > 0){
+      percepciones.push({
+        nombre: "depósito 1",
+        monto: (sueldos?.NETO || 0),
+      })
+    }
+
+    if( totalViajes() > (sueldos?.NETO || 0) ){
+      percepciones.push({
+        nombre: "depósito 2",
+        monto: totalViajes() - (sueldos?.NETO || 0),
+      })
+    } else {
+      percepciones.push({
+        nombre: "depósito 2",
+        monto: 0,
+      })
+    }
+
+    return {
+      operador: parseInt(selectedPersonalId),
+      fecha_inicio: periodoPago.saturday,
+      fecha_final: periodoPago.friday,
+      fecha_generada: new Date(Date.now()),
+      deducciones: deducciones,
+      percepciones: percepciones,
+      prestamo_pagos: prestamo.map((p) : prestamo_pago => ({
+        saldo: p.Saldo,
+        fecha: new Date(Date.now()),
+        numero_pago: (p.Numero_de_pagos + 1).toString() + "-" + (Math.ceil(p.Monto_de_prestamo / p.Descuento_por_semana) || 0).toString(), // cambiar por string pagos
+        status: p.Status,
+        prestamo: parseInt(p.uniqueId),
+      })),
+      nomina_prestamos: prestamo.map((p) : nomina_prestamo => ({
+        prestamo: parseInt(p.uniqueId),
+      })),
+      envios: envios.map((e): Envio => ({
+        uniqueId: e.uniqueId,
+      })),
+      total_percepciones: totalPercepciones,
+      total_deducciones: totalDeducciones,
+      total_neto: totalPercepciones - totalDeducciones,
+    }
+
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 print:p-0">
@@ -447,11 +582,10 @@ export default function Page() {
                 {filteredPersonal.map((operator) => (
                   <div
                     key={operator.uniqueId}
-                    className={`cursor-pointer hover:bg-indigo-50 px-4 py-2 ${
-                      operator.uniqueId == selectedPersonalId
-                        ? "bg-indigo-100"
-                        : ""
-                    }`}
+                    className={`cursor-pointer hover:bg-indigo-50 px-4 py-2 ${operator.uniqueId == selectedPersonalId
+                      ? "bg-indigo-100"
+                      : ""
+                      }`}
                     onClick={() => handleOperatorSelect(operator.uniqueId)}
                   >
                     <div className="flex items-center">
@@ -496,17 +630,18 @@ export default function Page() {
             </div>
           </div>
           {/* Información del período */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg print:bg-transparent print:border-b print:pb-4">
-            <h3 className="text-lg font-semibold text-blue-800 print:text-gray-800">
+          <div className="grid grid-cols-3 mb-6 p-4 bg-blue-50 rounded-lg print:bg-transparent print:border-b print:pb-4">
+            <h3 className="col-span-3 text-lg font-semibold text-blue-800 print:text-gray-800">
               Período de Pago
             </h3>
-            <p className="text-blue-600 print:text-gray-700">{currentDate}</p>
+            <p className="col-span-2 text-blue-600 print:text-gray-700">{currentDate}</p>
+            <p className="col-span-1 text-blue-600 justify-self-end print:text-gray-700">{'Folio:xxx'}</p>
           </div>
 
           {/* Grid de información */}
 
           {/* Datos de adelantos y prestamos con suma al final por separado una tabla */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Datos del Empleado */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
@@ -529,105 +664,7 @@ export default function Page() {
             </div>
 
             {/* Sección de Préstamos reorganizada */}
-            <div className="space-y-4 print:space-y-2">
-              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 print:text-base print:pb-1">
-                Detalles de Préstamos
-              </h3>
-
-              {/* Tabla de Comentarios de Préstamos */}
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-700 border-b pb-1 print:text-sm">
-                  COMENTARIOS, PRÉSTAMOS DE LA SEMANA
-                </h4>
-                <Table
-                  data={Array.isArray(prestamo) ? prestamo.filter((p) => p.Status === "EN VIGOR") : []}
-                  columns={[
-                    {
-                      header: "FECHA ALTA",
-                      accessor: (prestamo) =>
-                        formatDateTime(prestamo.Fec_Alta) || "-",
-                      className: "print:px-1 print:py-0.5",
-                    },
-                    {
-                      header: "PAGO",
-                      accessor: (prestamo) =>
-                        `${prestamo.Numero_de_pagos + 1} - ${
-                          Math.ceil(
-                            prestamo.Monto_de_prestamo /
-                              prestamo.Descuento_por_semana
-                          ) || 0
-                        }`,
-                      className: "print:px-1 print:py-0.5",
-                    },
-                    {
-                      header: "SALDO",
-                      accessor: (prestamo) => (
-                        <span className="font-medium">
-                          $
-                          {prestamo.Saldo?.toLocaleString("es-MX", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </span>
-                      ),
-                      className: "print:px-1 print:py-0.5",
-                    },
-                  ]}
-                  emptyMessage="No hay préstamos vigentes"
-                  className="text-sm print:text-xs mt-2"
-                />
-              </div>
-
-              {/* Tabla de Estado de Préstamos */}
-              <div>
-                <h4 className="font-medium text-gray-700 border-b pb-1 print:text-sm">
-                  ESTATUS DE PRÉSTAMOS
-                </h4>
-                <Table
-                  data={prestamo}
-                  columns={[
-                    {
-                      header: "MONTO ORIGINAL",
-                      accessor: (prestamo) =>
-                        `$${prestamo.Monto_de_prestamo?.toLocaleString(
-                          "es-MX",
-                          {
-                            minimumFractionDigits: 2,
-                          }
-                        )}`,
-                      className: "print:px-1 print:py-0.5",
-                    },
-                    {
-                      header: "PAGO SEMANAL",
-                      accessor: (prestamo) =>
-                        `$${prestamo.Descuento_por_semana?.toLocaleString(
-                          "es-MX",
-                          {
-                            minimumFractionDigits: 2,
-                          }
-                        )}`,
-                      className: "print:px-1 print:py-0.5",
-                    },
-                    {
-                      header: "ESTATUS",
-                      accessor: (prestamo) => (
-                        <div className="flex items-center">
-                          {prestamo.Status}
-                          <span
-                            className={`inline-block w-2 h-2 rounded-full ml-2 ${
-                              prestamo.Status == "EN VIGOR"
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                            }`}
-                          />
-                        </div>
-                      ),
-                      className: "print:px-1 print:py-0.5",
-                    },
-                  ]}
-                  className="min-w-full text-sm print:text-xs mt-2"
-                />
-              </div>
-            </div>
+            <PrestamoC prestamo={prestamo} />
           </div>
           {/* Tabla de viajes */}
           {selectedOperator?.Foraneo == 1 &&
@@ -661,24 +698,51 @@ export default function Page() {
                       })}`}
                     />
 
-                    <InfoRow
-                      label="depósito 2"
-                      value={`$${(sueldos.sueldo_real || 0).toLocaleString(
-                        "es-MX",
-                        { minimumFractionDigits: 2 }
-                      )}`}
-                    />
+                    {
+                      totalViajes() > (sueldos?.NETO || 0) ? (
+                        <InfoRow
+                          label="depósito 2"
+                          value={`$${(
+                            totalViajes() - (sueldos?.NETO || 0)
+                          ).toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                          })}`}
+                        />
+                      ) : (
+                        <InfoRow
+                          label="depósito 2"
+                          value={`$${(
+                            0
+                          ).toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                          })}`}
+                        />
+                      )
+                    }
 
                     <div className="pt-2 border-t">
-                      <InfoRow
-                        label="Total Percepciones"
-                        value={`$${(
-                          sueldos.Percepcion_total || 0
-                        ).toLocaleString("es-MX", {
-                          minimumFractionDigits: 2,
-                        })}`}
-                        highlight={true}
-                      />
+                      {totalViajes() > (sueldos?.NETO || 0) ? (
+                        <InfoRow
+                          label="Total Percepciones"
+                          value={`$${(
+                            totalViajes()
+                          ).toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                          })}`}
+                          highlight={true}
+                        />
+                      ) : (
+                        <InfoRow
+                          label="Total Percepciones"
+                          value={`${(
+                            (sueldos.NETO || 0)
+                          ).toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                          })}`}
+                          highlight={true}
+                        />
+                      )}
+
                     </div>
                   </div>
 
@@ -804,27 +868,27 @@ export default function Page() {
                 {/* Total Neto */}
                 <div className="bg-gray-50 px-6 py-4 border-t">
                   {selectedOperator?.Foraneo == 1 &&
-                  totalViajes() > (sueldos?.Sueldo || 0) ? (
+                    totalViajes() > (sueldos?.Sueldo || 0) ? (
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">
-                          Deposito 1
+                          Total percepciones
                         </span>
                         <span className="text-xl font-bold text-green-600">
                           $
-                          {(sueldos?.NETO || 0).toLocaleString("es-MX", {
+                          {(((totalViajes() || 0) - (sueldos?.NETO || 0)) + (sueldos.NETO || 0)).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">
-                          Depósito 2
+                          Total deducciones
                         </span>
                         <span className="text-xl font-bold text-green-600">
                           $
                           {(
-                            totalViajes() - (sueldos?.NETO || 0)
+                            (totalDescuentoPrestamos || 0) - (adelantoTotal || 0)
                           ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}
@@ -855,9 +919,10 @@ export default function Page() {
                       <span className="text-2xl font-bold text-green-600">
                         $
                         {(
-                          (sueldos?.NETO +
-                            (sueldos.sueldo_real - sueldos.NETO) +
-                            sueldos.extra || 0) -
+                          ((sueldos?.NETO || 0)
+                            //Elmer: comente esta parte por que sueldo_real es igual a cero en la tabla y me restaba el neto dando valores negativos
+                            /* + (sueldos.sueldo_real - sueldos.NETO)*/ +
+                            (sueldos.extra || 0)) -
                           (totalDescuentoPrestamos || 0) -
                           (adelantoTotal || 0)
                         ).toLocaleString("es-MX", {
@@ -885,19 +950,19 @@ export default function Page() {
               Imprimir
             </button>
             {/* Botón de confirmar pago */}
-              <button
-                onClick={() => setShowConfirmDialog(true)}
-                className="px-6 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition flex items-center"
-              >
-                <CheckIcon className="w-5 h-5 mr-2" />
-                Confirmar Pago
-              </button>
+            <button
+              onClick={() => setShowConfirmDialog(true)}
+              className="px-6 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition flex items-center"
+            >
+              <CheckIcon className="w-5 h-5 mr-2" />
+              Confirmar Pago
+            </button>
           </div>
         </div>
       </div>
-      <ConfirmDialog/>
+      <ConfirmDialog />
     </div>
-    
+
   );
 }
 
@@ -947,15 +1012,14 @@ const InfoRow = ({
   <div>
     <p className="text-sm font-medium text-gray-500">{label}</p>
     <p
-      className={`mt-1 text-sm ${
-        highlight
-          ? negative
-            ? "font-semibold text-red-600"
-            : "font-semibold text-indigo-600"
-          : negative
+      className={`mt-1 text-sm ${highlight
+        ? negative
+          ? "font-semibold text-red-600"
+          : "font-semibold text-indigo-600"
+        : negative
           ? "text-red-600"
           : "text-gray-900"
-      }`}
+        }`}
     >
       {value || "-"}
     </p>
@@ -964,15 +1028,7 @@ const InfoRow = ({
 
 // Funciones de utilidad
 const getFridayDate = (): string => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const daysUntilFriday = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
-  const friday = new Date(today);
-  friday.setDate(today.getDate() + daysUntilFriday);
-
-  const saturday = new Date(friday);
-  saturday.setDate(friday.getDate() - 6);
-
+  const periodoPago = getPeriodoPago();
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     day: "2-digit",
@@ -980,10 +1036,10 @@ const getFridayDate = (): string => {
     year: "numeric",
   };
 
-  return `${saturday.toLocaleDateString(
+  return `${periodoPago.saturday.toLocaleDateString(
     "es-MX",
     options
-  )} - ${friday.toLocaleDateString("es-MX", options)}`;
+  )} - ${periodoPago.friday.toLocaleDateString("es-MX", options)}`;
 };
 
 // Iconos (puedes reemplazar con tu librería de iconos preferida)
@@ -1082,3 +1138,16 @@ const UserIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+const getPeriodoPago = (): { saturday : Date; friday: Date} => {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const daysUntilFriday = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
+  const friday = new Date(today);
+  friday.setDate(today.getDate() + daysUntilFriday);
+
+  const saturday = new Date(friday);
+  saturday.setDate(friday.getDate() - 6);
+  
+  return { saturday, friday };
+};

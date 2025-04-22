@@ -9,4 +9,5 @@ export interface Prestamo {
     Status: string;
     uniqueId: string;
     Usu_Alta: string;
+    Comentario: string;
 }
