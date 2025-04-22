@@ -26,7 +26,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [currentDate] = useState<string>(getFridayDate());
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  //const [nomina, setNomina] = useState<any>();
+  const [folio, setFolio] = useState<Number>(0);
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -194,6 +194,18 @@ export default function Page() {
     };
     fetchSueldos();
   }, [selectedPersonalId]);
+
+  useEffect(() => {
+    fetch('/ticket-nomina/api/folio?obj=nomina')
+    .then((res) => res.json())
+    .then((folio : { folio:Number } ) => {
+      setFolio(folio.folio);
+    })
+    .catch((err) => {
+      console.error("Error al cargar folio:", err);
+      setFolio(0);
+    })
+  }, []);
 
   const totalViajes = () => {
     return envios.reduce((total, envio) => total + (envio.Sueldo || 0), 0);
@@ -635,7 +647,7 @@ export default function Page() {
               Período de Pago
             </h3>
             <p className="col-span-2 text-blue-600 print:text-gray-700">{currentDate}</p>
-            <p className="col-span-1 text-blue-600 justify-self-end print:text-gray-700">{'Folio:xxx'}</p>
+            <p className="col-span-1 text-blue-600 justify-self-end print:text-gray-700">Folio:{folio.toString()}</p>
           </div>
 
           {/* Grid de información */}
