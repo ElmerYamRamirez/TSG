@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { executeQuery, sql, connectToDatabase, poolPromise } from "components/app/lib/connection";
+import { sql, poolPromise } from "components/app/lib/connection";
 
 //Funcion para guardar nominas
 /* Uso: POST /nominas */
