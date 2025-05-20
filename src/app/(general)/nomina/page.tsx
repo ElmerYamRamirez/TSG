@@ -1,17 +1,17 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { Personal } from "./interfaces/personal";
-import { Adelanto } from "./interfaces/adelanto";
-import { Envio } from "./interfaces/envio";
-import { Sueldo } from "./interfaces/sueldo";
-import { Prestamo } from "./interfaces/prestamo";
-import { Table } from "../components/Table";
+import { Personal } from "../../../interfaces/personal";
+import { Adelanto } from "../../../interfaces/adelanto";
+import { Envio } from "../../../interfaces/envio";
+import { Sueldo } from "../../../interfaces/sueldo";
+import { Prestamo } from "../../../interfaces/prestamo";
+import { Table } from "../../../components/Table";
 import PrestamoC from "components/components/Prestamo";
-import { nomina } from "./interfaces/nomina";
-import { prestamo_pago } from "./interfaces/prestamo_pago";
-import { nomina_prestamo } from "./interfaces/nomina_prestamo";
-import { deduccion } from "./interfaces/deduccion";
-import { percepcion } from "./interfaces/percepcion";
+import { nomina } from "../../../interfaces/nomina";
+import { prestamo_pago } from "../../../interfaces/prestamo_pago";
+import { nomina_prestamo } from "../../../interfaces/nomina_prestamo";
+import { deduccion } from "../../../interfaces/deduccion";
+import { percepcion } from "../../../interfaces/percepcion";
 //import html2pdf from 'html2pdf.js';
 
 export default function Page() {
@@ -53,7 +53,7 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/ticket-nomina/api/personal/");
+        const response = await fetch("/api/personal/");
         if (!response.ok) throw new Error(`Error ${response.status}`);
 
         const data: Personal[] = await response.json();
@@ -82,7 +82,7 @@ export default function Page() {
 
       try {
         const response = await fetch(
-          `/ticket-nomina/api/adelantos/${selectedPersonalId}`
+          `/api/adelantos/${selectedPersonalId}`
         );
 
         if (response.status == 404) {
@@ -112,7 +112,7 @@ export default function Page() {
       }
       try {
         const response = await fetch(
-          `/ticket-nomina/api/prestamos/${selectedPersonalId}`
+          `/api/prestamos/${selectedPersonalId}`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -154,7 +154,7 @@ export default function Page() {
         };
 
         const response = await fetch(
-          `/ticket-nomina/api/envios/${selectedPersonalId}?startDate=${adjustToMexicoTimezone(
+          `/api/envios/${selectedPersonalId}?startDate=${adjustToMexicoTimezone(
             lastSaturday
           )}&endDate=${adjustToMexicoTimezone(thisFriday)}`
         );
@@ -180,7 +180,7 @@ export default function Page() {
       }
       try {
         const response = await fetch(
-          `/ticket-nomina/api/sueldos/${selectedPersonalId}/`
+          `/api/sueldos/${selectedPersonalId}/`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -196,7 +196,7 @@ export default function Page() {
   }, [selectedPersonalId]);
 
   useEffect(() => {
-    fetch('/ticket-nomina/api/folio?obj=nomina')
+    fetch('/api/folio?obj=nomina')
     .then((res) => res.json())
     .then((folio : { folio:Number } ) => {
       setFolio(folio.folio);
@@ -347,7 +347,7 @@ export default function Page() {
         await Promise.all(
           adelanto.map(async (item) => {
             const response = await fetch(
-              `/ticket-nomina/api/adelantos/${item.uniqueId}/`,
+              `/api/adelantos/${item.uniqueId}/`,
               {
                 method: "PUT",
                 headers: {
@@ -379,7 +379,7 @@ export default function Page() {
             const isFullyPaid = newSaldo <= 0;
 
             const response = await fetch(
-              `/ticket-nomina/api/prestamos/${item.uniqueId}`,
+              `/api/prestamos/${item.uniqueId}`,
               {
                 method: "PUT",
                 headers: {
@@ -409,7 +409,7 @@ export default function Page() {
       //Hacer la llamada a POST /nominas para poder crear una nueva nomina
       const requestBodyNomina = buildNominaBody();
       console.log(requestBodyNomina);
-      await fetch('/ticket-nomina/api/nominas/', {
+      await fetch('/api/nominas/', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

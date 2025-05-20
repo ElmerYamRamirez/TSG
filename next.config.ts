@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
 };
 
 module.exports = {
-  basePath: "/ticket-nomina",
   trailingSlash: true
 };
 
