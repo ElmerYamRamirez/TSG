@@ -2,7 +2,7 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const deleteViaticosById = async ( id: string ) => {
+export const deleteViaticosById = async ( id: number ) => {
     try {
 
         let query = `
