@@ -1,4 +1,4 @@
-import { updateViaticosById } from "components/actions";
+import { createViatico, updateViaticosById } from "components/actions";
 import { deleteViaticosById } from "components/actions/viaticos/delete-viaticos-by-id";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,16 +20,14 @@ const handleDarDeBaja = async(viatico: any) => {
   // Ejemplo: confirmar y hacer una petición a una API
   if (confirm(`¿Estás seguro de eliminar: ${viatico.concepto}?`)) {
     //llamar server action to delete
-    // fetch('/api/vehiculos/baja', { method: 'POST', body: JSON.stringify({ id: vehiculo.id }) });
-    const { ok, viaticos} = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
+    const { ok, viaticos } = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
   }
 }
 
-const handleCreate = async(viatico: any) => {
-  if (confirm(`¿Estás seguro de eliminar: ${viatico.concepto}?`)) {
-    //llamar server action to create
-    //const { ok, viaticos} = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
-  }
+const handleCreate = async (viatico: Viatico) => {
+  //llamar server action to create
+  const { ok, res } = await createViatico(viatico) ?? { ok: false, res: [] }
+  return { ok, res }
 }
 
 const handleEdit = async (viatico: Viatico) => {
@@ -37,15 +35,30 @@ const handleEdit = async (viatico: Viatico) => {
   return {ok, viaticos}
 }
 
-export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
+export default function Viaticos({ viaticos, programacion }: { viaticos: Viatico[], programacion: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [viaticosList, setViaticosList] = useState<Viatico[]>(viaticos)
   const [itemEditando, setItemEditando] = useState<Viatico | null>(null)
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false)
 
-  const abrirModal = (item: any) => {
-    setItemEditando(item)
-    setIsModalOpen(true)
+  const abrirModalEditar = (item: any) => {
+    setItemEditando(item);
+    setIsEditing(true);
+    setIsModalOpen(true);
+  }
+
+  const abrirModalCrear = () => {
+    setItemEditando({
+      uniqueId: 0,
+      cantidad: 0,
+      concepto: '',
+      programacion: programacion,
+      Bit_Activo: 1,
+      Fec_Alta: new Date().toISOString(),
+    })
+    setIsEditing(false);
+    setIsModalOpen(true);
   }
 
   const deleteViatico = async (item: any) => {
@@ -53,22 +66,32 @@ export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
     router.refresh();
   }
 
-  const createViatico = async (item: any) => {
-    const responce = await handleCreate(item);
-    router.refresh();
-  }
-
-  const editViaticos = async () => {
+  const guardarCambios = async () => {
     if (!itemEditando) return
 
-    const responce = await handleEdit(itemEditando);
+    if (isEditing) {
+      //call server action to edit
+      const responce = await handleEdit(itemEditando);
 
-    if (responce.ok) {
-      router.refresh()
-      setIsModalOpen(false)
+      if (responce.ok) {
+        router.refresh()
+      } else {
+        alert('Error al guardar')
+      }
+
     } else {
-      alert('Error al guardar')
+      //call server action to create
+      console.log(itemEditando)
+      const responce = await handleCreate(itemEditando);
+
+      if (responce.ok) {
+        router.refresh()
+      } else {
+        alert('Error al guardar')
+      }
     }
+
+    setIsModalOpen(false)
   }
 
 
@@ -87,6 +110,7 @@ export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
         </div>
         <button
           className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={abrirModalCrear}
         >
           <span>Agregar</span>
         </button>
@@ -107,7 +131,7 @@ export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
                 <td className="px-1 py-2 text-xs text-gray-700">{item.concepto}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.cantidad}</td>
                 <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModal(item)}>
+                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
                     Editar
                   </button>
                   <button
@@ -139,7 +163,7 @@ export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
               type="number"
               className="border rounded px-3 py-1 w-full"
               value={itemEditando.cantidad}
-              onChange={e => setItemEditando({ ...itemEditando, cantidad: e.target.value })}
+              onChange={e => setItemEditando({ ...itemEditando, cantidad: parseFloat(e.target.value) })}
               placeholder="Monto"
             />
             <div className="flex justify-end space-x-2">
@@ -147,7 +171,7 @@ export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
                 Cancelar
               </button>
               <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={editViaticos}>
+                onClick={guardarCambios}>
                 Guardar
               </button>
             </div>

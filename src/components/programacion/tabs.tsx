@@ -15,7 +15,7 @@ export default function Tabs({programacion}:{programacion: any}){
       case 'Combustible':
         return <div className="p-4">Contenido de Combustible</div>;
       case 'Viáticos':
-        return <Viaticos viaticos={programacion.viaticos}></Viaticos>;
+        return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':
         return <Casetas casetas={programacion.casetas}></Casetas>;
       default:

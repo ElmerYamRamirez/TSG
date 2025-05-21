@@ -33,7 +33,7 @@ export const getProgramacionesById = async (id:string) => {
          return {
              ok: true,
              programacion: {
-                 ...programacion,
+                 ...programacion[0],
                  viaticos,
                  casetas
              },
