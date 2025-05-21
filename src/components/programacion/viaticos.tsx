@@ -3,6 +3,7 @@ import { deleteViaticosById } from "components/actions/viaticos/delete-viaticos-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Viatico } from "components/interfaces/viaticos";
 
 // interface viaticos{
 //     viatico:viatico[]
@@ -31,15 +32,15 @@ const handleCreate = async(viatico: any) => {
   }
 }
 
-const handleEdit = async (viatico: any) => {
+const handleEdit = async (viatico: Viatico) => {
   const { ok, viaticos } = await updateViaticosById(viatico) ?? { ok: false, viaticos: [] };
   return {ok, viaticos}
 }
 
-export default function Viaticos({ viaticos }: { viaticos: any[] }) {
+export default function Viaticos({ viaticos }: { viaticos: Viatico[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [viaticosList, setViaticosList] = useState<any[]>(viaticos)
-  const [itemEditando, setItemEditando] = useState<any | null>(null)
+  const [viaticosList, setViaticosList] = useState<Viatico[]>(viaticos)
+  const [itemEditando, setItemEditando] = useState<Viatico | null>(null)
   const router = useRouter();
 
   const abrirModal = (item: any) => {

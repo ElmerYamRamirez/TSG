@@ -1,13 +1,14 @@
 'use server';
 
 import { executeQuery } from "components/app/lib/connection";
+import { Viatico } from "components/interfaces/viaticos";
 
-export const updateViaticosById = async ( item: any ) => {
+export const updateViaticosById = async ( item: Viatico ) => {
     try {
 
         let query = `
         UPDATE programacion_viaticos
-        SET concepto = @concepto, cantidad = @cantidad            
+        SET concepto = @concepto, cantidad = @cantidad
         WHERE uniqueId = @id;
         `;
 
