@@ -2,19 +2,16 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const updateViaticosById = async ( id: string ) => {
+export const updateViaticosById = async ( item: any ) => {
     try {
 
         let query = `
-        UPDATE 
-            programacion_viaticos
-        SET 
-            column1 = value1, column2 = value2, ... 
-        WHERE
-            uniqueId = @id;
+        UPDATE programacion_viaticos
+        SET concepto = @concepto, cantidad = @cantidad            
+        WHERE uniqueId = @id;
         `;
 
-        const paramsList = [{ name: 'id', value: id }];
+        const paramsList = [{ name: 'id', value: item.uniqueId },{ name: 'concepto', value: item.concepto },{ name:'cantidad', value: item.cantidad }];
         const viaticos = await executeQuery(query, paramsList);
 
         //return NextResponse.json(envios);
