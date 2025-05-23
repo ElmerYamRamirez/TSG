@@ -151,7 +151,7 @@ export default function Viaticos({ viaticos, programacion }: { viaticos: Viatico
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">Editar Viatico</h2>
+            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Viatico'}</h2>
             <input
               type="text"
               className="border rounded px-3 py-1 w-full"
@@ -172,7 +172,7 @@ export default function Viaticos({ viaticos, programacion }: { viaticos: Viatico
               </button>
               <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 onClick={guardarCambios}>
-                Guardar
+                {isEditing ? 'Guardar' : 'Crear'}
               </button>
             </div>
 
