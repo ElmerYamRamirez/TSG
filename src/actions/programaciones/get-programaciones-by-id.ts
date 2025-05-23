@@ -8,9 +8,20 @@ export const getProgramacionesById = async (id:string) => {
         const paramsList = [{ name: "id", value: id }];
 
         let query = `
-        SELECT *
-        FROM Programacion_de_envio p
-        WHERE p.uniqueId = @id;
+        SELECT 
+            pe.*, 
+            D.Nombre AS nombre_destino,
+            c.Nombre AS cliente_name,
+            o.Nombre AS operador_name
+        FROM 
+            Programacion_de_envio pe
+        INNER JOIN 
+            Destino D ON PE.Destino_de_la_unidad = D.uniqueId
+        INNER JOIN
+            Cliente c ON PE.Cliente = c.uniqueId
+        INNER JOIN
+            Operador o ON PE.Operador = o.uniqueId
+        WHERE pe.uniqueId = @id;
         `;
         const programacion = await executeQuery(query, paramsList);
 
