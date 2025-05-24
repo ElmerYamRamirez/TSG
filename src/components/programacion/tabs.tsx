@@ -17,7 +17,7 @@ export default function Tabs({programacion}:{programacion: any}){
       case 'Viáticos':
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':
-        return <Casetas casetas={programacion.casetas}></Casetas>;
+        return <Casetas casetas={programacion.casetas} programacion={programacion.uniqueId}></Casetas>;
       default:
         return null;
     }
