@@ -35,22 +35,11 @@ export const getProgramaciones = async () => {
 
         const paramsList = [{ name: "id", value: 1 }];
 
-        /* parametros para buscar por fecha
-        if (startDate && endDate) {
-            query += " AND Fecha_programada BETWEEN @startDate AND @endDate";
-            paramsList.push(
-                { name: "startDate", value: startDate },
-                { name: "endDate", value: endDate }
-            );
-        }
-        */
-
         query += " ORDER BY Fecha_programada, Hora_programada";
 
         const programaciones = await executeQuery(query, paramsList);
 
         //return NextResponse.json(envios);
-        console.log(JSON.stringify(programaciones));
         return {
             ok: true,
             programaciones: programaciones,
