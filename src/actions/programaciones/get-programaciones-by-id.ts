@@ -7,7 +7,7 @@ export const getProgramacionesById = async (id:string) => {
         
         const paramsList = [{ name: "id", value: id }];
 
-        let query = `
+        const query = `
         SELECT 
             pe.*, 
             D.Nombre AS nombre_destino,
@@ -25,14 +25,14 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const programacion = await executeQuery(query, paramsList);
 
-        let query2 = `
+        const query2 = `
         SELECT *
         FROM programacion_viaticos p
         WHERE p.programacion = @id;
         `;
         const viaticos = await executeQuery(query2, paramsList);
 
-        let query3 = `
+        const query3 = `
         SELECT *
         FROM programacion_casetas p
         WHERE p.folio_programacion = @id;

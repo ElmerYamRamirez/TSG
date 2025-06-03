@@ -5,7 +5,7 @@ import { executeQuery } from "components/app/lib/connection";
 export const getViaticosById = async ( id: string ) => {
     try {
 
-        let query = `
+        const query = `
         SELECT 
             v.*
         FROM 

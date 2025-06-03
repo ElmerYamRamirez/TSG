@@ -26,7 +26,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [currentDate] = useState<string>(getFridayDate());
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [folio, setFolio] = useState<Number>(0);
+  const [folio, setFolio] = useState<number>(0);
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -198,7 +198,7 @@ export default function Page() {
   useEffect(() => {
     fetch('/api/folio?obj=nomina')
     .then((res) => res.json())
-    .then((folio : { folio:Number } ) => {
+    .then((folio : { folio:number } ) => {
       setFolio(folio.folio);
     })
     .catch((err) => {

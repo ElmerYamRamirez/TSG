@@ -1,7 +1,6 @@
 import { createCaseta, updateCasetaById } from "components/actions";
 import { deleteCasetaById } from "components/actions/casetas/delete-caseta-by-id";
 import { CasetaI } from "components/interfaces/caseta";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -9,7 +8,11 @@ import { useState } from "react";
 const handleDarDeBaja = async (caseta: CasetaI) => {
   if (confirm(`¿Estás seguro de eliminar: ${caseta.nombre}?`)) {
     //llamar server action to delete
-    const { ok, casetas } = await deleteCasetaById(caseta.uniqueId) ?? { ok: false, casetas: [] };
+    const { ok } = await deleteCasetaById(caseta.uniqueId) ?? { ok: false, casetas: [] };
+
+    if (!ok) {
+      alert("Hubo un error al eliminar la caseta.");
+    }
   }
 }
 
@@ -28,12 +31,12 @@ const handleEdit = async (caseta: CasetaI) => {
 
 export default function Casetas({ casetas, programacion }: { casetas: CasetaI[], programacion: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [casetasList, setCasetasList] = useState<CasetaI[]>(casetas)
+  //const [casetasList, setCasetasList] = useState<CasetaI[]>(casetas)
   const [itemEditando, setItemEditando] = useState<CasetaI | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter();
 
-  const abrirModalEditar = (item: any) => {
+  const abrirModalEditar = (item: CasetaI) => {
     setItemEditando(item);
     setIsEditing(true);
     setIsModalOpen(true);
@@ -53,7 +56,8 @@ export default function Casetas({ casetas, programacion }: { casetas: CasetaI[],
   }
 
   const deleteCaseta = async (item: CasetaI) => {
-    const responce = await handleDarDeBaja(item);
+    //const responce = await handleDarDeBaja(item);
+    await handleDarDeBaja(item);
     router.refresh();
   }
 

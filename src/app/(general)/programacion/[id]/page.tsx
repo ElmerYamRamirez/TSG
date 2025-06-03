@@ -3,13 +3,9 @@ import Tabs from "components/components/programacion/tabs";
 import Link from "next/link";
 import React from "react";
 
-interface Props {
-    params: {id: string}
-}
 
-
-export default async function ProgramacionPage({params} : Props){
-  const { id } = await params;
+export default async function ProgramacionPage(props: { params : Promise<{id: string}> }) {
+  const id  = (await props.params).id;
   const programacion = await getProgramacionesById(id);
 
   return (

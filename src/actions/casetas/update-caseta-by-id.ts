@@ -6,7 +6,7 @@ import { CasetaI } from "components/interfaces/caseta";
 export const updateCasetaById = async ( item: CasetaI ) => {
     try {
 
-        let query = `
+        const query = `
         UPDATE programacion_casetas
         SET nombre = @nombre, precio = @precio
         WHERE uniqueId = @id;
