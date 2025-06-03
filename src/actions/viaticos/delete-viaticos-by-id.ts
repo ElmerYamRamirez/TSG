@@ -5,7 +5,7 @@ import { executeQuery } from "components/app/lib/connection";
 export const deleteViaticosById = async ( id: number ) => {
     try {
 
-        let query = `
+        const query = `
         DELETE FROM 
             programacion_viaticos 
         WHERE

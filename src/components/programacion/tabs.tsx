@@ -4,10 +4,30 @@ import Viaticos from './viaticos';
 import Casetas from './casetas';
 
 const tabs = ['Combustible', 'Viáticos', 'Casetas'];
-const viaticos = [{ "concepto":"hospedaje", "monto":500 }, { "concepto":"Comida", "monto": 400 }, { "concepto":"Agua","monto":300}]
 
+interface ProgramacionI {
+  uniqueId: number;
+  Bit_Activo: boolean;
+  Usu_Alta: number;
+  Fec_Alta: string;
+  Cliente: number;
+  Operador: number;
+  Unidad: number;
+  Comentario: string;
+  Destino_de_la_unidad: number;
+  Fecha_programada: string;
+  Hora_programada: string;
+  Sueldo: number;
+  nomina: number;
+  folio: string;
+  nombre_destino: string;
+  cliente_name: string;
+  operador_name: string;
+  viaticos:[]
+  casetas:[]
+} 
 
-export default function Tabs({programacion}:{programacion: any}){
+export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const [activeTab, setActiveTab] = useState('Combustible');
 
   const renderContent = () => {

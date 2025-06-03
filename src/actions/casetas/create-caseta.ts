@@ -6,7 +6,7 @@ import { CasetaI } from "components/interfaces/caseta";
 export const createCaseta = async ( item: CasetaI ) => {
     try {
 
-        let query = `
+        const query = `
         INSERT INTO programacion_casetas ( uniqueId, Bit_Activo, Fec_Alta, folio_programacion, precio, nombre )
 	    VALUES(
     	    (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM programacion_casetas),

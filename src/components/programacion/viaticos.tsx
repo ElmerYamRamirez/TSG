@@ -1,26 +1,29 @@
 import { createViatico, updateViaticosById } from "components/actions";
 import { deleteViaticosById } from "components/actions/viaticos/delete-viaticos-by-id";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Viatico } from "components/interfaces/viaticos";
 
-// interface viaticos{
-//     viatico:viatico[]
+// interface ViaticoI {
+//   uniqueId: number;
+//   Bit_Activo: boolean;
+//   Usu_Alta: string | null;
+//   Fec_Alta: string;
+//   cantidad: number;
+//   programacion: number;
+//   concepto: string;
 // }
 
-// interface viatico{
-//     concepto: string,
-//     monto: number
-// }
-
-const handleDarDeBaja = async(viatico: any) => {
-  const elmer = 12;
+const handleDarDeBaja = async(viatico: Viatico) => {
   console.log('Dar de baja:', viatico);
   // Ejemplo: confirmar y hacer una petición a una API
   if (confirm(`¿Estás seguro de eliminar: ${viatico.concepto}?`)) {
     //llamar server action to delete
-    const { ok, viaticos } = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
+    const { ok } = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
+
+    if (!ok) {
+      alert("Hubo un error al eliminar la caseta.");
+    }
   }
 }
 
@@ -37,12 +40,11 @@ const handleEdit = async (viatico: Viatico) => {
 
 export default function Viaticos({ viaticos, programacion }: { viaticos: Viatico[], programacion: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [viaticosList, setViaticosList] = useState<Viatico[]>(viaticos)
   const [itemEditando, setItemEditando] = useState<Viatico | null>(null)
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false)
 
-  const abrirModalEditar = (item: any) => {
+  const abrirModalEditar = (item: Viatico) => {
     setItemEditando(item);
     setIsEditing(true);
     setIsModalOpen(true);
@@ -61,8 +63,8 @@ export default function Viaticos({ viaticos, programacion }: { viaticos: Viatico
     setIsModalOpen(true);
   }
 
-  const deleteViatico = async (item: any) => {
-    const responce = await handleDarDeBaja(item);
+  const deleteViatico = async (item: Viatico) => {
+    await handleDarDeBaja(item);
     router.refresh();
   }
 
