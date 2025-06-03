@@ -7,7 +7,7 @@ export const getProgramacionesPagination = async (page: number, pageSize = 15) =
         const offset = (page - 1) * pageSize;
         const paramsList = [{ name: "offset", value: offset }, { name: "pageSize", value: pageSize }];
 
-        let query = `
+        const query = `
         SELECT 
             PE.*, 
             D.Nombre AS Nombre_destino,

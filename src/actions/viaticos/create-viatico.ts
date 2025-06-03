@@ -6,7 +6,7 @@ import { Viatico } from "components/interfaces/viaticos";
 export const createViatico = async ( item: Viatico ) => {
     try {
 
-        let query = `
+        const query = `
         INSERT INTO programacion_viaticos ( uniqueId, Bit_Activo, Fec_Alta, cantidad, programacion, concepto )
 	    VALUES(
     	    (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM programacion_viaticos),

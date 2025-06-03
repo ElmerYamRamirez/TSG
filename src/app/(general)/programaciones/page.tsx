@@ -1,27 +1,17 @@
-import { getProgramaciones } from "components/actions";
 import { getProgramacionesPagination } from "components/actions"; 
 import Link from "next/link";
 import React from "react";
 
-interface Props {
-  searchParams: {
-    page?: string;
-  }
-} 
-
-const options: Intl.DateTimeFormatOptions = {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-};
-
-//const { ok, programaciones = [] } = await getProgramaciones() ?? { ok: false, programaciones: [] };
-
-export default async function UserTable({searchParams}: Props) {
-  const { page } = await searchParams;
-  const pageInt = page ? parseInt( page) : 1
+export default async function UserTable({ 
+  searchParams, 
+}:{ 
+  searchParams: Promise<{ page?: string}>;
+}) {
+  //const page = searchParams.page ? parseInt( searchParams.page) : 1;
+  const {page = "1"} = await searchParams;
+  const pageInt = parseInt(page);
   const pageSize = 15;
-  const { ok, programaciones = [] } = await getProgramacionesPagination(pageInt, pageSize) ?? { ok: false, programaciones: []}
+  const responce = await getProgramacionesPagination(pageInt, pageSize) ?? { ok: false, programaciones: []}
 
   return (
     <div className=" px-1 mx-auto py-1 ">
@@ -53,7 +43,7 @@ export default async function UserTable({searchParams}: Props) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
 
-            {programaciones.map((programacion, index) => (
+            {responce.programaciones.map((programacion, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.folio}</td>
                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Nombre_destino}</td>

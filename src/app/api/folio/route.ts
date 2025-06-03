@@ -1,14 +1,11 @@
 import { type NextRequest, NextResponse  } from 'next/server'
-import { poolPromise, sql } from 'components/app/lib/connection';
+import { poolPromise } from 'components/app/lib/connection';
 
 const ALLOWED_TABLES = ['nomina', 'adelanto', 'prestamo']; // por seguridad
  
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const table = searchParams.get('obj')
-
-  const pool = await poolPromise;
-  const transaction = new sql.Transaction(pool);
 
   if (!table || !ALLOWED_TABLES.includes(table)) {
     return NextResponse.json(
