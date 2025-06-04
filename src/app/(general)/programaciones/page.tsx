@@ -29,16 +29,12 @@ export default async function UserTable({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Folio</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Destino</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Hora</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Cliente</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Unidad</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Destino</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Operador</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Cliente</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Comentario</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Estado</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Papeleria</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo</th>
-              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -46,15 +42,12 @@ export default async function UserTable({
             {responce.programaciones.map((programacion, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.folio}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{new Date((programacion.Fecha_programada).toString()).toLocaleString("es-MX", {day: "2-digit",month:"2-digit",year: "2-digit",})}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Unidad}</td>
                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Nombre_destino}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{new Date((programacion.Fecha_programada).toString()).toISOString().slice(0,10)}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Hora_programada}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.cliente_name}</td>
                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.operador_name}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.cliente_name}</td>
                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Comentario}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.estado}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.papeleria}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo}</td>
                 <td className="px-1 text-xs text-indigo-600 font-medium">
                   <div className="flex flex-col">
                     <Link href={`/programacion/${programacion.uniqueId}`} className="hover:underline">
