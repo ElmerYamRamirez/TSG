@@ -53,24 +53,24 @@ export default async function UserTable({ searchParams }: { searchParams: Promis
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="table-auto mx-auto divide-y divide-gray-300 w-full max-w-6xl">
+              <table className="table-auto mx-auto divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Folio</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Unidad</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Destino</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Operador</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Cliente</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Comentario</th>
-                    <th className="px-2 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Folio</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Unidad</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Destino</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Operador</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Cliente</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Comentario</th>
+                    <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {programaciones.map((programacion, index) => (
                     <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                      <td className="px-2 py-1 text-xs text-gray-700">{programacion.folio}</td>
-                      <td className="px-2 py-1 text-xs text-gray-700">
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.folio}</td>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">
                         {new Date(programacion.Fecha_programada).toLocaleDateString("es-MX", {
                           timeZone: "UTC",
                           day: "2-digit",
@@ -78,18 +78,17 @@ export default async function UserTable({ searchParams }: { searchParams: Promis
                           year: "2-digit",
                         })}
                       </td>
-                      <td className="px-2 py-1 text-xs text-gray-700">{programacion.Unidad}</td>
-                      <td className="px-2 py-1 text-xs text-gray-700">{programacion.Nombre_destino}</td>
-                      <td className="px-2 py-1 text-xs text-gray-700">{programacion.operador_name}</td>
-                      <td className="px-2 py-1 text-xs text-gray-700">{programacion.cliente_name}</td>
-                      <td className="px-2 py-1 text-xs text-gray-700">{programacion.Comentario}</td>
-                      <td className="px-2 py-1 text-xs text-indigo-600 font-medium">
-                        <Link
-                          href={`/programacion/${programacion.uniqueId}`}
-                          className="hover:underline"
-                        >
-                          Cargar datos
-                        </Link>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Unidad}</td>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Nombre_destino}</td>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.operador_name}</td>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.cliente_name}</td>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Comentario}</td>
+                      <td className="px-1 text-xs text-indigo-600 font-medium">
+                        <div className="flex flex-col">
+                          <Link href={`/programacion/${programacion.uniqueId}`} className="hover:underline">
+                            Cargar datos
+                          </Link> 
+                        </div>
                       </td>
                     </tr>
                   ))}

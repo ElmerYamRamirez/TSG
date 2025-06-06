@@ -12,7 +12,8 @@ export const getProgramacionesById = async (id:string) => {
             pe.*, 
             D.Nombre AS nombre_destino,
             c.Nombre AS cliente_name,
-            o.Nombre AS operador_name
+            o.Nombre AS operador_name,
+            u.Nombre AS unidad_name
         FROM 
             Programacion_de_envio pe
         INNER JOIN 
@@ -21,6 +22,8 @@ export const getProgramacionesById = async (id:string) => {
             Cliente c ON PE.Cliente = c.uniqueId
         INNER JOIN
             Operador o ON PE.Operador = o.uniqueId
+        INNER JOIN
+            Unidad u ON PE.Unidad = u.uniqueId
         WHERE pe.uniqueId = @id;
         `;
         const programacion = await executeQuery(query, paramsList);
