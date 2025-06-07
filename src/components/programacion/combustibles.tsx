@@ -1,5 +1,5 @@
 
-import { CombustibleI } from "components/interfaces/combustible";
+import { CombustibleI } from "components/interfaces/combustibles";
 import React from 'react';
 
 interface CombustibleProps {

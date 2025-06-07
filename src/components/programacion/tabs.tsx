@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Viaticos from './viaticos';
 import Casetas from './casetas';
-import Combustible from './combustible';
+import Combustibles from './combustibles';
 
 const tabs = ['Combustible', 'Viáticos', 'Casetas'];
 
@@ -26,7 +26,7 @@ interface ProgramacionI {
   operador_name: string;
   viaticos:[]
   casetas:[]
-  combustible: [];
+  combustibles: [];
 } 
 
 export default function Tabs({programacion}:{programacion: ProgramacionI}){
@@ -36,7 +36,7 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const renderContent = () => {
     switch (activeTab) {
       case 'Combustible':
-      return <Combustible></Combustible>
+      return <Combustibles></Combustibles>
       case 'Viáticos':
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':
