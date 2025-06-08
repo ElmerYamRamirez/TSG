@@ -26,22 +26,31 @@ export default async function UserTable({ searchParams }: { searchParams: Promis
       </div>
 
       <div className="flex justify-center mb-4">
-        <form className="w-full max-w-md flex" method="GET">
+        <form className="w-full max-w-xl flex flex-wrap gap-2" method="GET">
           <input
             type="text"
             name="search"
             defaultValue={searchTerm}
             placeholder="Buscar por folio, destino o fecha..."
-            className="border border-gray-300 rounded-l px-4 py-2 w-full"
+            className="border border-gray-300 rounded px-4 py-2 flex-grow min-w-[200px]"
           />
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Buscar
           </button>
+          {searchTerm && (
+            <Link
+              href="/programaciones"
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+            >
+              Limpiar
+            </Link>
+          )}
         </form>
       </div>
+
 
       {response?.ok === false ? (
         <p className="text-center text-red-500">Error al cargar las programaciones.</p>
@@ -113,18 +122,6 @@ export default async function UserTable({ searchParams }: { searchParams: Promis
                   </Link>
                 )}
               </div>
-            </div>
-          )}
-
-          {/* Mostrar el botón Limpiar búsqueda solo si hay término de búsqueda */}
-          {searchTerm && (
-            <div className="text-center mt-4">
-              <Link
-                href="/programaciones"
-                className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Limpiar búsqueda
-              </Link>
             </div>
           )}
         </>
