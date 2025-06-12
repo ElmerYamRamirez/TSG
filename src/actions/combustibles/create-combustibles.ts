@@ -6,33 +6,27 @@ import { CombustibleI } from "components/interfaces/combustibles";
 export const createCombustible = async ( item: CombustibleI ) => {
     try {
 
-        const now = new Date().toISOString();
-
         const query = `
-        INSERT INTO carga_diesel ( uniqueId, Bit_Activo, Fec_Alta, fecha, litros, precio, precio_total, programacion, kilometraje_actual)
-        VALUES (
+        INSERT INTO carga_diesel ( uniqueId, Bit_Activo, Fec_Alta, fecha, litros, precio, precio_total, programacion, kilometraje_actual )
+        VALUES(
             (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM carga_diesel),
-    	    1,
-            @fecha_alta,
+            1,
+            @Fec_Alta,
             @fecha,
             @litros,
-            @precioLitro,
-            @total,
-            @kilometraje,
-            @tipo,
-            
-        )
+            @precio,
+            @precio_total,
+            @programacion,
+            @kilometraje_actual)
         `;
 
-        const paramsList = [
-        { name: 'fecha_alta', value: item.Fec_Alta = new Date().toISOString()},
-        { name: 'fecha', value: item.fecha },
-        { name: 'litros', value: item.litros ?? null },
-        { name: 'precioLitro', value: item.precioLitro ?? null },
-        { name: 'total', value: item.total ?? null },
-        { name: 'kilometraje', value: item.kilometraje },
-
-        ];
+        const paramsList = [{ name: 'Fec_Alta', value: item.Fec_Alta = new Date().toISOString()},
+                {name: 'fecha', value: item.fecha = new Date().toISOString()},
+                {name: 'litros', value: item.litros},
+                {name: 'precio', value: item.precioLitro},
+                {name: 'precio_total', value: item.total},
+                {name: 'programacion', value: item.programacion},
+                {name: 'kilometraje_actual', value: item.kilometraje}];
                 
         const responce = await executeQuery(query, paramsList);
 

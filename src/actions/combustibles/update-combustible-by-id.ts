@@ -1,21 +1,18 @@
 'use server';
 
 import { executeQuery } from "components/app/lib/connection";
+import { CombustibleI} from "components/interfaces/combustibles";
 
-export const getCombustiblesById = async ( id: string ) => {
+export const updateCombustibleById = async ( item: CombustibleI ) => {
     try {
 
         const query = `
-        SELECT 
-            v.*
-        FROM 
-            carga_diesel v
+        
         `;
 
-        const paramsList = [{ name: 'id', value: id }];
+        const paramsList = [{ name: 'id', value: item.uniqueId },{ name: 'fecha', value: item.fecha },{ name:'litros', value: item.litros}];
         const combustibles = await executeQuery(query, paramsList);
 
-        console.log(combustibles)
         //return NextResponse.json(envios);
         return {
             ok: true,
@@ -31,4 +28,3 @@ export const getCombustiblesById = async ( id: string ) => {
         //);
     }
 }
-

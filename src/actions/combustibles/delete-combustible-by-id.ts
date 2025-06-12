@@ -2,21 +2,21 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const getCombustiblesById = async ( id: string ) => {
+export const deleteCombustibleById = async ( id: number ) => {
     try {
 
         const query = `
-        SELECT 
-            v.*
-        FROM 
-            carga_diesel v
+        DELETE FROM 
+            carga_diesel
+        WHERE
+            uniqueId = @id;
         `;
 
         const paramsList = [{ name: 'id', value: id }];
         const combustibles = await executeQuery(query, paramsList);
 
-        console.log(combustibles)
         //return NextResponse.json(envios);
+        console.log(combustibles);
         return {
             ok: true,
             combustibles: combustibles,
@@ -31,4 +31,3 @@ export const getCombustiblesById = async ( id: string ) => {
         //);
     }
 }
-
