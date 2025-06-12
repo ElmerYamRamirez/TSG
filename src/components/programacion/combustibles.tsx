@@ -48,7 +48,7 @@ export default function Combustibles({ combustibles, programacion }: { combustib
       precioLitro: 0,
       total: 0,
       kilometraje: 0,
-      programacion: programacion, // Aquí el programacion desde URL
+      programacion: programacion,
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
     });
