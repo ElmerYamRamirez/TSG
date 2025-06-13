@@ -5,8 +5,8 @@ export interface CombustibleI {
   Fec_Alta?: string;
   fecha: string;
   litros: number;
-  precioLitro: number;
-  total: number;
+  precio: number;
+  precio_total: number;
   programacion: number;
-  kilometraje: number;
+  kilometraje_actual: number;
 }

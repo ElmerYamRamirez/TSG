@@ -23,10 +23,10 @@ export const createCombustible = async ( item: CombustibleI ) => {
         const paramsList = [{ name: 'Fec_Alta', value: item.Fec_Alta = new Date().toISOString()},
                 {name: 'fecha', value: item.fecha = new Date().toISOString()},
                 {name: 'litros', value: item.litros},
-                {name: 'precio', value: item.precioLitro},
-                {name: 'precio_total', value: item.total},
+                {name: 'precio', value: item.precio},
+                {name: 'precio_total', value: item.precio_total},
                 {name: 'programacion', value: item.programacion},
-                {name: 'kilometraje_actual', value: item.kilometraje}];
+                {name: 'kilometraje_actual', value: item.kilometraje_actual}];
                 
         const responce = await executeQuery(query, paramsList);
 

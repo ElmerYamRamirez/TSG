@@ -45,9 +45,9 @@ export default function Combustibles({ combustibles, programacion }: { combustib
       uniqueId: 0,
       fecha: new Date().toISOString().split("T")[0],
       litros: 0,
-      precioLitro: 0,
-      total: 0,
-      kilometraje: 0,
+      precio: 0,
+      precio_total: 0,
+      kilometraje_actual: 0,
       programacion: programacion,
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
@@ -94,15 +94,6 @@ export default function Combustibles({ combustibles, programacion }: { combustib
     <div className="p-6 bg-white rounded-lg shadow">
 
       <div className="flex items-center justify-between mb-4">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="border rounded px-3 py-1 w-64" />
-          <button className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
-            Buscar
-          </button>
-        </div>
         <button
           className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
           onClick={abrirModalCrear}
@@ -127,11 +118,12 @@ export default function Combustibles({ combustibles, programacion }: { combustib
           <tbody className="bg-white divide-y divide-gray-200 space-x-2">
             {(combustibles || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toLocaleDateString() : "Sin fecha"}</td>
+                <td className="px-1 py-2 text-xs text-gray-700"></td>
+                <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toISOString().split("T")[0] : "Sin fecha"}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.precioLitro}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.total}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.kilometraje}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.precio_total}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.kilometraje_actual}</td>
                 <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
                   <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
                     Editar
@@ -154,47 +146,44 @@ export default function Combustibles({ combustibles, programacion }: { combustib
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
             <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Viatico'}</h2>
+            <label className="block text-sm font-medium text-gray-700">Fecha</label>
             <input
              type="date"
              className="border rounded px-3 py-1 w-full"
              value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
              onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
+             placeholder="Fecha"
             />
-
-
+            <label className="block text-sm font-medium text-gray-700">Litros</label>
             <input
              type="number"
              className="border rounded px-3 py-1 w-full"
              value={Number.isNaN(itemEditando.litros) ? '' : itemEditando.litros ?? ''}
              onChange={e => setItemEditando({ ...itemEditando, litros: parseFloat(e.target.value) || 0 })}
+             placeholder="Litros"
              />
+             <label className="block text-sm font-medium text-gray-700">Precio por Litro</label>
             <input
               type="number"
               className="border rounded px-3 py-1 w-full"
-              value={itemEditando.precioLitro}
-              onChange={e => setItemEditando({ ...itemEditando, precioLitro: parseFloat(e.target.value) })}
+              value={itemEditando.precio}
+              onChange={e => setItemEditando({ ...itemEditando, precio: parseFloat(e.target.value) })}
               placeholder="Precio"
             />
+            <label className="block text-sm font-medium text-gray-700">Total</label>
             <input
               type="number"
               className="border rounded px-3 py-1 w-full"
-              value={itemEditando.total}
-              onChange={e => setItemEditando({ ...itemEditando, total: parseFloat(e.target.value) })}
-              placeholder="Precio Litro"
+              value={itemEditando.precio_total}
+              onChange={e => setItemEditando({ ...itemEditando, precio_total: parseFloat(e.target.value) })}
+              placeholder="Precio Total"
             />
-            <label className="block text-sm font-medium text-gray-700">Programación</label>
-            <input
-             type="number"
-             disabled
-             className="border rounded px-3 py-1 w-full bg-gray-100 text-gray-600"
-             value={itemEditando.programacion}
-             />
-
+            <label className="block text-sm font-medium text-gray-700">Kilometraje Actual</label>
             <input
               type="number"
               className="border rounded px-3 py-1 w-full"
-              value={itemEditando.kilometraje}
-              onChange={e => setItemEditando({ ...itemEditando, kilometraje: parseFloat(e.target.value) })}
+              value={itemEditando.kilometraje_actual}
+              onChange={e => setItemEditando({ ...itemEditando, kilometraje_actual: parseFloat(e.target.value) })}
               placeholder="Kilometraje"
             />
             <div className="flex justify-end space-x-2">
