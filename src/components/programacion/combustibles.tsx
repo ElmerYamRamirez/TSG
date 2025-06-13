@@ -24,8 +24,9 @@ const handleCreate = async (combustible: CombustibleI) => {
 }
 
 const handleEdit = async (combustible: CombustibleI) => {
-  const { ok, combustibles } = await updateCombustibleById(combustible) ?? { ok: false, combustibles: [] };
-  return {ok, combustibles}
+  const response = await updateCombustibleById(combustible) ?? { ok: false, res: [] };
+  const combustibles = response.res ?? [];
+  return { ok: response.ok, combustibles };
 }
 
 export default function Combustibles({ combustibles, programacion }: { combustibles: CombustibleI[], programacion: number }) {
