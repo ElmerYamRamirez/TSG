@@ -127,7 +127,7 @@ export default function Combustibles({ combustibles, programacion }: { combustib
           <tbody className="bg-white divide-y divide-gray-200 space-x-2">
             {(combustibles || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.fecha}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toLocaleDateString() : "Sin fecha"}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.precioLitro}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.total}</td>
@@ -155,19 +155,19 @@ export default function Combustibles({ combustibles, programacion }: { combustib
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
             <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Viatico'}</h2>
             <input
-              type="text"
-              className="border rounded px-3 py-1 w-full"
-              value={itemEditando.fecha}
-              onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-              placeholder="Fecha"
+             type="date"
+             className="border rounded px-3 py-1 w-full"
+             value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
+             onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
             />
+
+
             <input
-              type="number"
-              className="border rounded px-3 py-1 w-full"
-              value={itemEditando.litros}
-              onChange={e => setItemEditando({ ...itemEditando, litros: parseFloat(e.target.value) })}
-              placeholder="Litros"
-            />
+             type="number"
+             className="border rounded px-3 py-1 w-full"
+             value={Number.isNaN(itemEditando.litros) ? '' : itemEditando.litros ?? ''}
+             onChange={e => setItemEditando({ ...itemEditando, litros: parseFloat(e.target.value) || 0 })}
+             />
             <input
               type="number"
               className="border rounded px-3 py-1 w-full"
@@ -183,12 +183,12 @@ export default function Combustibles({ combustibles, programacion }: { combustib
               placeholder="Precio Litro"
             />
             <label className="block text-sm font-medium text-gray-700">Programación</label>
-<input
-  type="number"
-  disabled
-  className="border rounded px-3 py-1 w-full bg-gray-100 text-gray-600"
-  value={itemEditando.programacion}
-/>
+            <input
+             type="number"
+             disabled
+             className="border rounded px-3 py-1 w-full bg-gray-100 text-gray-600"
+             value={itemEditando.programacion}
+             />
 
             <input
               type="number"
