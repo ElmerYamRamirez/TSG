@@ -163,9 +163,10 @@ export default function Combustibles({ combustibles, programacion }: { combustib
               <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
-                value={Number.isNaN(itemEditando.litros) ? '' : itemEditando.litros ?? ''}
+                value={itemEditando.litros === 0 ? '' : itemEditando.litros?.toString() ?? ''}
                 onChange={e => {
-                  const litros = parseFloat(e.target.value) || 0;
+                  const value = e.target.value;
+                  const litros = value === '' ? 0 : parseFloat(value);
                   const precio = itemEditando?.precio || 0;
                   setItemEditando({
                     ...itemEditando,
@@ -182,9 +183,10 @@ export default function Combustibles({ combustibles, programacion }: { combustib
               <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
-                value={Number.isNaN(itemEditando.precio) ? '' : itemEditando.precio ?? ''}
+                value={itemEditando.precio === 0 ? '' : itemEditando.precio?.toString() ?? ''}
                 onChange={e => {
-                  const precio = parseFloat(e.target.value) || 0;
+                  const value = e.target.value;
+                  const precio = value === '' ? 0 : parseFloat(value);
                   const litros = itemEditando?.litros || 0;
                   setItemEditando({
                     ...itemEditando,
@@ -213,11 +215,18 @@ export default function Combustibles({ combustibles, programacion }: { combustib
               <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
-                value={Number.isNaN(itemEditando.kilometraje_actual) ? '' : itemEditando.kilometraje_actual ?? ''}
-                onChange={e => setItemEditando({ ...itemEditando, kilometraje_actual: parseFloat(e.target.value) || 0 })}
+                value={itemEditando.kilometraje_actual === 0 ? '' : itemEditando.kilometraje_actual?.toString() ?? ''}
+                onChange={e => {
+                  const value = e.target.value;
+                  setItemEditando({
+                    ...itemEditando,
+                    kilometraje_actual: value === '' ? 0 : parseFloat(value)
+                  });
+                }}
                 placeholder="Kilometraje"
               />
             </div>
+
 
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
