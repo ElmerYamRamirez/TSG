@@ -146,46 +146,79 @@ export default function Combustibles({ combustibles, programacion }: { combustib
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
             <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Viatico'}</h2>
-            <label className="block text-sm font-medium text-gray-700">Fecha</label>
-            <input
-             type="date"
-             className="border rounded px-3 py-1 w-full"
-             value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-             onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-             placeholder="Fecha"
-            />
-            <label className="block text-sm font-medium text-gray-700">Litros</label>
-            <input
-             type="number"
-             className="border rounded px-3 py-1 w-full"
-             value={Number.isNaN(itemEditando.litros) ? '' : itemEditando.litros ?? ''}
-             onChange={e => setItemEditando({ ...itemEditando, litros: parseFloat(e.target.value) || 0 })}
-             placeholder="Litros"
-             />
-             <label className="block text-sm font-medium text-gray-700">Precio por Litro</label>
-            <input
-              type="number"
-              className="border rounded px-3 py-1 w-full"
-              value={itemEditando.precio}
-              onChange={e => setItemEditando({ ...itemEditando, precio: parseFloat(e.target.value) })}
-              placeholder="Precio"
-            />
-            <label className="block text-sm font-medium text-gray-700">Total</label>
-            <input
-              type="number"
-              className="border rounded px-3 py-1 w-full"
-              value={itemEditando.precio_total}
-              onChange={e => setItemEditando({ ...itemEditando, precio_total: parseFloat(e.target.value) })}
-              placeholder="Precio Total"
-            />
-            <label className="block text-sm font-medium text-gray-700">Kilometraje Actual</label>
-            <input
-              type="number"
-              className="border rounded px-3 py-1 w-full"
-              value={itemEditando.kilometraje_actual}
-              onChange={e => setItemEditando({ ...itemEditando, kilometraje_actual: parseFloat(e.target.value) })}
-              placeholder="Kilometraje"
-            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+              <input
+                type="date"
+                className="border rounded px-3 py-2 w-full"
+                value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
+                onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
+                placeholder="Fecha"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={Number.isNaN(itemEditando.litros) ? '' : itemEditando.litros ?? ''}
+                onChange={e => {
+                  const litros = parseFloat(e.target.value) || 0;
+                  const precio = itemEditando?.precio || 0;
+                  setItemEditando({
+                    ...itemEditando,
+                    litros,
+                    precio_total: litros * precio
+                  });
+                }}
+                placeholder="Litros"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio por Litro</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={Number.isNaN(itemEditando.precio) ? '' : itemEditando.precio ?? ''}
+                onChange={e => {
+                  const precio = parseFloat(e.target.value) || 0;
+                  const litros = itemEditando?.litros || 0;
+                  setItemEditando({
+                    ...itemEditando,
+                    precio,
+                    precio_total: litros * precio
+                  });
+                }}
+                placeholder="Precio"
+              />
+            </div>
+
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed"
+                value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                readOnly
+                placeholder="Total"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Actual</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={Number.isNaN(itemEditando.kilometraje_actual) ? '' : itemEditando.kilometraje_actual ?? ''}
+                onChange={e => setItemEditando({ ...itemEditando, kilometraje_actual: parseFloat(e.target.value) || 0 })}
+                placeholder="Kilometraje"
+              />
+            </div>
+
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
                 Cancelar
