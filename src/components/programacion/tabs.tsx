@@ -36,7 +36,7 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const renderContent = () => {
     switch (activeTab) {
       case 'Combustible':
-      return <Combustibles></Combustibles>
+      return <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId}></Combustibles>
       case 'Viáticos':
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':

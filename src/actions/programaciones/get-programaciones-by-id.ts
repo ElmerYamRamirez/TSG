@@ -42,6 +42,13 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const casetas = await executeQuery(query3, paramsList);
 
+        const query4 = `
+        SELECT *
+        FROM carga_diesel c
+        WHERE c.programacion = @id;
+        `;
+        const combustibles = await executeQuery(query4, paramsList);
+
 
         //return NextResponse.json(envios);
          return {
@@ -49,7 +56,8 @@ export const getProgramacionesById = async (id:string) => {
              programacion: {
                  ...programacion[0],
                  viaticos,
-                 casetas
+                 casetas,
+                 combustibles
              },
          };
 

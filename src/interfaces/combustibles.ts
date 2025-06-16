@@ -1,9 +1,12 @@
 export interface CombustibleI {
   uniqueId: number;
-  tipo: 'Gasolina' | 'Diesel' | 'Otros';
+  Bit_Activo?: number;
+  Usu_Alta?: string;
+  Fec_Alta?: string;
   fecha: string;
-  litros?: number;
-  precioLitro?: number;
-  total?: number;
-  kilometraje: number;
+  litros: number;
+  precio: number;
+  precio_total: number;
+  programacion: number;
+  kilometraje_actual: number;
 }
