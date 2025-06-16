@@ -107,7 +107,6 @@ export default function Combustibles({ combustibles, programacion }: { combustib
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Tipo</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
@@ -119,7 +118,6 @@ export default function Combustibles({ combustibles, programacion }: { combustib
           <tbody className="bg-white divide-y divide-gray-200 space-x-2">
             {(combustibles || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-1 py-2 text-xs text-gray-700"></td>
                 <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toISOString().split("T")[0] : "Sin fecha"}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
