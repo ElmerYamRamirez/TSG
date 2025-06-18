@@ -2,7 +2,7 @@ import { createCombustible, updateCombustibleById, deleteCombustibleById} from "
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CombustibleI } from "components/interfaces/combustibles";
-
+import { ReporteCombustibleI } from "components/interfaces/reporteCombustible";
 
 const handleDarDeBaja = async(combustible: CombustibleI) => {
   console.log('Dar de baja:', combustible);
@@ -29,7 +29,7 @@ const handleEdit = async (combustible: CombustibleI) => {
   return { ok: response.ok, combustibles };
 }
 
-export default function Combustibles({ combustibles, programacion }: { combustibles: CombustibleI[], programacion: number }) {
+export default function Combustibles({ combustibles, programacion, reporte }: { combustibles: CombustibleI[], programacion: number, reporte: ReporteCombustibleI }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [itemEditando, setItemEditando] = useState<CombustibleI | null>(null)
   const router = useRouter();
@@ -94,7 +94,54 @@ export default function Combustibles({ combustibles, programacion }: { combustib
   return (
     <div className="p-6 bg-white rounded-lg shadow">
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Comsumo</h3>
+        <button
+          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          >
+          <span>Agregar Rendimiento</span>
+        </button>
+      </div>
+
+      <div className="overflow-x-auto mb-10">
+        <table className="min-w-full divide-y divide-gray-300">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Actual</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Anterior</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">KM Recorridos</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rend Real</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rend Ideal</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Ideal</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Dif litros</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Dif Precio total</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Variacion</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_actual}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_anterior}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio_diferencia_litros}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+
+      <div className="border-t border-gray-300 my-4"></div>
+
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="text-lg font-bold text-gray-800 mb-2">Listado de Cargas</h3>
         <button
           className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
           onClick={abrirModalCrear}
