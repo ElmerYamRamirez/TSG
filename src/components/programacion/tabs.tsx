@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Viaticos from './viaticos';
 import Casetas from './casetas';
 import Combustibles from './combustibles';
+import { ReporteCombustibleI } from 'components/interfaces/reporteCombustible';
 
 const tabs = ['Combustible', 'Viáticos', 'Casetas'];
 
@@ -27,7 +28,9 @@ interface ProgramacionI {
   viaticos:[]
   casetas:[]
   combustibles: [];
+  reporte: ReporteCombustibleI
 } 
+
 
 export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const [activeTab, setActiveTab] = useState('Combustible');
@@ -36,7 +39,7 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const renderContent = () => {
     switch (activeTab) {
       case 'Combustible':
-      return <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId}></Combustibles>
+      return <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}></Combustibles>
       case 'Viáticos':
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':
