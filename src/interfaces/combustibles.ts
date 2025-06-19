@@ -8,5 +8,5 @@ export interface CombustibleI {
   precio: number;
   precio_total: number;
   programacion: number;
-  kilometraje_actual: number;
+  comentario: string;
 }

@@ -15,7 +15,7 @@ export const updateCombustibleById = async (item: CombustibleI) => {
             precio = @precio,
             precio_total = @precio_total,
             programacion = @programacion,
-            kilometraje_actual = @kilometraje_actual
+            comentario = @comentario
         WHERE uniqueId = @uniqueId
         `;
 
@@ -27,7 +27,7 @@ export const updateCombustibleById = async (item: CombustibleI) => {
             { name: 'precio', value: item.precio },
             { name: 'precio_total', value: item.precio_total },
             { name: 'programacion', value: item.programacion },
-            { name: 'kilometraje_actual', value: item.kilometraje_actual },
+            { name: 'comentario', value: item.comentario },
             { name: 'uniqueId', value: item.uniqueId }
         ];
 
