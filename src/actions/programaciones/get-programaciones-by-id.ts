@@ -49,15 +49,15 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const combustibles = await executeQuery(query4, paramsList);
 
-        const query5 = `
-        SELECT 
-            rep.*
-        FROM 
-            PC_Rep_RendimientosNew rep
-        WHERE 
-            rep.uniqueId = @id
-        `;
-        const reporte = await executeQuery(query5, paramsList);
+        // const query5 = `
+        // SELECT 
+        //     rep.*
+        // FROM 
+        //     PC_Rep_RendimientosNew rep
+        // WHERE 
+        //     rep.uniqueId = @id
+        // `;
+        // const reporte = await executeQuery(query5, paramsList);
 
 
         //return NextResponse.json(envios);
@@ -69,7 +69,7 @@ export const getProgramacionesById = async (id:string) => {
                  casetas,
                  combustibles,
                  reporte : {
-                    ...reporte[0]
+                    // ...reporte[0]
                  }
              },
          };
