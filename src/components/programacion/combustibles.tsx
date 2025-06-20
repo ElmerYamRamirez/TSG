@@ -155,10 +155,10 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
           <thead className="bg-gray-50">
             <tr>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
+              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Total</th>
-              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
@@ -166,10 +166,11 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
             {(combustibles || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toISOString().split("T")[0] : "Sin fecha"}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.comentario}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.precio_total}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.comentario}</td>
+                
                 <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
                   <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
                     Editar
@@ -201,6 +202,17 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
                 value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
                 onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
                 placeholder="Fecha"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Comentario</label>
+              <textarea
+                className="border rounded px-3 py-2 w-full"
+                value={itemEditando.comentario || ''}
+                onChange={e => setItemEditando({ ...itemEditando, comentario: e.target.value })}
+                placeholder="Agrega un comentario opcional"
+                rows={3}
               />
             </div>
 
@@ -254,18 +266,6 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
                 placeholder="Total"
               />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Comentario</label>
-              <textarea
-                className="border rounded px-3 py-2 w-full"
-                value={itemEditando.comentario || ''}
-                onChange={e => setItemEditando({ ...itemEditando, comentario: e.target.value })}
-                placeholder="Agrega un comentario opcional"
-                rows={3}
-              />
-            </div>
-
 
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
