@@ -7,7 +7,7 @@ export const createCombustible = async ( item: CombustibleI ) => {
     try {
 
         const query = `
-        INSERT INTO carga_diesel ( uniqueId, Bit_Activo, Fec_Alta, fecha, litros, precio, precio_total, programacion, kilometraje_actual )
+        INSERT INTO carga_diesel ( uniqueId, Bit_Activo, Fec_Alta, fecha, litros, precio, precio_total, programacion, comentario )
         VALUES(
             (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM carga_diesel),
             1,
@@ -17,7 +17,7 @@ export const createCombustible = async ( item: CombustibleI ) => {
             @precio,
             @precio_total,
             @programacion,
-            @kilometraje_actual)
+            @comentario)
         `;
 
         const paramsList = [{ name: 'Fec_Alta', value: item.Fec_Alta = new Date().toISOString()},
@@ -26,7 +26,7 @@ export const createCombustible = async ( item: CombustibleI ) => {
                 {name: 'precio', value: item.precio},
                 {name: 'precio_total', value: item.precio_total},
                 {name: 'programacion', value: item.programacion},
-                {name: 'kilometraje_actual', value: item.kilometraje_actual}];
+                {name: 'comentario', value: item.comentario}];
                 
         const responce = await executeQuery(query, paramsList);
 
