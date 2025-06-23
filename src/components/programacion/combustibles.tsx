@@ -2,7 +2,8 @@ import { createCombustible, updateCombustibleById, deleteCombustibleById} from "
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CombustibleI } from "components/interfaces/combustibles";
-import { createRendimiento } from "components/actions";
+import { Rendimiento } from "components/interfaces/rendimientos";
+import { createRendimiento ,updateRendimientoById, getRendimientoByProgramacion} from "components/actions";
 import { ReporteCombustibleI } from "components/interfaces/reporteCombustible";
 
 const handleDarDeBaja = async(combustible: CombustibleI) => {
@@ -40,6 +41,29 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   const [isRendimientoModalOpen, setIsRendimientoModalOpen] = useState(false);
   const [rendimientoIdeal, setRendimientoIdeal] = useState('');
   const [litrosIdeales, setLitrosIdeales] = useState('');
+  const [rendimientoId, setRendimientoId] = useState<number | null>(null);
+  
+  //Modal Rendimiento
+  const abrirModalRendimiento = async () => {
+  try {
+    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
+    
+    if (rendimientoExistente) {
+      setRendimientoId(rendimientoExistente.uniqueId);
+      setRendimientoIdeal(rendimientoExistente.rendimiento_ideal.toString());
+      setLitrosIdeales(rendimientoExistente.litros_ideales.toString());
+    } else {
+      setRendimientoId(null);
+      setRendimientoIdeal('');
+      setLitrosIdeales('');
+    }
+    
+    setIsRendimientoModalOpen(true);
+  } catch (error) {
+    console.error("Error al cargar rendimiento:", error);
+    alert("Error al cargar el rendimiento existente");
+  }
+};
 
   const abrirModalEditar = (item: CombustibleI) => {
     setItemEditando(item);
@@ -69,22 +93,36 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   }
 
   //Guardar Rendimiento
-  const guardarRendimiento = async () => {
-    const rendimientoData = {
+ const guardarRendimiento = async () => {
+  try {
+    const rendimientoData: Rendimiento = {
+      uniqueId: rendimientoId || 0, // 0 si es nuevo
       rendimiento_ideal: parseFloat(rendimientoIdeal),
       litros_ideales: parseFloat(litrosIdeales),
       programacion: programacion,
     };
 
-    const { ok } = await createRendimiento(rendimientoData) ?? { ok: false };
+    let response;
+    
+    if (rendimientoId) {
+      // Actualizar rendimiento existente
+      response = await updateRendimientoById(rendimientoData);
+    } else {
+      // Crear nuevo rendimiento
+      response = await createRendimiento(rendimientoData);
+    }
 
-    if (ok) {
+    if (response?.ok) {
       setIsRendimientoModalOpen(false);
       router.refresh();
     } else {
       alert("Error al guardar el rendimiento ideal.");
     }
-  };
+  } catch (error) {
+    console.error("Error al guardar rendimiento:", error);
+    alert("Error al guardar el rendimiento");
+  }
+};
 
 
   //Guardar Carga de Combustible
@@ -112,7 +150,6 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
         alert('Error al guardar')
       }
     }
-
     setIsModalOpen(false)
   }
   
@@ -123,8 +160,8 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
         <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Comsumo</h3>
         <button
           className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={() => setIsRendimientoModalOpen(true)}///Rendimiento ideal
-          >
+          onClick={abrirModalRendimiento}
+        >
           <span>Agregar Rendimiento</span>
         </button>
       </div>
@@ -355,5 +392,3 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     </div>
   );
 }
-
-
