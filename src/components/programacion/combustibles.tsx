@@ -71,24 +71,21 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   //Guardar Rendimiento
   const guardarRendimiento = async () => {
     const rendimientoData = {
-      programacion: programacion,
       rendimiento_ideal: parseFloat(rendimientoIdeal),
       litros_ideales: parseFloat(litrosIdeales),
-      litros_iniciales: null,
-      litros_finales: null,
-      km_inicial: null,
-      km_final: null,
+      programacion: programacion,
     };
 
+    const { ok } = await createRendimiento(rendimientoData) ?? { ok: false };
 
-    const { ok } = await createRendimiento(rendimientoData);
     if (ok) {
       setIsRendimientoModalOpen(false);
       router.refresh();
     } else {
-      alert("Error al guardar rendimiento ideal");
+      alert("Error al guardar el rendimiento ideal.");
     }
   };
+
 
   //Guardar Carga de Combustible
   const guardarCambios = async () => {
@@ -358,4 +355,5 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     </div>
   );
 }
+
 
