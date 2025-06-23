@@ -35,6 +35,11 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false)
 
+  ////Rendimiento ideal
+  const [isRendimientoModalOpen, setIsRendimientoModalOpen] = useState(false);
+  const [rendimientoIdeal, setRendimientoIdeal] = useState('');
+  const [litrosIdeales, setLitrosIdeales] = useState('');
+
   const abrirModalEditar = (item: CombustibleI) => {
     setItemEditando(item);
     setIsEditing(true);
@@ -90,6 +95,23 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     setIsModalOpen(false)
   }
 
+  const handleGuardarRendimiento = async (rendimiento: number, litros: number) => {
+  try {
+    const response = await fetch('/api/rendimiento-ideal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rendimientoIdeal: rendimiento, litrosIdeales: litros }),
+    });
+
+    if (!response.ok) throw new Error('Error en la API');
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return { ok: false };
+  }
+};
+
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
@@ -98,6 +120,7 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
         <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Comsumo</h3>
         <button
           className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={() => setIsRendimientoModalOpen(true)}///Rendimiento ideal
           >
           <span>Agregar Rendimiento</span>
         </button>
@@ -187,6 +210,58 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
           </tbody>
         </table>
       </div>
+        {/* Modal rendimiento ideal */}
+      {isRendimientoModalOpen && (
+  <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+      <h2 className="text-lg font-bold mb-2">Agregar Rendimiento Ideal</h2>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Rendimiento Ideal</label>
+        <input
+          type="number"
+          className="border rounded px-3 py-2 w-full"
+          value={rendimientoIdeal}
+          onChange={(e) => setRendimientoIdeal(e.target.value)}
+          placeholder="Rendimiento Ideal"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Litros Ideales</label>
+        <input
+          type="number"
+          className="border rounded px-3 py-2 w-full"
+          value={litrosIdeales}
+          onChange={(e) => setLitrosIdeales(e.target.value)}
+          placeholder="Litros Ideales"
+        />
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <button
+         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        onClick={async () => {
+        const response = await handleGuardarRendimiento(
+         Number(rendimientoIdeal),
+         Number(litrosIdeales)
+         );
+         if (response.ok) {
+          alert('Rendimiento guardado con éxito');
+           router.refresh();
+         } else {
+          alert('Error al guardar el rendimiento');
+         }
+          setIsRendimientoModalOpen(false);
+         }}
+                >
+          Guardar
+    </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Modal de edición */}
       {isModalOpen && itemEditando && (
