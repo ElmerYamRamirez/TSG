@@ -2,6 +2,7 @@ import { createCombustible, updateCombustibleById, deleteCombustibleById} from "
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CombustibleI } from "components/interfaces/combustibles";
+import { createRendimiento } from "components/actions";
 import { ReporteCombustibleI } from "components/interfaces/reporteCombustible";
 
 const handleDarDeBaja = async(combustible: CombustibleI) => {
@@ -67,6 +68,29 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     router.refresh();
   }
 
+  //Guardar Rendimiento
+  const guardarRendimiento = async () => {
+    const rendimientoData = {
+      programacion: programacion,
+      rendimiento_ideal: parseFloat(rendimientoIdeal),
+      litros_ideales: parseFloat(litrosIdeales),
+      litros_iniciales: null,
+      litros_finales: null,
+      km_inicial: null,
+      km_final: null,
+    };
+
+
+    const { ok } = await createRendimiento(rendimientoData);
+    if (ok) {
+      setIsRendimientoModalOpen(false);
+      router.refresh();
+    } else {
+      alert("Error al guardar rendimiento ideal");
+    }
+  };
+
+  //Guardar Carga de Combustible
   const guardarCambios = async () => {
     if (!itemEditando) return
 
@@ -94,25 +118,7 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
 
     setIsModalOpen(false)
   }
-
-  const handleGuardarRendimiento = async (rendimiento: number, litros: number) => {
-  try {
-    const response = await fetch('/api/rendimiento-ideal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rendimientoIdeal: rendimiento, litrosIdeales: litros }),
-    });
-
-    if (!response.ok) throw new Error('Error en la API');
-
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    return { ok: false };
-  }
-};
-
-
+  
   return (
     <div className="p-6 bg-white rounded-lg shadow">
 
@@ -210,65 +216,52 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
           </tbody>
         </table>
       </div>
-        {/* Modal rendimiento ideal */}
-        {isRendimientoModalOpen && (
-  <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-      <h2 className="text-lg font-bold mb-2">Agregar Rendimiento Ideal</h2>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Rendimiento Ideal</label>
-        <input
-          type="number"
-          className="border rounded px-3 py-2 w-full"
-          value={rendimientoIdeal}
-          onChange={(e) => setRendimientoIdeal(e.target.value)}
-          placeholder="Rendimiento Ideal"
-        />
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Litros Ideales</label>
-        <input
-          type="number"
-          className="border rounded px-3 py-2 w-full"
-          value={litrosIdeales}
-          onChange={(e) => setLitrosIdeales(e.target.value)}
-          placeholder="Litros Ideales"
-        />
-      </div>
+      {/* Modal rendimiento ideal */}
+      {isRendimientoModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+            <h2 className="text-lg font-bold mb-2">Agregar Rendimiento Ideal</h2>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rendimiento Ideal</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={rendimientoIdeal}
+                onChange={(e) => setRendimientoIdeal(e.target.value)}
+                placeholder="Rendimiento Ideal"
+              />
+            </div>
 
-      <div className="flex justify-end space-x-2">
-        <button
-          className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
-          onClick={() => setIsRendimientoModalOpen(false)}
-        >
-          Cancelar
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={async () => {
-            const response = await handleGuardarRendimiento(
-              Number(rendimientoIdeal),
-              Number(litrosIdeales)
-            );
-            if (response.ok) {
-              alert('Rendimiento guardado con éxito');
-              router.refresh();
-            } else {
-              alert('Error al guardar el rendimiento');
-            }
-            setIsRendimientoModalOpen(false);
-          }}
-        >
-          Guardar
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros Ideales</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={litrosIdeales}
+                onChange={(e) => setLitrosIdeales(e.target.value)}
+                placeholder="Litros Ideales"
+              />
+            </div>
 
-
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                onClick={() => setIsRendimientoModalOpen(false)}
+              >
+                Cancelar
+              </button>
+             <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={guardarRendimiento}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de edición */}
       {isModalOpen && itemEditando && (
@@ -365,3 +358,4 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     </div>
   );
 }
+
