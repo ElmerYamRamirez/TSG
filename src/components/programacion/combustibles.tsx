@@ -211,7 +211,7 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
         </table>
       </div>
         {/* Modal rendimiento ideal */}
-      {isRendimientoModalOpen && (
+        {isRendimientoModalOpen && (
   <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
     <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
       <h2 className="text-lg font-bold mb-2">Agregar Rendimiento Ideal</h2>
@@ -240,27 +240,34 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
 
       <div className="flex justify-end space-x-2">
         <button
-         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        onClick={async () => {
-        const response = await handleGuardarRendimiento(
-         Number(rendimientoIdeal),
-         Number(litrosIdeales)
-         );
-         if (response.ok) {
-          alert('Rendimiento guardado con éxito');
-           router.refresh();
-         } else {
-          alert('Error al guardar el rendimiento');
-         }
-          setIsRendimientoModalOpen(false);
-         }}
-                >
+          className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+          onClick={() => setIsRendimientoModalOpen(false)}
+        >
+          Cancelar
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={async () => {
+            const response = await handleGuardarRendimiento(
+              Number(rendimientoIdeal),
+              Number(litrosIdeales)
+            );
+            if (response.ok) {
+              alert('Rendimiento guardado con éxito');
+              router.refresh();
+            } else {
+              alert('Error al guardar el rendimiento');
+            }
+            setIsRendimientoModalOpen(false);
+          }}
+        >
           Guardar
-    </button>
+        </button>
       </div>
     </div>
   </div>
 )}
+
 
 
       {/* Modal de edición */}
