@@ -15,6 +15,8 @@ export const updateRendimientoById = async (item: Rendimiento) => {
             rendimiento_ideal = @rendimiento_ideal, 
             litros_ideales = @litros_ideales,
             programacion = @programacion,
+            litros_iniciales = @litros_iniciales,
+            litros_finales = @litros_finales,
             km_inicial = @km_inicial,
             km_final = @km_final
         WHERE uniqueId = @uniqueId;
@@ -25,6 +27,8 @@ export const updateRendimientoById = async (item: Rendimiento) => {
             { name: 'litros_ideales', value: item.litros_ideales },
             { name: 'programacion', value: item.programacion },
             { name: 'uniqueId', value: item.uniqueId },
+            { name: 'litros_iniciales', value: item.litros_iniciales ?? null },
+            { name: 'litros_finales', value: item.litros_finales ?? null },
             { name: 'km_inicial', value: item.km_inicial ?? null},
             { name: 'km_final', value: item.km_final ?? null},
         ];
