@@ -6,14 +6,16 @@ import { Rendimiento } from "components/interfaces/rendimientos";
 export const createRendimiento = async (item: Rendimiento) => {
     try {
         const query = `
-        INSERT INTO reporte_rendimiento (uniqueId, Bit_Activo, Fec_Alta, rendimiento_ideal, litros_ideales, programacion)
+        INSERT INTO reporte_rendimiento (uniqueId, Bit_Activo, Fec_Alta, rendimiento_ideal, litros_ideales, programacion, km_inicial, km_final)
         VALUES (
             (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM reporte_rendimiento),
             1,
             @Fec_Alta,
             @rendimiento_ideal,
             @litros_ideales,
-            @programacion
+            @programacion,
+            @km_inicial, 
+            @km_final
             
         )
         `;
@@ -23,6 +25,8 @@ export const createRendimiento = async (item: Rendimiento) => {
             { name: 'rendimiento_ideal', value: item.rendimiento_ideal },
             { name: 'litros_ideales', value: item.litros_ideales },
             { name: 'programacion', value: item.programacion },
+            { name: 'km_inicial', value: item.km_inicial ?? null},
+            { name: 'km_final', value: item.km_final ?? null},
             
         ];
 

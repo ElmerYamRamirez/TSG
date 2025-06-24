@@ -14,7 +14,6 @@ export const getRendimientoByProgramacion = async (programacionId: number): Prom
         const paramsList = [{ name: 'programacion', value: programacionId }];
         const result = await executeQuery(query, paramsList);
 
-        // Asumimos que executeQuery devuelve un array de resultados
         if (result && result.length > 0) {
             return result[0] as Rendimiento;
         }

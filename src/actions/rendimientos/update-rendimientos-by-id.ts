@@ -14,7 +14,9 @@ export const updateRendimientoById = async (item: Rendimiento) => {
         SET 
             rendimiento_ideal = @rendimiento_ideal, 
             litros_ideales = @litros_ideales,
-            programacion = @programacion
+            programacion = @programacion,
+            km_inicial = @km_inicial,
+            km_final = @km_final
         WHERE uniqueId = @uniqueId;
         `;
 
@@ -23,6 +25,8 @@ export const updateRendimientoById = async (item: Rendimiento) => {
             { name: 'litros_ideales', value: item.litros_ideales },
             { name: 'programacion', value: item.programacion },
             { name: 'uniqueId', value: item.uniqueId },
+            { name: 'km_inicial', value: item.km_inicial ?? null},
+            { name: 'km_final', value: item.km_final ?? null},
         ];
 
         const response = await executeQuery(query, paramsList);
