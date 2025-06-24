@@ -6,5 +6,6 @@ export interface Rendimiento {
   rendimiento_ideal: number;
   litros_ideales: number;
   programacion: number;
-  
+  km_inicial?: number | null;
+  km_final?: number | null;
 }

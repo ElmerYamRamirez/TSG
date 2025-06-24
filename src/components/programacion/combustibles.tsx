@@ -37,11 +37,16 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false)
 
-  ////Rendimiento ideal
+  // Rendimiento ideal
   const [isRendimientoModalOpen, setIsRendimientoModalOpen] = useState(false);
   const [rendimientoIdeal, setRendimientoIdeal] = useState('');
   const [litrosIdeales, setLitrosIdeales] = useState('');
   const [rendimientoId, setRendimientoId] = useState<number | null>(null);
+
+  // Kilometrajes
+  const [isKilometrajeModalOpen, setIsKilometrajeModalOpen] = useState(false);
+  const [KilometrajeInicial, setKilometrajeInicial] = useState('');
+  const [KilometrajeFinal, setKilometrajeFinal] = useState('');
   
   //Modal Rendimiento
   const abrirModalRendimiento = async () => {
@@ -65,6 +70,30 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   }
 };
 
+  // Modal Kilometrajes
+  const abrirModalKilometraje = async () => {
+  try {
+    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
+    
+    if (rendimientoExistente) {
+      setRendimientoId(rendimientoExistente.uniqueId);
+      setKilometrajeInicial((rendimientoExistente.km_inicial ?? '').toString());
+      setKilometrajeFinal((rendimientoExistente.km_final ?? '').toString());
+
+    } else {
+      setRendimientoId(null);
+      setKilometrajeInicial('');
+      setKilometrajeFinal('');
+    }
+    
+    setIsKilometrajeModalOpen(true);
+  } catch (error) {
+    console.error("Error al cargar rendimiento:", error);
+    alert("Error al cargar el rendimiento existente");
+  }
+};
+
+  //Modal Combustibles
   const abrirModalEditar = (item: CombustibleI) => {
     setItemEditando(item);
     setIsEditing(true);
@@ -92,14 +121,48 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     router.refresh();
   }
 
+  // Guardar Kilometraje
+  const guardarKilometraje = async () => {
+  try {
+    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
+
+    const data: Rendimiento = {
+      uniqueId: rendimientoExistente?.uniqueId || 0,
+      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal || 0,
+      litros_ideales: rendimientoExistente?.litros_ideales || 0,
+      km_inicial: parseFloat(KilometrajeInicial),
+      km_final: parseFloat(KilometrajeFinal),
+      programacion,
+    };
+
+    const response = rendimientoExistente
+      ? await updateRendimientoById(data)
+      : await createRendimiento(data);
+
+    if (response?.ok) {
+      setIsKilometrajeModalOpen(false);
+      router.refresh();
+    } else {
+      alert("Error al guardar el kilometraje.");
+    }
+  } catch (error) {
+    console.error("Error al guardar kilometraje:", error);
+    alert("Error al guardar el kilometraje");
+  }
+};
+
   //Guardar Rendimiento
  const guardarRendimiento = async () => {
   try {
+    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
     const rendimientoData: Rendimiento = {
       uniqueId: rendimientoId || 0, // 0 si es nuevo
       rendimiento_ideal: parseFloat(rendimientoIdeal),
       litros_ideales: parseFloat(litrosIdeales),
       programacion: programacion,
+      km_inicial: rendimientoExistente?.km_inicial ?? null,
+      km_final: rendimientoExistente?.km_final ?? null,
+      
     };
 
     let response;
@@ -157,14 +220,24 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     <div className="p-6 bg-white rounded-lg shadow">
 
       <div className="flex items-center justify-between mb-1">
-        <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Comsumo</h3>
-        <button
-          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={abrirModalRendimiento}
-        >
-          <span>Agregar Rendimiento</span>
-        </button>
+        <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Consumo</h3>
+        
+        <div className="flex space-x-2">
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalKilometraje}
+          >
+            <span>Agregar Kilometraje</span>
+          </button>
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalRendimiento}
+          >
+            <span>Agregar Rendimiento</span>
+          </button>
+        </div>
       </div>
+
 
       <div className="overflow-x-auto mb-10">
         <table className="min-w-full divide-y divide-gray-300">
@@ -250,6 +323,52 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
           </tbody>
         </table>
       </div>
+
+      {/* Modal Kilometraje */}
+      {isKilometrajeModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+            <h2 className="text-lg font-bold mb-2">Agregar Kilometraje</h2>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Inicial</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={KilometrajeInicial}
+                onChange={(e) => setKilometrajeInicial(e.target.value)}
+                placeholder="Kilometraje Incial"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Final</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={KilometrajeFinal}
+                onChange={(e) => setKilometrajeFinal(e.target.value)}
+                placeholder="Kilometraje Final"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                onClick={() => setIsKilometrajeModalOpen(false)}
+              >
+                Cancelar
+              </button>
+             <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={guardarKilometraje}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal rendimiento ideal */}
       {isRendimientoModalOpen && (
