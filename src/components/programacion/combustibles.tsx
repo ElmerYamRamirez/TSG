@@ -43,6 +43,11 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   const [litrosIdeales, setLitrosIdeales] = useState('');
   const [rendimientoId, setRendimientoId] = useState<number | null>(null);
 
+  ///Litros consumidos 
+  const [isLitrosModalOpen, setIsLitrosModalOpen] = useState(false);
+  const [litrosIniciales, setLitrosIniciales] = useState('');
+  const [litrosFinales, setLitrosFinales] = useState('');
+
   // Kilometrajes
   const [isKilometrajeModalOpen, setIsKilometrajeModalOpen] = useState(false);
   const [KilometrajeInicial, setKilometrajeInicial] = useState('');
@@ -69,6 +74,29 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     alert("Error al cargar el rendimiento existente");
   }
 };
+
+//////Modal litros consumidos 
+const abrirModalLitros = async () => {
+  try {
+    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
+
+    if (rendimientoExistente) {
+      setRendimientoId(rendimientoExistente.uniqueId);
+      setLitrosIniciales((rendimientoExistente.litros_iniciales ?? '').toString());
+      setLitrosFinales((rendimientoExistente.litros_finales ?? '').toString());
+    } else {
+      setRendimientoId(null);
+      setLitrosIniciales('');
+      setLitrosFinales('');
+    }
+
+    setIsLitrosModalOpen(true);
+  } catch (error) {
+    console.error("Error al cargar litros:", error);
+    alert("Error al cargar los litros consumidos.");
+  }
+};
+
 
   // Modal Kilometrajes
   const abrirModalKilometraje = async () => {
@@ -120,6 +148,37 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     await handleDarDeBaja(item);
     router.refresh();
   }
+
+  /// Guardar litros consumidos 
+  const guardarLitros = async () => {
+  try {
+    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
+
+    const data: Rendimiento = {
+      uniqueId: rendimientoExistente?.uniqueId || 0,
+      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal || 0,
+      litros_ideales: rendimientoExistente?.litros_ideales || 0,
+      litros_iniciales: parseFloat(litrosIniciales),
+      litros_finales: parseFloat(litrosFinales),
+      programacion,
+    };
+
+    const response = rendimientoExistente
+      ? await updateRendimientoById(data)
+      : await createRendimiento(data);
+
+    if (response?.ok) {
+      setIsLitrosModalOpen(false);
+      router.refresh();
+    } else {
+      alert("Error al guardar los litros consumidos.");
+    }
+  } catch (error) {
+    console.error("Error al guardar litros:", error);
+    alert("Error al guardar los litros consumidos");
+  }
+};
+
 
   // Guardar Kilometraje
   const guardarKilometraje = async () => {
@@ -223,6 +282,13 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
         <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Consumo</h3>
         
         <div className="flex space-x-2">
+        <button
+          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={abrirModalLitros}
+        >
+           <span>Agregar Litros Consumidos</span>
+        </button>
+
           <button
             className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
             onClick={abrirModalKilometraje}
@@ -323,6 +389,55 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
           </tbody>
         </table>
       </div>
+
+       {/* Modal Litros consumidos  */}
+       {isLitrosModalOpen && (
+  <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+      <h2 className="text-lg font-bold mb-2">Agregar Litros Consumidos</h2>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Litros Iniciales</label>
+        <input
+          type="number"
+          className="border rounded px-3 py-2 w-full"
+          value={litrosIniciales}
+          onChange={(e) => setLitrosIniciales(e.target.value)}
+          placeholder="Litros Iniciales"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Litros Finales</label>
+        <input
+          type="number"
+          className="border rounded px-3 py-2 w-full"
+          value={litrosFinales}
+          onChange={(e) => setLitrosFinales(e.target.value)}
+          placeholder="Litros Finales"
+        />
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <button
+          className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+          onClick={() => setIsLitrosModalOpen(false)}
+        >
+          Cancelar
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={guardarLitros}
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
 
       {/* Modal Kilometraje */}
       {isKilometrajeModalOpen && (
