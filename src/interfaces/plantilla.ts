@@ -1,4 +1,6 @@
 export interface PlantillaI {
-  id: number | string;
-  nombreRuta: string;
+  folio: number | string;            
+  nombre?: string;             
+  municipio?: string;        
+  destino?: string;  
 }
