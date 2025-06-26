@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Viaticos from './viaticos';
 import Casetas from './casetas';
 
-const tabs = ['Combustible', 'Viáticos', 'Casetas'];
+const tabs = [ 'Viáticos', 'Casetas'];
 
 interface PlantillaI {
   uniqueId: number;
@@ -28,15 +28,16 @@ interface PlantillaI {
 }
 
 export default function Tabs({ plantilla }: { plantilla: PlantillaI }) {
-  const [activeTab, setActiveTab] = useState('Combustible');
+  //const [activeTab, setActiveTab] = useState('Combustible');
+  const [activeTab, setActiveTab] = useState('Viáticos');
 
 
 const renderContent = () => {
   switch (activeTab) {
     case 'Viáticos':
-      return <Viaticos viaticos={plantilla.viaticos} programacion={plantilla.uniqueId}></Viaticos>;
+      return <Viaticos viaticos={plantilla.viaticos} plantilla={plantilla.uniqueId}></Viaticos>;
     case 'Casetas':
-      return <Casetas casetas={plantilla.casetas} programacion={plantilla.uniqueId}></Casetas>;
+      return <Casetas casetas={plantilla.casetas} plantilla={plantilla.uniqueId}></Casetas>;
     default:
       return null;
   }

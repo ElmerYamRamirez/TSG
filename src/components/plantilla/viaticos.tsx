@@ -1,14 +1,25 @@
-import { createCaseta, updateCasetaById } from "components/actions";
-import { deleteCasetaById } from "components/actions/casetas/delete-caseta-by-id";
-import { CasetaI } from "components/interfaces/caseta";
+import { createViatico, updateViaticosById } from "components/actions";
+import { deleteViaticosById } from "components/actions/viaticos/delete-viaticos-by-id";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Viatico } from "components/interfaces/viaticos";
 
+// interface ViaticoI {
+//   uniqueId: number;
+//   Bit_Activo: boolean;
+//   Usu_Alta: string | null;
+//   Fec_Alta: string;
+//   cantidad: number;
+//   programacion: number;
+//   concepto: string;
+// }
 
-const handleDarDeBaja = async (caseta: CasetaI) => {
-  if (confirm(`¿Estás seguro de eliminar: ${caseta.nombre}?`)) {
+const handleDarDeBaja = async(viatico: Viatico) => {
+  console.log('Dar de baja:', viatico);
+  // Ejemplo: confirmar y hacer una petición a una API
+  if (confirm(`¿Estás seguro de eliminar: ${viatico.concepto}?`)) {
     //llamar server action to delete
-    const { ok } = await deleteCasetaById(caseta.uniqueId) ?? { ok: false, casetas: [] };
+    const { ok } = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
 
     if (!ok) {
       alert("Hubo un error al eliminar la caseta.");
@@ -16,27 +27,24 @@ const handleDarDeBaja = async (caseta: CasetaI) => {
   }
 }
 
-const handleCreate = async (caseta: CasetaI) => {
+const handleCreate = async (viatico: Viatico) => {
   //llamar server action to create
-  const { ok, res } = await createCaseta(caseta) ?? { ok: false, res: [] }
+  const { ok, res } = await createViatico(viatico) ?? { ok: false, res: [] }
   return { ok, res }
 }
 
-
-const handleEdit = async (caseta: CasetaI) => {
-  const { ok, casetas } = await updateCasetaById(caseta) ?? { ok: false, casetas: [] };
-  return { ok, casetas }
+const handleEdit = async (viatico: Viatico) => {
+  const { ok, viaticos } = await updateViaticosById(viatico) ?? { ok: false, viaticos: [] };
+  return {ok, viaticos}
 }
 
-
-export default function Casetas({ casetas, programacion }: { casetas: CasetaI[], programacion: number }) {
+export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[], plantilla: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  //const [casetasList, setCasetasList] = useState<CasetaI[]>(casetas)
-  const [itemEditando, setItemEditando] = useState<CasetaI | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
+  const [itemEditando, setItemEditando] = useState<Viatico | null>(null)
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false)
 
-  const abrirModalEditar = (item: CasetaI) => {
+  const abrirModalEditar = (item: Viatico) => {
     setItemEditando(item);
     setIsEditing(true);
     setIsModalOpen(true);
@@ -45,9 +53,9 @@ export default function Casetas({ casetas, programacion }: { casetas: CasetaI[],
   const abrirModalCrear = () => {
     setItemEditando({
       uniqueId: 0,
-      precio: 0,
-      nombre: '',
-      folio_programacion: programacion,
+      cantidad: 0,
+      concepto: '',
+      programacion: plantilla,
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
     })
@@ -55,8 +63,7 @@ export default function Casetas({ casetas, programacion }: { casetas: CasetaI[],
     setIsModalOpen(true);
   }
 
-  const deleteCaseta = async (item: CasetaI) => {
-    //const responce = await handleDarDeBaja(item);
+  const deleteViatico = async (item: Viatico) => {
     await handleDarDeBaja(item);
     router.refresh();
   }
@@ -89,8 +96,10 @@ export default function Casetas({ casetas, programacion }: { casetas: CasetaI[],
     setIsModalOpen(false)
   }
 
+
   return (
     <div className="p-6 bg-white rounded-lg shadow">
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-2">
           <input
@@ -101,32 +110,34 @@ export default function Casetas({ casetas, programacion }: { casetas: CasetaI[],
             Buscar
           </button>
         </div>
-        <button className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={abrirModalCrear}>
+        <button
+          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={abrirModalCrear}
+        >
           <span>Agregar</span>
         </button>
       </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Nombre</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Concepto</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Monto</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {casetas.map((item, index) => (
+          <tbody className="bg-white divide-y divide-gray-200 space-x-2">
+             {(viaticos || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.nombre}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
-                <td className="px-1 py-2 space-x-1 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600"
-                    onClick={() => abrirModalEditar(item)}>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.concepto}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.cantidad}</td>
+                <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
+                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
                     Editar
                   </button>
                   <button
-                    onClick={() => deleteCaseta(item)}
+                    onClick={() => deleteViatico(item)}
                     className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
                     Eliminar
                   </button>
@@ -138,23 +149,23 @@ export default function Casetas({ casetas, programacion }: { casetas: CasetaI[],
         </table>
       </div>
 
-      {/* Modal de edición y creacion */}
+      {/* Modal de edición */}
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Caseta' : 'Agregar Caseta'}</h2>
+            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Viatico'}</h2>
             <input
               type="text"
               className="border rounded px-3 py-1 w-full"
-              value={itemEditando.nombre}
-              onChange={e => setItemEditando({ ...itemEditando, nombre: e.target.value })}
+              value={itemEditando.concepto}
+              onChange={e => setItemEditando({ ...itemEditando, concepto: e.target.value })}
               placeholder="Concepto"
             />
             <input
               type="number"
               className="border rounded px-3 py-1 w-full"
-              value={itemEditando.precio}
-              onChange={e => setItemEditando({ ...itemEditando, precio: parseFloat(e.target.value) })}
+              value={itemEditando.cantidad}
+              onChange={e => setItemEditando({ ...itemEditando, cantidad: parseFloat(e.target.value) })}
               placeholder="Monto"
             />
             <div className="flex justify-end space-x-2">

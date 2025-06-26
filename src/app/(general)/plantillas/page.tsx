@@ -1,13 +1,7 @@
-import { getDestinoPagination } from "components/actions";
+import { getPlantillasPagination } from "components/actions";
 import Link from "next/link";
 import React from "react";
-
-export interface PlantillaI {
-  folio: number | string;
-  nombre?: string;
-  municipio?: string;
-  destino?: string;
-}
+import { PlantillaI } from "components/interfaces/plantilla";
 
 export default async function PlantillasPage({
   searchParams,
@@ -19,15 +13,14 @@ export default async function PlantillasPage({
   const page = pageParam ? parseInt(pageParam) : 1;
   const searchTerm = searchTermParam || "";
   const pageSize = 15;
+  const response = await getPlantillasPagination(page, pageSize, searchTerm);
 
-  const response = await getDestinoPagination(page, pageSize, searchTerm);
-
-  const plantillas: PlantillaI[] = (response?.destinos ?? []).map((p: any) => ({
+  const plantillas: PlantillaI[] = (response?.plantillas ?? []).map((p: any) => ({
   folio: p.Folio ?? p.id ?? "",
   nombre: p.Nombre ?? "", 
   municipio: p.Municipio ?? "",
   destino: p.NombreDestino ?? "",
-  }));
+}));
 
 
   const hayMasResultados = plantillas.length === pageSize;
@@ -116,7 +109,7 @@ export default async function PlantillasPage({
                       <td className="px-1 text-xs text-indigo-600 font-medium">
                         <div className="flex flex-col">
                           <Link
-                            href={`/programacion/${plantilla.folio}`}
+                            href={`/plantilla/${plantilla.folio}`}
                             className="hover:underline"
                           >
                             Cargar datos
