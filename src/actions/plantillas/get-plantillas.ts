@@ -11,7 +11,7 @@ export const getPlantillas = async () => {
             Municipio,
             NombreDestino
         FROM 
-            Plantillas
+            Destino
         ORDER BY 
             Folio DESC
         `;

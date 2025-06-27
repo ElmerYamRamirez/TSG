@@ -1,12 +1,13 @@
 'use server';
 
 import { executeQuery } from "components/app/lib/connection";
+import { PlantillaI } from "components/interfaces/plantilla";
 
 export const getPlantillasFiltro = async (
   page: number,
   pageSize = 15,
   searchTerm = ""
-) => {
+): Promise<{ ok: boolean; plantillas: PlantillaI[] }> => {
   try {
     const offset = (page - 1) * pageSize;
     const search = `%${searchTerm.trim()}%`;
@@ -24,7 +25,7 @@ export const getPlantillasFiltro = async (
         P.Municipio,
         P.NombreDestino
       FROM 
-        Plantillas P
+        Destino P
       WHERE 
         P.Folio LIKE @searchTerm
         OR P.Nombre LIKE @searchTerm
@@ -36,11 +37,11 @@ export const getPlantillasFiltro = async (
       FETCH NEXT @pageSize ROWS ONLY;
     `;
 
-    const plantillas = await executeQuery(query, paramsList);
+    const plantilla = await executeQuery(query, paramsList);
 
     return {
       ok: true,
-      plantillas: plantillas
+      plantillas: plantilla
     };
 
   } catch (error) {
