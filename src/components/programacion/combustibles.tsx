@@ -60,8 +60,8 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
     
     if (rendimientoExistente) {
       setRendimientoId(rendimientoExistente.uniqueId);
-      setRendimientoIdeal(rendimientoExistente.rendimiento_ideal.toString());
-      setLitrosIdeales(rendimientoExistente.litros_ideales.toString());
+      setRendimientoIdeal(rendimientoExistente.rendimiento_ideal?.toString() || '');
+      setLitrosIdeales(rendimientoExistente.litros_ideales?.toString() || '');
     } else {
       setRendimientoId(null);
       setRendimientoIdeal('');
@@ -156,10 +156,12 @@ const abrirModalLitros = async () => {
 
     const data: Rendimiento = {
       uniqueId: rendimientoExistente?.uniqueId || 0,
-      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal || 0,
-      litros_ideales: rendimientoExistente?.litros_ideales || 0,
+      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal ?? null,
+      litros_ideales: rendimientoExistente?.litros_ideales ?? null,
       litros_iniciales: parseFloat(litrosIniciales),
       litros_finales: parseFloat(litrosFinales),
+      km_inicial: rendimientoExistente?.km_inicial ?? null,
+      km_final: rendimientoExistente?.km_final ?? null,
       programacion,
     };
 
@@ -187,10 +189,12 @@ const abrirModalLitros = async () => {
 
     const data: Rendimiento = {
       uniqueId: rendimientoExistente?.uniqueId || 0,
-      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal || 0,
-      litros_ideales: rendimientoExistente?.litros_ideales || 0,
+      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal ?? null,
+      litros_ideales: rendimientoExistente?.litros_ideales ?? null,
       km_inicial: parseFloat(KilometrajeInicial),
       km_final: parseFloat(KilometrajeFinal),
+      litros_iniciales: rendimientoExistente?.litros_iniciales ?? null,
+      litros_finales: rendimientoExistente?.litros_finales ?? null,
       programacion,
     };
 
@@ -221,6 +225,8 @@ const abrirModalLitros = async () => {
       programacion: programacion,
       km_inicial: rendimientoExistente?.km_inicial ?? null,
       km_final: rendimientoExistente?.km_final ?? null,
+      litros_iniciales: rendimientoExistente?.litros_iniciales ?? null,
+      litros_finales: rendimientoExistente?.litros_finales ?? null,
       
     };
 
