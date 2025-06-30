@@ -2,21 +2,21 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const getCasetaPlantillaById = async ( id: string ) => {
+export const deleteCasetaPlantillaById = async ( id: number ) => {
     try {
 
         const query = `
-        SELECT 
-            v.*
-        FROM 
-            casetas v
+        DELETE FROM 
+            casetas
+        WHERE
+            uniqueId = @id;
         `;
 
         const paramsList = [{ name: 'id', value: id }];
         const casetas = await executeQuery(query, paramsList);
 
-        console.log(casetas)
         //return NextResponse.json(envios);
+        console.log(casetas);
         return {
             ok: true,
             casetas: casetas,
@@ -31,4 +31,3 @@ export const getCasetaPlantillaById = async ( id: string ) => {
         //);
     }
 }
-

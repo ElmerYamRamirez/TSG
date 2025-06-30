@@ -1,5 +1,4 @@
-import { createCasetaPlantilla, updateCasetaPlantillaById } from "components/actions";
-import { deleteCasetaById } from "components/actions/casetas/delete-caseta-by-id";
+import { createCasetaPlantilla, updateCasetaPlantillaById, deleteCasetaPlantillaById} from "components/actions";
 import { CasetaPlantilla } from "components/interfaces/caseta_plantilla";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,7 +7,7 @@ import { useState } from "react";
 const handleDarDeBaja = async (caseta: CasetaPlantilla) => {
   if (confirm(`¿Estás seguro de eliminar: ${caseta.nombre}?`)) {
     //llamar server action to delete
-    const { ok } = await deleteCasetaById(caseta.uniqueId) ?? { ok: false, casetas: [] };
+    const { ok } = await deleteCasetaPlantillaById (caseta.uniqueId) ?? { ok: false, casetas: [] };
 
     if (!ok) {
       alert("Hubo un error al eliminar la caseta.");
