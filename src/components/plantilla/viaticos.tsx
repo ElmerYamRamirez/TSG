@@ -1,50 +1,41 @@
-import { createViatico, updateViaticosById } from "components/actions";
-import { deleteViaticosById } from "components/actions/viaticos/delete-viaticos-by-id";
+import { createViaticoPlantilla, updateViaticoPlantillaById, deleteViaticoPlantillaById} from "components/actions";
+import { ViaticoPlantilla } from "components/interfaces/viatico_plantilla";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Viatico } from "components/interfaces/viaticos";
 
-// interface ViaticoI {
-//   uniqueId: number;
-//   Bit_Activo: boolean;
-//   Usu_Alta: string | null;
-//   Fec_Alta: string;
-//   cantidad: number;
-//   programacion: number;
-//   concepto: string;
-// }
 
-const handleDarDeBaja = async(viatico: Viatico) => {
-  console.log('Dar de baja:', viatico);
-  // Ejemplo: confirmar y hacer una petición a una API
-  if (confirm(`¿Estás seguro de eliminar: ${viatico.concepto}?`)) {
+const handleDarDeBaja = async (viatico: ViaticoPlantilla) => {
+  if (confirm(`¿Estás seguro de eliminar: ${viatico.nombre}?`)) {
     //llamar server action to delete
-    const { ok } = await deleteViaticosById(viatico.uniqueId) ?? { ok: false, viaticos: [] };
+    const { ok } = await deleteViaticoPlantillaById (viatico.uniqueId) ?? { ok: false, viaticos: [] };
 
     if (!ok) {
-      alert("Hubo un error al eliminar la caseta.");
+      alert("Hubo un error al eliminar la viático.");
     }
   }
 }
 
-const handleCreate = async (viatico: Viatico) => {
+const handleCreate = async (viatico: ViaticoPlantilla) => {
   //llamar server action to create
-  const { ok, res } = await createViatico(viatico) ?? { ok: false, res: [] }
+  const { ok, res } = await createViaticoPlantilla(viatico) ?? { ok: false, res: [] }
   return { ok, res }
 }
 
-const handleEdit = async (viatico: Viatico) => {
-  const { ok, viaticos } = await updateViaticosById(viatico) ?? { ok: false, viaticos: [] };
-  return {ok, viaticos}
+
+const handleEdit = async (viatico: ViaticoPlantilla) => {
+  const { ok, viaticos } = await updateViaticoPlantillaById(viatico) ?? { ok: false, viaticos: [] };
+  return { ok, viaticos }
 }
 
-export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[], plantilla: number }) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [itemEditando, setItemEditando] = useState<Viatico | null>(null)
-  const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false)
 
-  const abrirModalEditar = (item: Viatico) => {
+export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPlantilla[], plantilla: number }) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  //const [casetasList, setCasetasList] = useState<CasetaI[]>(casetas)
+  const [itemEditando, setItemEditando] = useState<ViaticoPlantilla | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter();
+
+  const abrirModalEditar = (item: ViaticoPlantilla) => {
     setItemEditando(item);
     setIsEditing(true);
     setIsModalOpen(true);
@@ -54,8 +45,7 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[],
     setItemEditando({
       uniqueId: 0,
       cantidad: 0,
-      concepto: '',
-      programacion: plantilla,
+      nombre: '',
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
     })
@@ -63,7 +53,8 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[],
     setIsModalOpen(true);
   }
 
-  const deleteViatico = async (item: Viatico) => {
+  const deleteViatico = async (item: ViaticoPlantilla) => {
+    //const responce = await handleDarDeBaja(item);
     await handleDarDeBaja(item);
     router.refresh();
   }
@@ -96,10 +87,8 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[],
     setIsModalOpen(false)
   }
 
-
   return (
     <div className="p-6 bg-white rounded-lg shadow">
-
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-2">
           <input
@@ -110,30 +99,28 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[],
             Buscar
           </button>
         </div>
-        <button
-          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={abrirModalCrear}
-        >
+        <button className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={abrirModalCrear}>
           <span>Agregar</span>
         </button>
       </div>
-
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Concepto</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Nombre</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Monto</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200 space-x-2">
+          <tbody className="bg-white divide-y divide-gray-200">
              {(viaticos || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.concepto}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.nombre}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.cantidad}</td>
-                <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
+                <td className="px-1 py-2 space-x-1 text-xs text-indigo-600 font-medium">
+                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600"
+                    onClick={() => abrirModalEditar(item)}>
                     Editar
                   </button>
                   <button
@@ -149,16 +136,16 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: Viatico[],
         </table>
       </div>
 
-      {/* Modal de edición */}
+      {/* Modal de edición y creacion */}
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Viatico'}</h2>
+            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Caseta' : 'Agregar Caseta'}</h2>
             <input
               type="text"
               className="border rounded px-3 py-1 w-full"
-              value={itemEditando.concepto}
-              onChange={e => setItemEditando({ ...itemEditando, concepto: e.target.value })}
+              value={itemEditando.nombre}
+              onChange={e => setItemEditando({ ...itemEditando, nombre: e.target.value })}
               placeholder="Concepto"
             />
             <input

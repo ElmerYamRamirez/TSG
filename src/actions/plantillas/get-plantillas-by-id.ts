@@ -22,11 +22,20 @@ export const getPlantillaById = async (id: string) => {
         `;
         const casetas = await executeQuery(query2, paramsList);
 
+        const query3 = `
+        SELECT *
+        FROM viaticos
+        WHERE Bit_Activo = 1;
+        `;
+        const viaticos = await executeQuery(query3, paramsList);
+
+
         return {
              ok: true,
              plantilla: {
                  ...plantilla[0],                
                  casetas,
+                 viaticos,
              },
          };
 
