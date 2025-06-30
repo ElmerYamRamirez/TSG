@@ -2,21 +2,33 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const getPlantillaById = async (folio: string) => {
-  try {
-    const query = `
-      SELECT * 
-      FROM Destino 
-      WHERE Folio = @id;
-    `;
+export const getPlantillaById = async (id: string) => {
+ try {
+        
+        const paramsList = [{ name: "id", value: id }];
+        
+        const query = `
+          SELECT * 
+          FROM Destino 
+          WHERE Folio = @id;
+        `;
 
-    const paramsList = [{ name: 'id', value: folio }];
-    const result = await executeQuery(query, paramsList);
+        const plantilla = await executeQuery(query, paramsList);
 
-    return {
-      ok: true,
-      plantilla: result[0] ?? null,
-    };
+        const query2 = `
+        SELECT *
+        FROM Casetas
+        WHERE Bit_Activo = 1;
+        `;
+        const casetas = await executeQuery(query2, paramsList);
+
+        return {
+             ok: true,
+             plantilla: {
+                 ...plantilla[0],                
+                 casetas,
+             },
+         };
 
   } catch (error) {
     console.error("API Error:", error);

@@ -1,11 +1,11 @@
-import { createCaseta, updateCasetaById } from "components/actions";
+import { createCasetaPlantilla, updateCasetaPlantillaById } from "components/actions";
 import { deleteCasetaById } from "components/actions/casetas/delete-caseta-by-id";
-import { CasetaI } from "components/interfaces/caseta";
+import { CasetaPlantilla } from "components/interfaces/caseta_plantilla";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 
-const handleDarDeBaja = async (caseta: CasetaI) => {
+const handleDarDeBaja = async (caseta: CasetaPlantilla) => {
   if (confirm(`¿Estás seguro de eliminar: ${caseta.nombre}?`)) {
     //llamar server action to delete
     const { ok } = await deleteCasetaById(caseta.uniqueId) ?? { ok: false, casetas: [] };
@@ -16,27 +16,27 @@ const handleDarDeBaja = async (caseta: CasetaI) => {
   }
 }
 
-const handleCreate = async (caseta: CasetaI) => {
+const handleCreate = async (caseta: CasetaPlantilla) => {
   //llamar server action to create
-  const { ok, res } = await createCaseta(caseta) ?? { ok: false, res: [] }
+  const { ok, res } = await createCasetaPlantilla(caseta) ?? { ok: false, res: [] }
   return { ok, res }
 }
 
 
-const handleEdit = async (caseta: CasetaI) => {
-  const { ok, casetas } = await updateCasetaById(caseta) ?? { ok: false, casetas: [] };
+const handleEdit = async (caseta: CasetaPlantilla) => {
+  const { ok, casetas } = await updateCasetaPlantillaById(caseta) ?? { ok: false, casetas: [] };
   return { ok, casetas }
 }
 
 
-export default function Casetas({ casetas, plantilla }: { casetas: CasetaI[], plantilla: number }) {
+export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantilla[], plantilla: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   //const [casetasList, setCasetasList] = useState<CasetaI[]>(casetas)
-  const [itemEditando, setItemEditando] = useState<CasetaI | null>(null)
+  const [itemEditando, setItemEditando] = useState<CasetaPlantilla | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter();
 
-  const abrirModalEditar = (item: CasetaI) => {
+  const abrirModalEditar = (item: CasetaPlantilla) => {
     setItemEditando(item);
     setIsEditing(true);
     setIsModalOpen(true);
@@ -47,7 +47,6 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaI[], pl
       uniqueId: 0,
       precio: 0,
       nombre: '',
-      folio_programacion: plantilla,
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
     })
@@ -55,7 +54,7 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaI[], pl
     setIsModalOpen(true);
   }
 
-  const deleteCaseta = async (item: CasetaI) => {
+  const deleteCaseta = async (item: CasetaPlantilla) => {
     //const responce = await handleDarDeBaja(item);
     await handleDarDeBaja(item);
     router.refresh();
