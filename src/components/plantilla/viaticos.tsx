@@ -2,11 +2,37 @@ import { createViaticoPlantilla, updateViaticoPlantillaById, deleteViaticoPlanti
 import { ViaticoPlantilla } from "components/interfaces/viatico_plantilla";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+/////////////guardar la plantilla///////
+export async function guardarViaticosPlantilla(plantillaId: number, viaticoIds: number[]) {
+  try {
+    const response = await fetch('/api/guardar_plantilla', {
+      method: 'POST',
+      body: JSON.stringify({ plantillaId, viaticoIds }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) throw new Error('Error al guardar la plantilla');
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return { ok: false };
+  }
+}
+
+
+export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPlantilla[], plantilla: number }) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [itemEditando, setItemEditando] = useState<ViaticoPlantilla | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
 
 const handleDarDeBaja = async (viatico: ViaticoPlantilla) => {
   if (confirm(`¿Estás seguro de eliminar: ${viatico.nombre}?`)) {
-    //llamar server action to delete
+
     const { ok } = await deleteViaticoPlantillaById (viatico.uniqueId) ?? { ok: false, viaticos: [] };
 
     if (!ok) {
@@ -16,7 +42,6 @@ const handleDarDeBaja = async (viatico: ViaticoPlantilla) => {
 }
 
 const handleCreate = async (viatico: ViaticoPlantilla) => {
-  //llamar server action to create
   const { ok, res } = await createViaticoPlantilla(viatico) ?? { ok: false, res: [] }
   return { ok, res }
 }
@@ -27,13 +52,21 @@ const handleEdit = async (viatico: ViaticoPlantilla) => {
   return { ok, viaticos }
 }
 
+const toggleSelect = (id: number) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
 
-export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPlantilla[], plantilla: number }) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  //const [casetasList, setCasetasList] = useState<CasetaI[]>(casetas)
-  const [itemEditando, setItemEditando] = useState<ViaticoPlantilla | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const router = useRouter();
+  const toggleSelectAll = () => {
+    if (selectedIds.length === viaticos.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(viaticos.map(c => c.uniqueId));
+    }
+  };
+
+
 
   const abrirModalEditar = (item: ViaticoPlantilla) => {
     setItemEditando(item);
@@ -54,7 +87,6 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
   }
 
   const deleteViatico = async (item: ViaticoPlantilla) => {
-    //const responce = await handleDarDeBaja(item);
     await handleDarDeBaja(item);
     router.refresh();
   }
@@ -63,7 +95,6 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
     if (!itemEditando) return
 
     if (isEditing) {
-      //call server action to edit
       const responce = await handleEdit(itemEditando);
 
       if (responce.ok) {
@@ -73,7 +104,6 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
       }
 
     } else {
-      //call server action to create
       console.log(itemEditando)
       const responce = await handleCreate(itemEditando);
 
@@ -86,56 +116,109 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
 
     setIsModalOpen(false)
   }
+//////////////////////guardar la planilla/////////
+  const guardarPlantilla = async () => {
+    if (selectedIds.length === 0) {
+      alert("Selecciona al menos un viático para guardar.");
+      return;
+    }
 
-  return (
+    const res = await guardarViaticosPlantilla(plantilla, selectedIds);
+    if (res.ok) {
+      alert("Plantilla guardada exitosamente.");
+      setSelectedIds([]);
+      router.refresh();
+    } else {
+      alert("Error al guardar la plantilla.");
+    }
+  };
+  
+
+   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-2">
           <input
             type="text"
             placeholder="Buscar..."
-            className="border rounded px-3 py-1 w-64" />
+            className="border rounded px-3 py-1 w-64"
+          />
           <button className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
             Buscar
           </button>
+
         </div>
-        <button className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={abrirModalCrear}>
-          <span>Agregar</span>
-        </button>
+
+
+        <div className="flex items-center space-x-2">
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600"
+            onClick={guardarPlantilla}
+         >
+            Guardar Plantilla
+          </button>
+
+
+          
+          <button
+          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center"
+           onClick={abrirModalCrear}
+            >
+           <span>Agregar</span>
+         </button>
+      </div>
+
+        
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-1 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.length === viaticos.length && viaticos.length > 0}
+                  onChange={toggleSelectAll}
+                  aria-label="Seleccionar todo"
+                />
+              </th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Nombre</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Monto</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-             {(viaticos || []).map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+            {viaticos.map((item, index) => (
+              <tr key={item.uniqueId} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                <td className="px-1 py-2 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(item.uniqueId)}
+                    onChange={() => toggleSelect(item.uniqueId)}
+                    aria-label={`Seleccionar caseta ${item.nombre}`}
+                  />
+                </td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.nombre}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.cantidad}</td>
                 <td className="px-1 py-2 space-x-1 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600"
-                    onClick={() => abrirModalEditar(item)}>
+                  <button
+                    className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600"
+                    onClick={() => abrirModalEditar(item)}
+                  >
                     Editar
                   </button>
                   <button
                     onClick={() => deleteViatico(item)}
-                    className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
+                    className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded"
+                  >
                     Eliminar
                   </button>
                 </td>
               </tr>
             ))}
-
           </tbody>
         </table>
       </div>
-
       {/* Modal de edición y creacion */}
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
