@@ -1,4 +1,4 @@
-import { createCasetaPlantilla, updateCasetaPlantillaById, deleteCasetaPlantillaById } from "components/actions";
+import { createCasetaPlantilla, updateCasetaPlantillaById, deleteCasetaPlantillaById, checkCaseta} from "components/actions";
 import { CasetaPlantilla } from "components/interfaces/caseta_plantilla";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -79,6 +79,32 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
     setIsModalOpen(false);
   };
 
+  const guardarPlantilla = async () => {
+  if (selectedIds.length === 0) {
+    alert("Selecciona al menos una caseta");
+    return;
+  }
+
+  for (const casetaId of selectedIds) {
+    const item = {
+      caseta: casetaId,
+      destino: plantilla, // este valor lo recibes como prop en tu componente
+      Fec_Alta: new Date().toISOString(),
+    };
+
+   const { ok } = await checkCaseta(item) ?? { ok: false, res: [] };
+
+    if (!ok) {
+      alert("Error al guardar alguna caseta.");
+      return;
+    }
+  }
+
+  alert("Casetas guardadas correctamente en la plantilla.");
+  setSelectedIds([]);
+  router.refresh();
+};
+
   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex items-center justify-between mb-4">
@@ -92,12 +118,20 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
             Buscar
           </button>
         </div>
-        <button
-          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={abrirModalCrear}
-        >
-          <span>Agregar</span>
-        </button>
+        <div className="flex space-x-2">
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={guardarPlantilla}
+          >
+            <span>Guardar Plantilla</span>
+          </button>
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalCrear}
+          >
+            <span>Agregar</span>
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-300">
