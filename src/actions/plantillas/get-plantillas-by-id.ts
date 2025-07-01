@@ -29,7 +29,6 @@ export const getPlantillaById = async (id: string) => {
         `;
         const viaticos = await executeQuery(query3, paramsList);
 
-
         return {
              ok: true,
              plantilla: {
