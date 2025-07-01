@@ -89,11 +89,12 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
     const item = {
       viaticos: viaticoId,
       destino: plantilla,
-      descripcion: String(plantilla), 
+      nombre: String(plantilla),
+      descripcion: undefined,
       Fec_Alta: new Date().toISOString(),
     };
 
-    const { ok } = await checkViatico(item) ?? { ok: false };
+    const { ok } = await checkViatico(item) ?? { ok: false, res: [] };
 
     if (!ok) {
       alert("Error al guardar viático.");
