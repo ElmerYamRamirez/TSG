@@ -1,7 +1,9 @@
 import { createCasetaPlantilla, updateCasetaPlantillaById, deleteCasetaPlantillaById, checkCaseta} from "components/actions";
 import { CasetaPlantilla } from "components/interfaces/caseta_plantilla";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+//import { useState } from "react";
+import { useEffect, useState } from "react";///////////Seleccion ///////////////////
+
 
 export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantilla[], plantilla: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,7 +11,14 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
   const [isEditing, setIsEditing] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const router = useRouter();
-
+////////////// Seleccion ///////////////
+  useEffect(() => {
+  const stored = localStorage.getItem(`caseta-plantilla-${plantilla}-selected`);
+  if (stored) {
+    setSelectedIds(JSON.parse(stored));
+  }
+}, [plantilla]);
+//////////////////////////////////
   const toggleSelect = (id: number) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
@@ -100,9 +109,13 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
     }
   }
 
-  alert("Casetas guardadas correctamente en la plantilla.");
-  setSelectedIds([]);
-  router.refresh();
+  ////alert("Casetas guardadas correctamente en la plantilla.");
+  ///setSelectedIds([]);
+  ////router.refresh();
+  localStorage.setItem(`caseta-plantilla-${plantilla}-selected`, JSON.stringify(selectedIds));//////////seleccion
+
+  alert("Casetas guardadas correctamente en la plantilla.");////////seleccion
+  router.refresh();    /////////seleccionm
 };
 
   return (

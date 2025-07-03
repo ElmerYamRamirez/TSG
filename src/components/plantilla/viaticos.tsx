@@ -1,7 +1,8 @@
 import { createViaticoPlantilla, updateViaticoPlantillaById, deleteViaticoPlantillaById, checkViatico} from "components/actions";
 import { ViaticoPlantilla } from "components/interfaces/viatico_plantilla";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+//import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPlantilla[], plantilla: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,12 +10,24 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
   const [isEditing, setIsEditing] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const router = useRouter();
+  
+/////////////////Seleccion/////////
+  useEffect(() => {
+    const stored = localStorage.getItem(`plantilla-${plantilla}-selected`);
+    if (stored) {
+      setSelectedIds(JSON.parse(stored));
+    }
+  }, [plantilla]);
+////////////////////////////////////
+
 
   const toggleSelect = (id: number) => {
     setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
+
+ 
 
   const toggleSelectAll = () => {
     if (selectedIds.length === viaticos.length) {
@@ -101,10 +114,14 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
       return;
     }
   }
+  ////alert("Viaticos guardadas correctamente en la plantilla.");
+  ///setSelectedIds([]);
+  ////router.refresh();
 
-  alert("Viáticos guardados correctamente en la plantilla.");
-  setSelectedIds([]);
-  router.refresh();
+  localStorage.setItem(`plantilla-${plantilla}-selected`, JSON.stringify(selectedIds));
+
+    alert("Viáticos guardados correctamente en la plantilla.");
+    router.refresh();
 };
 
 
