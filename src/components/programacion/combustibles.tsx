@@ -315,31 +315,33 @@ const abrirModalLitros = async () => {
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Total</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Actual</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Anterior</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Final</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Inicial</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">KM Recorridos</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rend Real</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rend Ideal</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Ideal</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Dif litros</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Dif Precio total</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo de FI</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Variacion</th>
             </tr>
           </thead>
           <tbody>
               <tr>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
                 <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_actual}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_anterior}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_final}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_inicial}</td>
                 <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
                 <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_ideal}</td>
                 <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
                 <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio_diferencia_litros}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio}</td>
+                <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_fi}</td>
                 <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
               </tr>
             </tbody>
