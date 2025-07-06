@@ -6,31 +6,21 @@ import { checkViaticoPlantilla } from "components/interfaces/check_viatico";
 export const checkViatico = async (item: checkViaticoPlantilla) => {
   try {
     const query = `
-      IF NOT EXISTS (
-        SELECT 1 FROM plantilla_viaticos
-        WHERE destino = @destino AND viaticos = @viaticos
-      )
-      BEGIN
-        INSERT INTO plantilla_viaticos (
-          uniqueId,
-          Bit_Activo,
-          Fec_Alta,
-          descripcion,
-          viaticos,
-          destino,
-          nombre
-        )
-        SELECT
-          (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM plantilla_viaticos),
-          1,
-          @fecha_alta,
-          @descripcion,
-          @viaticos,
-          d.uniqueId,
-          d.Nombre
-        FROM Destino d
-        WHERE d.uniqueId = @destino;
-      END
+      INSERT INTO plantilla_viaticos (uniqueId, Bit_Activo, Fec_Alta, descripcion, viaticos, destino, nombre)
+      SELECT
+        (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM plantilla_viaticos),
+        1,
+        @fecha_alta,
+        @descripcion,
+        @viaticos,
+        d.uniqueId,
+        d.Nombre
+      FROM Destino d
+      WHERE d.uniqueId = @destino
+        AND NOT EXISTS (
+          SELECT 1 FROM plantilla_viaticos p
+          WHERE p.viaticos = @viaticos AND p.destino = d.uniqueId
+        );
     `;
 
     const paramsList = [
