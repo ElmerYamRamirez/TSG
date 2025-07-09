@@ -16,7 +16,6 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
       setSelectedIds(casetasVinculadas);
     } else {
       console.error("Error al cargar las casetas vinculadas.");
-      // Aquí puedes mostrar un mensaje de error al usuario si lo deseas
     }
   }, [plantilla]);
 

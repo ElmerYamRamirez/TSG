@@ -14,11 +14,11 @@ export const getViaticosVinculados = async (plantillaId: number): Promise<{ ok: 
 
     const result = await executeQuery(query, paramsList);
 
-    const viaticosVinculados: number[] = result.map((row: any) => row.viatico);
+    const viaticosVinculados: number[] = result.map((row: any) => row.viaticos);
 
     return { ok: true, viaticosVinculados };
   } catch (error) {
-    console.error("Error al obtener las casetas vinculadas:", error);
+    console.error("Error al obtener los viáticos vinculados:", error);
     return { ok: false, viaticosVinculados: [] };
   }
 };
