@@ -90,16 +90,15 @@ import React from "react";
             <table className="table-auto mx-auto divide-y divide-gray-300 text-xs">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Unidad</th>
-                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Nombre</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Folio</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Unidad</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Fecha</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900 min-w-[100px]">Hora</th>
-                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Total</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Ruta</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Operador</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Litros</th>
-                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Km final</th>
-                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Km inicial</th>
-                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Recorridos</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Precio Total</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">KM Recorridos</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Rend. Real</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Rend. Ideal</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Litros Ideal</th>
@@ -112,9 +111,8 @@ import React from "react";
               <tbody className="bg-white divide-y divide-gray-200">
                 {rendimientos.map((r: any, i: number) => (
                   <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <td className="px-1 lg:py-1 text-gray-700">{r.unidad}</td>
-                    <td className="px-1 lg:py-1 text-gray-700">{r.nombre}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.folio}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{r.unidad}</td>
                     <td className="px-1 lg:py-1 text-gray-700">
                       {new Date(r.Fecha_programada).toLocaleDateString("es-MX", {
                           timeZone: "UTC",
@@ -131,10 +129,10 @@ import React from "react";
                           })
                         : "-"}
                     </td>
-                    <td className="px-1 lg:py-1 text-gray-700">{r.total}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{r.destino}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{r.operador}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.litros}</td>
-                    <td className="px-1 lg:py-1 text-gray-700">{r.km_final}</td>
-                    <td className="px-1 lg:py-1 text-gray-700">{r.km_inicial}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{r.total}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.km_recorridos}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.rendimiento_real}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.rendimiento_ideal}</td>
@@ -142,7 +140,7 @@ import React from "react";
                     <td className="px-1 lg:py-1 text-gray-700">{r.diferencia_litros}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.precio}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.costo_fi}</td>
-                    <td className="px-1 lg:py-1 text-gray-700">{r.variacion}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{r.variacion}%</td>
                   </tr>
                 ))}
               </tbody>
