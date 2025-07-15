@@ -88,14 +88,17 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
 
     // Vincular las nuevas casetas
     for (const casetaId of selectedIds) {
-      const item = { caseta: casetaId, destino: plantilla, Fec_Alta: new Date().toISOString() };
+      const item = { 
+        caseta: casetaId, 
+        destino: plantilla, 
+        Fec_Alta: new Date().toISOString() };
       const { ok } = await checkCaseta(item) ?? { ok: false };
       if (!ok) return alert("Error al guardar alguna caseta.");
     }
 
     alert("Plantilla actualizada correctamente.");
     router.refresh();
-  }, [checkCaseta, deleteCasetasVinculadas, plantilla, router, selectedIds]);
+  }, [plantilla, selectedIds]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">

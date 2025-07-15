@@ -1,5 +1,3 @@
-'use client';
-
 import {createViaticoPlantilla, updateViaticoPlantillaById, deleteViaticoPlantillaById, checkViatico, deleteViaticosVinculados, getViaticosVinculados,} from "components/actions";
 import { ViaticoPlantilla } from "components/interfaces/viatico_plantilla";
 import { useRouter } from "next/navigation";
@@ -101,7 +99,7 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
 
     alert("Plantilla actualizada correctamente.");
     router.refresh();
-  }, [checkViatico, deleteViaticosVinculados, plantilla, router, selectedIds]);
+  }, [plantilla, selectedIds]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">

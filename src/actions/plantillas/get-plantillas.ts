@@ -4,7 +4,7 @@ import { executeQuery } from "components/app/lib/connection";
 
 export const getPlantillas = async () => {
     try {
-        let query = `
+        const query = `
         SELECT 
             Folio,
             Nombre,
