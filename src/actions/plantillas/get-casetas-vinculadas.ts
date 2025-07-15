@@ -14,7 +14,7 @@ export const getCasetasVinculadas = async (plantillaId: number): Promise<{ ok: b
 
     const result = await executeQuery(query, paramsList);
 
-    const casetasVinculadas: number[] = result.map((row: any) => row.caseta);
+    const casetasVinculadas: number[] = (result as { caseta: number }[]).map((row) => row.caseta);
 
     return { ok: true, casetasVinculadas };
   } catch (error) {

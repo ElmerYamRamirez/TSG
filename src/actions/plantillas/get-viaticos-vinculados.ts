@@ -14,7 +14,7 @@ export const getViaticosVinculados = async (plantillaId: number): Promise<{ ok: 
 
     const result = await executeQuery(query, paramsList);
 
-    const viaticosVinculados: number[] = result.map((row: any) => row.viaticos);
+    const viaticosVinculados: number[] = (result as { viaticos: number }[]).map((row) => row.viaticos);
 
     return { ok: true, viaticosVinculados };
   } catch (error) {

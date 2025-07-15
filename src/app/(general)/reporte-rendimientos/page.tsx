@@ -3,6 +3,25 @@ import { getReportesRendimientoPagination } from "components/actions";
 import Link from "next/link";
 import React from "react";
 
+type Rendimiento = {
+  folio: string;
+  unidad: string;
+  Fecha_programada: string;
+  Hora_programada: string | null;
+  destino: string;
+  operador: string;
+  litros: number;
+  total: number;
+  km_recorridos: number;
+  rendimiento_real: number;
+  rendimiento_ideal: number;
+  litros_ideal: number;
+  diferencia_litros: number;
+  precio: number;
+  costo_fi: number;
+  variacion: number;
+};
+
  export default async function ReporteRendimientos({ searchParams,}: { searchParams: Promise<{ page?: string; search?: string; desde?: string; hasta?: string }>;}) {
 
   const resolvedParams = await searchParams;
@@ -109,7 +128,7 @@ import React from "react";
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {rendimientos.map((r: any, i: number) => (
+                {rendimientos.map((r: Rendimiento, i: number) => (
                   <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <td className="px-1 lg:py-1 text-gray-700">{r.folio}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.unidad}</td>
