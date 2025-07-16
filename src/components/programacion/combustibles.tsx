@@ -47,6 +47,8 @@ export default function Combustibles({ combustibles, programacion, reporte }: { 
   const [isLitrosModalOpen, setIsLitrosModalOpen] = useState(false);
   const [litrosIniciales, setLitrosIniciales] = useState('');
   const [litrosFinales, setLitrosFinales] = useState('');
+  const [precioPorLitro, setPrecioPorLitro] = useState('');
+
 
   // Kilometrajes
   const [isKilometrajeModalOpen, setIsKilometrajeModalOpen] = useState(false);
@@ -84,10 +86,13 @@ const abrirModalLitros = async () => {
       setRendimientoId(rendimientoExistente.uniqueId);
       setLitrosIniciales((rendimientoExistente.litros_iniciales ?? '').toString());
       setLitrosFinales((rendimientoExistente.litros_finales ?? '').toString());
+      setPrecioPorLitro((rendimientoExistente.precio_litro ?? '').toString());
+
     } else {
       setRendimientoId(null);
       setLitrosIniciales('');
       setLitrosFinales('');
+      setPrecioPorLitro('');
     }
 
     setIsLitrosModalOpen(true);
@@ -160,6 +165,7 @@ const abrirModalLitros = async () => {
       litros_ideales: rendimientoExistente?.litros_ideales ?? null,
       litros_iniciales: parseFloat(litrosIniciales),
       litros_finales: parseFloat(litrosFinales),
+      precio_litro: parseFloat(precioPorLitro),
       km_inicial: rendimientoExistente?.km_inicial ?? null,
       km_final: rendimientoExistente?.km_final ?? null,
       programacion,
@@ -425,6 +431,19 @@ const abrirModalLitros = async () => {
           placeholder="Litros Finales"
         />
       </div>
+
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Precio por Litro</label>
+        <input
+          type="number"
+          className="border rounded px-3 py-2 w-full"
+          value={precioPorLitro}
+          onChange={(e) => setPrecioPorLitro(e.target.value)}
+          placeholder="Precio por Litro"
+        />
+      </div>
+
 
       <div className="flex justify-end space-x-2">
         <button
