@@ -8,6 +8,7 @@ export interface Rendimiento {
   programacion: number;
   litros_iniciales?: number | null;
   litros_finales?: number | null;
+  precio_litro?: number | null;
   km_inicial?: number | null;
   km_final?: number | null;
 }
