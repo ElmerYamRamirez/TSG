@@ -125,6 +125,11 @@ type Rendimiento = {
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Precio</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Costo FI</th>
                   <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Variación</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Rend. Bono</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">LTS Bono</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">LTS dif favor</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Costo favor</th>
+                  <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">20%</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -160,6 +165,11 @@ type Rendimiento = {
                     <td className="px-1 lg:py-1 text-gray-700">{r.precio}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.costo_fi}</td>
                     <td className="px-1 lg:py-1 text-gray-700">{r.variacion}%</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{(r.rendimiento_ideal-0.3).toFixed(2)}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{(r.km_recorridos/(r.rendimiento_ideal-0.3)).toFixed(2)}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{(r.litros_ideal-(r.km_recorridos/(r.rendimiento_ideal-0.3))).toFixed(2)}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{((r.litros_ideal-(r.km_recorridos/(r.rendimiento_ideal-0.3)))*26).toFixed(2)}</td>
+                    <td className="px-1 lg:py-1 text-gray-700">{(((r.litros_ideal-(r.km_recorridos/(r.rendimiento_ideal-0.3)))*26)*0.2).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
