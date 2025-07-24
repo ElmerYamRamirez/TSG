@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Viaticos from './viaticos';
 import Casetas from './casetas';
 import Combustibles from './combustibles';
+import CombustiblesDual from './combustible_hibrido';
 import { ReporteCombustibleI } from 'components/interfaces/reporteCombustible';
 
 const tabs = ['Combustible', 'Viáticos', 'Casetas'];
@@ -28,6 +29,7 @@ interface ProgramacionI {
   viaticos:[]
   casetas:[]
   combustibles: [];
+  combustible: string;
   reporte: ReporteCombustibleI
 } 
 
@@ -38,8 +40,19 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Combustible':
-      return <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}></Combustibles>
+     case 'Combustible':
+  const tipo = (programacion.combustible ?? '').toString().toLowerCase().replace(/\s/g, '');
+
+  console.log('Tipo normalizado:', tipo); // debe ser algo como "gas/gasolina"
+
+  if (tipo === 'gas/gasolina') {
+    return (
+      <CombustiblesDual combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}/>);
+  } else {
+    return (
+      <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}/>
+    );
+  }
       case 'Viáticos':
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':

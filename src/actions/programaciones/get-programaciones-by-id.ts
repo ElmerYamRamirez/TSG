@@ -59,20 +59,29 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const reporte = await executeQuery(query5, paramsList);
 
+        const query6 = `
+        SELECT u.combustible
+        FROM Programacion_de_envio pe
+        JOIN Unidad u ON pe.Unidad = u.uniqueId
+        WHERE pe.uniqueId = @id;
+        `;
+        const combustible = await executeQuery(query6, paramsList);
 
         //return NextResponse.json(envios);
          return {
-             ok: true,
-             programacion: {
-                 ...programacion[0],
-                 viaticos,
-                 casetas,
-                 combustibles,
-                 reporte : {
-                    ...reporte[0]
-                 }
-             },
-         };
+            ok: true,
+            programacion: {
+                ...programacion[0],
+                combustible: combustible[0]?.combustible || null,
+                viaticos,
+                casetas,
+                combustibles,
+                reporte: {
+                ...reporte[0],
+                },
+            },
+            };
+
 
 
     } catch (error) {
