@@ -43,8 +43,6 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
      case 'Combustible':
   const tipo = (programacion.combustible ?? '').toString().toLowerCase().replace(/\s/g, '');
 
-  console.log('Tipo normalizado:', tipo); // debe ser algo como "gas/gasolina"
-
   if (tipo === 'gas/gasolina') {
     return (
       <CombustiblesDual combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}/>);
