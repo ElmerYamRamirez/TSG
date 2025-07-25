@@ -30,6 +30,7 @@ interface ProgramacionI {
   casetas:[]
   combustibles: [];
   combustible: string;
+  combustible_hibrido:[];
   reporte: ReporteCombustibleI
 } 
 
@@ -45,7 +46,7 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
 
   if (tipo === 'gas/gasolina') {
     return (
-      <CombustiblesDual combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}/>);
+      <CombustiblesDual combustibles={programacion.combustible_hibrido} programacion={programacion.uniqueId}/>);
   } else {
     return (
       <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}/>

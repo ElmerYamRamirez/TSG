@@ -1,17 +1,14 @@
-import { createCombustible, updateCombustibleById, deleteCombustibleById} from "components/actions";
+import { createCombustibleHibrido, updateCombustibleHibridoById, deleteCombustibleHibridoById} from "components/actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CombustibleI } from "components/interfaces/combustibles";
-import { Rendimiento } from "components/interfaces/rendimientos";
-import { createRendimiento ,updateRendimientoById, getRendimientoByProgramacion} from "components/actions";
-import { ReporteCombustibleI } from "components/interfaces/reporteCombustible";
+import { CombustibleHibrido } from "components/interfaces/combustible_hibrido";
 
-const handleDarDeBaja = async(combustible: CombustibleI) => {
+const handleDarDeBaja = async(combustible: CombustibleHibrido) => {
   console.log('Dar de baja:', combustible);
   // Ejemplo: confirmar y hacer una petición a una API
-  if (confirm(`¿Estás seguro de eliminar: ${combustible.fecha}?`)) {
+  if (confirm(`¿Estás seguro de eliminar: ${combustible.Fecha_Carga}?`)) {
     //llamar server action to delete
-    const { ok } = await deleteCombustibleById(combustible.uniqueId) ?? { ok: false, combustibles: [] };
+    const { ok } = await deleteCombustibleHibridoById(combustible.uniqueId) ?? { ok: false, combustibles: [] };
 
     if (!ok) {
       alert("Hubo un error al eliminar la carga.");
@@ -19,115 +16,26 @@ const handleDarDeBaja = async(combustible: CombustibleI) => {
   }
 }
 
-const handleCreate = async (combustible: CombustibleI) => {
+const handleCreate = async (combustible: CombustibleHibrido) => {
   //llamar server action to create
-  const { ok, res } = await createCombustible(combustible) ?? { ok: false, res: [] }
+  const { ok, res } = await createCombustibleHibrido(combustible) ?? { ok: false, res: [] }
   return { ok, res }
 }
 
-const handleEdit = async (combustible: CombustibleI) => {
-  const response = await updateCombustibleById(combustible) ?? { ok: false, res: [] };
+const handleEdit = async (combustible: CombustibleHibrido) => {
+  const response = await updateCombustibleHibridoById(combustible) ?? { ok: false, res: [] };
   const combustibles = response.res ?? [];
   return { ok: response.ok, combustibles };
 }
 
-export default function Combustibles({ combustibles, programacion, reporte }: { combustibles: CombustibleI[], programacion: number, reporte: ReporteCombustibleI }) {
+export default function CombustiblesHibrido({ combustibles, programacion }: { combustibles: CombustibleHibrido[], programacion: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [itemEditando, setItemEditando] = useState<CombustibleI | null>(null)
+  const [itemEditando, setItemEditando] = useState<CombustibleHibrido | null>(null)
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false)
 
-  // Rendimiento ideal
-  const [isRendimientoModalOpen, setIsRendimientoModalOpen] = useState(false);
-  const [rendimientoIdeal, setRendimientoIdeal] = useState('');
-  const [litrosIdeales, setLitrosIdeales] = useState('');
-  const [rendimientoId, setRendimientoId] = useState<number | null>(null);
-
-  ///Litros consumidos 
-  const [isLitrosModalOpen, setIsLitrosModalOpen] = useState(false);
-  const [litrosIniciales, setLitrosIniciales] = useState('');
-  const [litrosFinales, setLitrosFinales] = useState('');
-  const [precioPorLitro, setPrecioPorLitro] = useState('');
-
-
-  // Kilometrajes
-  const [isKilometrajeModalOpen, setIsKilometrajeModalOpen] = useState(false);
-  const [KilometrajeInicial, setKilometrajeInicial] = useState('');
-  const [KilometrajeFinal, setKilometrajeFinal] = useState('');
-  
-  //Modal Rendimiento
-  const abrirModalRendimiento = async () => {
-  try {
-    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
-    
-    if (rendimientoExistente) {
-      setRendimientoId(rendimientoExistente.uniqueId);
-      setRendimientoIdeal(rendimientoExistente.rendimiento_ideal?.toString() || '');
-      setLitrosIdeales(rendimientoExistente.litros_ideales?.toString() || '');
-    } else {
-      setRendimientoId(null);
-      setRendimientoIdeal('');
-      setLitrosIdeales('');
-    }
-    
-    setIsRendimientoModalOpen(true);
-  } catch (error) {
-    console.error("Error al cargar rendimiento:", error);
-    alert("Error al cargar el rendimiento existente");
-  }
-};
-
-//////Modal litros consumidos 
-const abrirModalLitros = async () => {
-  try {
-    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
-
-    if (rendimientoExistente) {
-      setRendimientoId(rendimientoExistente.uniqueId);
-      setLitrosIniciales((rendimientoExistente.litros_iniciales ?? '').toString());
-      setLitrosFinales((rendimientoExistente.litros_finales ?? '').toString());
-      setPrecioPorLitro((rendimientoExistente.precio_litro ?? '').toString());
-
-    } else {
-      setRendimientoId(null);
-      setLitrosIniciales('');
-      setLitrosFinales('');
-      setPrecioPorLitro('');
-    }
-
-    setIsLitrosModalOpen(true);
-  } catch (error) {
-    console.error("Error al cargar litros:", error);
-    alert("Error al cargar los litros consumidos.");
-  }
-};
-
-
-  // Modal Kilometrajes
-  const abrirModalKilometraje = async () => {
-  try {
-    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
-    
-    if (rendimientoExistente) {
-      setRendimientoId(rendimientoExistente.uniqueId);
-      setKilometrajeInicial((rendimientoExistente.km_inicial ?? '').toString());
-      setKilometrajeFinal((rendimientoExistente.km_final ?? '').toString());
-
-    } else {
-      setRendimientoId(null);
-      setKilometrajeInicial('');
-      setKilometrajeFinal('');
-    }
-    
-    setIsKilometrajeModalOpen(true);
-  } catch (error) {
-    console.error("Error al cargar rendimiento:", error);
-    alert("Error al cargar el rendimiento existente");
-  }
-};
-
   //Modal Combustibles
-  const abrirModalEditar = (item: CombustibleI) => {
+  const abrirModalEditar = (item: CombustibleHibrido) => {
     setItemEditando(item);
     setIsEditing(true);
     setIsModalOpen(true);
@@ -136,11 +44,12 @@ const abrirModalLitros = async () => {
   const abrirModalCrear = () => {
     setItemEditando({
       uniqueId: 0,
-      fecha: new Date().toISOString().split("T")[0],
-      litros: 0,
-      precio: 0,
-      precio_total: 0,
-      comentario: '',
+      Fecha_Carga: new Date().toISOString().split("T")[0],
+      Litros_T1: 0,
+      Litros_T2: 0,
+      Litros_T3: 0,
+      Litros_T4: 0,
+      Litros_TG: 0,
       programacion: programacion,
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
@@ -149,42 +58,10 @@ const abrirModalLitros = async () => {
     setIsModalOpen(true);
   };
 
-  const deleteViatico = async (item: CombustibleI) => {
-    await handleDarDeBaja(item);
-    router.refresh();
-  }
-
-  // Guardar Kilometraje
-  const guardarKilometraje = async () => {
-  try {
-    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
-
-    const data: Rendimiento = {
-      uniqueId: rendimientoExistente?.uniqueId || 0,
-      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal ?? null,
-      litros_ideales: rendimientoExistente?.litros_ideales ?? null,
-      km_inicial: parseFloat(KilometrajeInicial),
-      km_final: parseFloat(KilometrajeFinal),
-      litros_iniciales: rendimientoExistente?.litros_iniciales ?? null,
-      litros_finales: rendimientoExistente?.litros_finales ?? null,
-      programacion,
-    };
-
-    const response = rendimientoExistente
-      ? await updateRendimientoById(data)
-      : await createRendimiento(data);
-
-    if (response?.ok) {
-      setIsKilometrajeModalOpen(false);
+  const deleteCombustibleHibrido = async (item: CombustibleHibrido) => {
+      await handleDarDeBaja(item);
       router.refresh();
-    } else {
-      alert("Error al guardar el kilometraje.");
     }
-  } catch (error) {
-    console.error("Error al guardar kilometraje:", error);
-    alert("Error al guardar el kilometraje");
-  }
-};
 
   //Guardar Carga de Combustible
   const guardarCambios = async () => {
@@ -223,7 +100,7 @@ const abrirModalLitros = async () => {
         <div className="flex space-x-2">
           <button
             className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-            onClick={abrirModalKilometraje}
+            
           >
             <span>Agregar Kilometraje</span>
           </button>
@@ -236,34 +113,17 @@ const abrirModalLitros = async () => {
             <tr>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Inicial</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Final</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">KM Recorridos</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">KM Rec Gasolina</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">KM Rec Gas</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rendimiento</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">.</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">.</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">.</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">.</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">.</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">.</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T1</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T2</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T3</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T1</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T2</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T3</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final TG</th>
             </tr>
           </thead>
-          <tbody>
-              <tr>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_final}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_inicial}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_ideal}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_fi}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
-              </tr>
-            </tbody>
         </table>
       </div>
 
@@ -283,29 +143,29 @@ const abrirModalLitros = async () => {
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
-              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Total</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha de Carga</th>
+              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Litros T1</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T2</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T3</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros TG</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200 space-x-2">
             {(combustibles || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toISOString().split("T")[0] : "Sin fecha"}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.comentario}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.precio_total}</td>
-                
+                <td className="px-2 py-1 text-xs text-gray-700">{item.Fecha_Carga ? new Date(item.Fecha_Carga).toISOString().split("T")[0] : "Sin fecha"}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T1}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T2}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T3}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T4}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_TG}</td>
                 <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
                   <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
                     Editar
                   </button>
                   <button
-                    onClick={() => deleteViatico(item)}
+                    onClick={() => deleteCombustibleHibrido(item)}
                     className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
                     Eliminar
                   </button>
@@ -317,54 +177,6 @@ const abrirModalLitros = async () => {
         </table>
       </div>
 
-       
-
-      {/* Modal Kilometraje */}
-      {isKilometrajeModalOpen && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">Agregar Kilometraje</h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Inicial</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={KilometrajeInicial}
-                onChange={(e) => setKilometrajeInicial(e.target.value)}
-                placeholder="Kilometraje Incial"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Final</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={KilometrajeFinal}
-                onChange={(e) => setKilometrajeFinal(e.target.value)}
-                placeholder="Kilometraje Final"
-              />
-            </div>
-
-            <div className="flex justify-end space-x-2">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
-                onClick={() => setIsKilometrajeModalOpen(false)}
-              >
-                Cancelar
-              </button>
-             <button
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={guardarKilometraje}
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Modal de edición */}
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
@@ -372,77 +184,106 @@ const abrirModalLitros = async () => {
             <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Carga de Combustible'}</h2>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Carga</label>
               <input
                 type="date"
                 className="border rounded px-3 py-2 w-full"
-                value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-                placeholder="Fecha"
+                value={itemEditando.Fecha_Carga ? new Date(itemEditando.Fecha_Carga).toISOString().split("T")[0] : ""}
+                onChange={e => setItemEditando({ ...itemEditando, Fecha_Carga: e.target.value })}
+                placeholder="Fecha_Carga"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Comentario</label>
-              <textarea
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros T1</label>
+              <input
+                type="number"
                 className="border rounded px-3 py-2 w-full"
-                value={itemEditando.comentario || ''}
-                onChange={e => setItemEditando({ ...itemEditando, comentario: e.target.value })}
-                placeholder="Agrega un comentario opcional"
-                rows={3}
+                value={itemEditando.Litros_T1 === 0 ? '' : itemEditando.Litros_T1?.toString() ?? ''}
+                onChange={e => {
+                  const value = e.target.value;
+                  const Litros_T1 = value === '' ? 0 : parseFloat(value);
+                  setItemEditando({
+                    ...itemEditando,
+                    Litros_T1,
+                  });
+                }}
+                placeholder="Litros_T1"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Litros</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros T2</label>
               <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
-                value={itemEditando.litros === 0 ? '' : itemEditando.litros?.toString() ?? ''}
+                value={itemEditando.Litros_T2 === 0 ? '' : itemEditando.Litros_T2?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
-                  const litros = value === '' ? 0 : parseFloat(value);
-                  const precio = itemEditando?.precio || 0;
+                  const Litros_T2 = value === '' ? 0 : parseFloat(value);
                   setItemEditando({
                     ...itemEditando,
-                    litros,
-                    precio_total: litros * precio
+                    Litros_T2,
                   });
                 }}
-                placeholder="Litros"
+                placeholder="Litros_T2"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Precio por Litro</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros T3</label>
               <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
-                value={itemEditando.precio === 0 ? '' : itemEditando.precio?.toString() ?? ''}
+                value={itemEditando.Litros_T3 === 0 ? '' : itemEditando.Litros_T3?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
-                  const precio = value === '' ? 0 : parseFloat(value);
-                  const litros = itemEditando?.litros || 0;
+                  const Litros_T3 = value === '' ? 0 : parseFloat(value);
                   setItemEditando({
                     ...itemEditando,
-                    precio,
-                    precio_total: litros * precio
+                    Litros_T3,
                   });
                 }}
-                placeholder="Precio"
+                placeholder="Litros_T3"
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros T4</label>
               <input
                 type="number"
-                className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed"
-                value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                readOnly
-                placeholder="Total"
+                className="border rounded px-3 py-2 w-full"
+                value={itemEditando.Litros_T4 === 0 ? '' : itemEditando.Litros_T4?.toString() ?? ''}
+                onChange={e => {
+                  const value = e.target.value;
+                  const Litros_T4 = value === '' ? 0 : parseFloat(value);
+                  setItemEditando({
+                    ...itemEditando,
+                    Litros_T4,
+                  });
+                }}
+                placeholder="Litros_T4"
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros TG</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={itemEditando.Litros_TG === 0 ? '' : itemEditando.Litros_TG?.toString() ?? ''}
+                onChange={e => {
+                  const value = e.target.value;
+                  const Litros_TG = value === '' ? 0 : parseFloat(value);
+                  setItemEditando({
+                    ...itemEditando,
+                    Litros_TG,
+                  });
+                }}
+                placeholder="Litros_TG"
+              />
+            </div>
+
 
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
