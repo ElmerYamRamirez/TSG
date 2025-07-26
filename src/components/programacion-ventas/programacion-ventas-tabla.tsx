@@ -1,21 +1,23 @@
 'use client';
 
 import { updateProgramacionById } from "components/actions";
+import { DestinoI } from "components/interfaces/destino";
 import { ProgramacionI } from "components/interfaces/programacion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const handleEdit = async (programacion: any) => {
-  const response = await updateProgramacionById(programacion) ?? { ok: false, res: [] };
-  const combustibles = response.res ?? [];
-  return { ok: response.ok, combustibles };
+    const response = await updateProgramacionById(programacion) ?? { ok: false, res: [] };
+    const combustibles = response.res ?? [];
+    return { ok: response.ok, combustibles };
 }
 
-export default function UserTable({ programaciones }: { programaciones: ProgramacionI[] }) {
+export default function UserTable({ programaciones, destinosList }: { programaciones: ProgramacionI[], destinosList: DestinoI[] }) {
 
-    const [itemEditando, setItemEditando] = useState<any | null>(null);
+    const [itemEditando, setItemEditando] = useState<ProgramacionI | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [destinos, setDestinos] = useState([]);
     const router = useRouter();
     //Modal Combustibles
     const abrirModalEditar = (item: any) => {
@@ -56,6 +58,7 @@ export default function UserTable({ programaciones }: { programaciones: Programa
         <>
 
             <div className="overflow-x-auto">
+                {JSON.stringify(destinosList)}
                 <table className="table-auto mx-auto divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                         <tr>
@@ -120,116 +123,180 @@ export default function UserTable({ programaciones }: { programaciones: Programa
 
             {/* Modal de edición */}
             {isModalOpen && itemEditando && (
-                <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-                        <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Programación' : 'Agregar Programación'}</h2>
+                <div className="fixed inset-0 bg-black/50 bg-opacity-50 overflow-y-auto z-50">
+                    <div className="flex items-center justify-center min-h-screen px-4 py-8">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-2">
+                            <div className="flex items-center justify-center">
+                                <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Programación' : 'Agregar Programación'}</h2>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Unidad</label>
+                                    <input
+                                        type="date"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
+                                        onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
+                                        placeholder="Fecha"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
-                            <input
-                                type="date"
-                                className="border rounded px-3 py-2 w-full"
-                                value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                                onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-                                placeholder="Fecha"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs text-gray-700 mb-1">Operador</label>
+                                    <input
+                                        type="date"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
+                                        onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
+                                        placeholder="Fecha"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm text-gray-700 mb-1">Operador</label>
-                            <input
-                                type="date"
-                                className="border rounded px-3 py-2 w-full"
-                                value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                                onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-                                placeholder="Fecha"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Fecha</label>
+                                    <input
+                                        type="date"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
+                                        onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
+                                        placeholder="Fecha"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-                            <input
-                                type="date"
-                                className="border rounded px-3 py-2 w-full"
-                                value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                                onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-                                placeholder="Fecha"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Hora</label>
+                                    <textarea
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.comentario || ''}
+                                        onChange={e => setItemEditando({ ...itemEditando, comentario: e.target.value })}
+                                        placeholder="Agrega un comentario opcional"
+                                        rows={3}
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Comentario</label>
-                            <textarea
-                                className="border rounded px-3 py-2 w-full"
-                                value={itemEditando.comentario || ''}
-                                onChange={e => setItemEditando({ ...itemEditando, comentario: e.target.value })}
-                                placeholder="Agrega un comentario opcional"
-                                rows={3}
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Destino</label>
+                                    <select
+                                        value={itemEditando.Destino_de_la_unidad}
+                                        onChange={e => setItemEditando({ ...itemEditando, Destino_de_la_unidad: Number(e.target.value) })}
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                    >
+                                        <option value="">Selecciona un destino</option>
+                                        {destinosList.map(destino => (
+                                            <option key={destino.uniqueId} value={destino.uniqueId}>
+                                                {destino.Nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Litros</label>
-                            <input
-                                type="number"
-                                className="border rounded px-3 py-2 w-full"
-                                value={itemEditando.litros === 0 ? '' : itemEditando.litros?.toString() ?? ''}
-                                onChange={e => {
-                                    const value = e.target.value;
-                                    const litros = value === '' ? 0 : parseFloat(value);
-                                    const precio = itemEditando?.precio || 0;
-                                    setItemEditando({
-                                        ...itemEditando,
-                                        litros,
-                                        precio_total: litros * precio
-                                    });
-                                }}
-                                placeholder="Litros"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Cliente</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.precio === 0 ? '' : itemEditando.precio?.toString() ?? ''}
+                                        onChange={e => {
+                                            const value = e.target.value;
+                                            const precio = value === '' ? 0 : parseFloat(value);
+                                            const litros = itemEditando?.litros || 0;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                precio,
+                                                precio_total: litros * precio
+                                            });
+                                        }}
+                                        placeholder="Precio"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Precio por Litro</label>
-                            <input
-                                type="number"
-                                className="border rounded px-3 py-2 w-full"
-                                value={itemEditando.precio === 0 ? '' : itemEditando.precio?.toString() ?? ''}
-                                onChange={e => {
-                                    const value = e.target.value;
-                                    const precio = value === '' ? 0 : parseFloat(value);
-                                    const litros = itemEditando?.litros || 0;
-                                    setItemEditando({
-                                        ...itemEditando,
-                                        precio,
-                                        precio_total: litros * precio
-                                    });
-                                }}
-                                placeholder="Precio"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Comentario</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Estado de envio</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Papeleria</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Se cobró</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Fecha Papeleria</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Vendedor</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
+                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
+                                        readOnly
+                                        placeholder="Total"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
-                            <input
-                                type="number"
-                                className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed"
-                                value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                readOnly
-                                placeholder="Total"
-                            />
-                        </div>
+                            </div>
 
-                        <div className="flex justify-end space-x-2">
-                            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
-                                Cancelar
-                            </button>
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                onClick={guardarCambios}>
-                                {isEditing ? 'Guardar' : 'Crear'}
-                            </button>
+
+                            <div className="flex justify-end space-x-2">
+                                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
+                                    Cancelar
+                                </button>
+                                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                    onClick={guardarCambios}>
+                                    {isEditing ? 'Guardar' : 'Crear'}
+                                </button>
+                            </div>
                         </div>
 
                     </div>
+
                 </div>
             )}
         </>);

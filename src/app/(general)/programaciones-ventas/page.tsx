@@ -1,5 +1,5 @@
 
-import { getProgramacionesPagination } from "components/actions";
+import { getDestinos, getProgramacionesPagination } from "components/actions";
 import { getProgramacionesFiltro } from "components/actions/programaciones/get-programaciones-filtro";
 import Link from "next/link";
 import UserTable from "components/components/programacion-ventas/programacion-ventas-tabla";
@@ -11,6 +11,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const page = pageParam ? parseInt(pageParam) : 1;
   const searchTerm = searchTermParam || "";
   const pageSize = 15;
+
+  const destinos = await getDestinos() ?? { ok: false, destinos: [] };
+  const unidades = await getDestinos() ?? { ok: false, destinos: [] };
 
   const response = searchTerm
     ? await getProgramacionesFiltro(page, pageSize, searchTerm)
@@ -62,7 +65,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
             </div>
           ) : (
             <>
-              <UserTable programaciones={programaciones}></UserTable>
+              <UserTable programaciones={programaciones} destinosList={destinos.destinos}></UserTable>
               <div className="flex justify-center mt-4">
                 {page > 1 && (
                   <Link
