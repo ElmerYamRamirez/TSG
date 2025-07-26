@@ -1,8 +1,11 @@
 'use client';
 
 import { updateProgramacionById } from "components/actions";
+import { ClientesI } from "components/interfaces/clientes";
 import { DestinoI } from "components/interfaces/destino";
+import { OperadorI } from "components/interfaces/operador";
 import { ProgramacionI } from "components/interfaces/programacion";
+import { UnidadI } from "components/interfaces/unidad";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -12,12 +15,14 @@ const handleEdit = async (programacion: any) => {
     return { ok: response.ok, combustibles };
 }
 
-export default function UserTable({ programaciones, destinosList }: { programaciones: ProgramacionI[], destinosList: DestinoI[] }) {
+export default function UserTable({ programaciones, destinosList, unidades, operadores, clientes }:
+    { programaciones: ProgramacionI[], destinosList: DestinoI[], unidades: UnidadI[], operadores: OperadorI[], clientes: ClientesI[] }) {
 
     const [itemEditando, setItemEditando] = useState<ProgramacionI | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [destinos, setDestinos] = useState([]);
+    const opcionesStatus = ['Programado', 'Despachado', 'Finalizado', ''];
+    const opcionesPapeleria = ['Pendiente', 'Entregada', ''];
     const router = useRouter();
     //Modal Combustibles
     const abrirModalEditar = (item: any) => {
@@ -58,7 +63,6 @@ export default function UserTable({ programaciones, destinosList }: { programaci
         <>
 
             <div className="overflow-x-auto">
-                {JSON.stringify(destinosList)}
                 <table className="table-auto mx-auto divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                         <tr>
@@ -132,24 +136,34 @@ export default function UserTable({ programaciones, destinosList }: { programaci
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Unidad</label>
-                                    <input
-                                        type="date"
+                                    <select
+                                        value={itemEditando.Unidad}
+                                        onChange={e => setItemEditando({ ...itemEditando, Unidad: Number(e.target.value) })}
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                                        onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-                                        placeholder="Fecha"
-                                    />
+                                    >
+                                        <option value="">Selecciona una unidad</option>
+                                        {unidades.map(unidad => (
+                                            <option key={unidad.uniqueId} value={unidad.uniqueId}>
+                                                {unidad.Nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
                                     <label className="block text-xs text-gray-700 mb-1">Operador</label>
-                                    <input
-                                        type="date"
+                                    <select
+                                        value={itemEditando.Operador}
+                                        onChange={e => setItemEditando({ ...itemEditando, Operador: Number(e.target.value) })}
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                                        onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
-                                        placeholder="Fecha"
-                                    />
+                                    >
+                                        <option value="">Selecciona un operador</option>
+                                        {operadores.map(operador => (
+                                            <option key={operador.uniqueId} value={operador.uniqueId}>
+                                                {operador.Nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
@@ -157,20 +171,19 @@ export default function UserTable({ programaciones, destinosList }: { programaci
                                     <input
                                         type="date"
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.fecha ? new Date(itemEditando.fecha).toISOString().split("T")[0] : ""}
-                                        onChange={e => setItemEditando({ ...itemEditando, fecha: e.target.value })}
+                                        value={itemEditando.Fecha_programada ? new Date(itemEditando.Fecha_programada).toISOString().split("T")[0] : ""}
+                                        onChange={e => setItemEditando({ ...itemEditando, Fecha_programada: e.target.value })}
                                         placeholder="Fecha"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Hora</label>
-                                    <textarea
+                                    <input
+                                        type="time"
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.comentario || ''}
-                                        onChange={e => setItemEditando({ ...itemEditando, comentario: e.target.value })}
-                                        placeholder="Agrega un comentario opcional"
-                                        rows={3}
+                                        value={itemEditando.Hora_programada || ''}
+                                        onChange={e => setItemEditando({ ...itemEditando, Hora_programada: e.target.value })}
                                     />
                                 </div>
 
@@ -192,61 +205,69 @@ export default function UserTable({ programaciones, destinosList }: { programaci
 
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Cliente</label>
-                                    <input
-                                        type="number"
+                                    <select
+                                        value={itemEditando.Cliente}
+                                        onChange={e => setItemEditando({ ...itemEditando, Cliente: Number(e.target.value) })}
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.precio === 0 ? '' : itemEditando.precio?.toString() ?? ''}
-                                        onChange={e => {
-                                            const value = e.target.value;
-                                            const precio = value === '' ? 0 : parseFloat(value);
-                                            const litros = itemEditando?.litros || 0;
-                                            setItemEditando({
-                                                ...itemEditando,
-                                                precio,
-                                                precio_total: litros * precio
-                                            });
-                                        }}
-                                        placeholder="Precio"
-                                    />
+                                    >
+                                        <option value="">Selecciona un cliente</option>
+                                        {clientes.map(cliente => (
+                                            <option key={cliente.uniqueId} value={cliente.uniqueId}>
+                                                {cliente.Nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Comentario</label>
-                                    <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
-                                        placeholder="Total"
+                                    <textarea
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.Comentario || ''}
+                                        onChange={e => setItemEditando({ ...itemEditando, Comentario: e.target.value })}
+                                        placeholder="Agrega un comentario opcional"
+                                        rows={3}
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Estado de envio</label>
-                                    <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
-                                        placeholder="Total"
-                                    />
+                                    <select
+                                        value={itemEditando.status_programacion}
+                                        onChange={(e) =>
+                                            setItemEditando({ ...itemEditando, status_programacion: e.target.value })
+                                        }
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                    >
+                                        {opcionesStatus.map((status, index) => (
+                                            <option key={index} value={status}>
+                                                {status}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Papeleria</label>
-                                    <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
-                                        placeholder="Total"
-                                    />
+                                    <select
+                                        value={itemEditando.papeleria}
+                                        onChange={(e) =>
+                                            setItemEditando({ ...itemEditando, papeleria: e.target.value })
+                                        }
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                    >
+                                        {opcionesPapeleria.map((status, index) => (
+                                            <option key={index} value={status}>
+                                                {status}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo</label>
                                     <input
                                         type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => setItemEditando({ ...itemEditando, Sueldo: Number(e.target.value) })}
+                                        value={itemEditando.Sueldo?.toFixed(2) ?? ''}
                                         placeholder="Total"
                                     />
                                 </div>
@@ -254,30 +275,30 @@ export default function UserTable({ programaciones, destinosList }: { programaci
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Se cobró</label>
                                     <input
                                         type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => setItemEditando({ ...itemEditando, cantidad_cobrada: Number(e.target.value) })}
+                                        value={itemEditando.cantidad_cobrada?.toFixed(2) ?? ''}
                                         placeholder="Total"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Fecha Papeleria</label>
                                     <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
-                                        placeholder="Total"
+                                        type="date"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        value={itemEditando.fecha_entrega_papeleria ? new Date(itemEditando.fecha_entrega_papeleria).toISOString().split("T")[0] : ""}
+                                        onChange={e => setItemEditando({ ...itemEditando, fecha_entrega_papeleria: e.target.value })}
+                                        placeholder="Fecha"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Vendedor</label>
                                     <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-xs"
-                                        value={itemEditando.precio_total?.toFixed(2) ?? ''}
-                                        readOnly
-                                        placeholder="Total"
+                                        type="text"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => setItemEditando({ ...itemEditando, vendedor: e.target.value })}
+                                        value={itemEditando.vendedor}
+                                        placeholder="Vendedor"
                                     />
                                 </div>
 

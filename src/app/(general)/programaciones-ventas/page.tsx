@@ -1,8 +1,9 @@
 
-import { getDestinos, getProgramacionesPagination } from "components/actions";
+import { getDestinos, getOperadores, getProgramacionesPagination, getUnidades } from "components/actions";
 import { getProgramacionesFiltro } from "components/actions/programaciones/get-programaciones-filtro";
 import Link from "next/link";
 import UserTable from "components/components/programacion-ventas/programacion-ventas-tabla";
+import { getClientes } from "components/actions/clientes/get-clientes";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; search?: string }> }) {
   const resolvedParams = await searchParams;
@@ -13,7 +14,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const pageSize = 15;
 
   const destinos = await getDestinos() ?? { ok: false, destinos: [] };
-  const unidades = await getDestinos() ?? { ok: false, destinos: [] };
+  const unidades = await getUnidades() ?? { ok: false, unidades: [] };
+  const operadores = await getOperadores() ?? { ok: false, operadores: [] };
+  const clientes = await getClientes() ?? { ok: false, clientes: []};
 
   const response = searchTerm
     ? await getProgramacionesFiltro(page, pageSize, searchTerm)
@@ -65,7 +68,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
             </div>
           ) : (
             <>
-              <UserTable programaciones={programaciones} destinosList={destinos.destinos}></UserTable>
+              <UserTable programaciones={programaciones} destinosList={destinos.destinos} unidades={unidades.unidades} operadores={operadores.operadores} clientes={clientes.clientes}></UserTable>
               <div className="flex justify-center mt-4">
                 {page > 1 && (
                   <Link
