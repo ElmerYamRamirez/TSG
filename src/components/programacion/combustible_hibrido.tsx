@@ -34,6 +34,63 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false)
 
+  //Porcentajes Iniciales
+  const [isPorcentajesInicialesModalOpen, setIsPorcentajesInicialesModalOpen] = useState(false);
+  const [PorcentajesIniciales, setPorcentajesIniciales] = useState('');
+  const [PorcentajeInicialT1, setPorcentajeInicialT1] = useState('');
+  const [PorcentajeInicialT2, setPorcentajeInicialT2] = useState('');
+  const [PorcentajeInicialT3, setPorcentajeInicialT3] = useState('');
+  const [PorcentajeInicialT4, setPorcentajeInicialT4] = useState('');
+
+  //Porcentajes Finales
+  const [isPorcentajesFinalesModalOpen, setIsPorcentajesFinalesModalOpen] = useState(false);
+  const [PorcentajesFinales, setPorcentajesFinales] = useState('');
+  const [PorcentajeFinalT1, setPorcentajeFinalT1] = useState('');
+  const [PorcentajeFinalT2, setPorcentajeFinalT2] = useState('');
+  const [PorcentajeFinalT3, setPorcentajeFinalT3] = useState('');
+  const [PorcentajeFinalT4, setPorcentajeFinalT4] = useState('');
+  const [PorcentajeFinalTG, setPorcentajeFinalTG] = useState('');
+
+
+  //Kilometrajes
+  const [isKilometrajesModalOpen, setIsKilometrajesModalOpen] = useState(false);
+  const [KilometrajeInicial, setKilometrajeInicial] = useState('');
+  const [KilometrajeFinal, setKilometrajeFinal] = useState('');
+
+  //////Modal Porcentajes Iniciales
+  const abrirModalPorcentajesIniciales = () => {
+    try {
+        setPorcentajesIniciales('');
+        setIsPorcentajesInicialesModalOpen(true);
+    } catch (error) {
+        console.error("Error al abrir el modal:", error);
+        alert("Error al abrir el modal de porcentajes iniciales.");
+    }
+  };
+
+  //Modal Porcentajes Finales
+  const abrirModalPorcentajesFinales = () => {
+    try {
+        setPorcentajesFinales('');
+        setIsPorcentajesFinalesModalOpen(true);
+    } catch (error) {
+        console.error("Error al abrir el modal:", error);
+        alert("Error al abrir el modal de porcentajes iniciales.");
+    }
+  };
+
+  //Modal Kilometrajes
+  const abrirModalKilometraje = () => {
+    try {
+        setKilometrajeInicial('');
+        setKilometrajeFinal('');
+        setIsKilometrajesModalOpen(true);
+    } catch (error) {
+        console.error("Error al abrir el modal:", error);
+        alert("Error al abrir el modal de kilometraje.");
+    }
+  };
+
   //Modal Combustibles
   const abrirModalEditar = (item: CombustibleHibrido) => {
     setItemEditando(item);
@@ -59,9 +116,17 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   };
 
   const deleteCombustibleHibrido = async (item: CombustibleHibrido) => {
-      await handleDarDeBaja(item);
-      router.refresh();
-    }
+    await handleDarDeBaja(item);
+    router.refresh();
+  }
+
+  // Guardar Porcentajes Iniciales 
+  
+
+  // Guardar Porcentajes Finales
+
+  // Guardar Kilometrajes
+  
 
   //Guardar Carga de Combustible
   const guardarCambios = async () => {
@@ -100,9 +165,23 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
         <div className="flex space-x-2">
           <button
             className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-            
+            onClick={abrirModalKilometraje}
           >
-            <span>Agregar Kilometraje</span>
+            <span>Agregar Kilometrajes</span>
+          </button>
+
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalPorcentajesIniciales}
+          >
+            <span>Agregar Porcentajes Iniciales</span>
+          </button>
+
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalPorcentajesFinales}
+          >
+            <span>Agregar Porcentajes Finales</span>
           </button>
         </div>
       </div>
@@ -176,6 +255,190 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
           </tbody>
         </table>
       </div>
+
+      {/* Modal Porcentajes Iniciales*/}
+       {isPorcentajesInicialesModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+            <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Iniciales</h2>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 1</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeInicialT1}
+                onChange={(e) => setPorcentajeInicialT1(e.target.value)}
+                placeholder="Porcentaje T1"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 2</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeInicialT2}
+                onChange={(e) => setPorcentajeInicialT2(e.target.value)}
+                placeholder="Porcentaje T2"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 3</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeInicialT3}
+                onChange={(e) => setPorcentajeInicialT3(e.target.value)}
+                placeholder="Porcentaje T3"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 4</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeInicialT4}
+                onChange={(e) => setPorcentajeInicialT4(e.target.value)}
+                placeholder="Porcentaje T4"
+                />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+                <button
+                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                onClick={() => setIsPorcentajesInicialesModalOpen(false)}
+                >
+                Cancelar
+                </button>
+                <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                
+                >
+                Guardar
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
+
+        {/* Modal Porcentajes Finales*/}
+        {isPorcentajesFinalesModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+            <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Finales</h2>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 1</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeFinalT1}
+                onChange={(e) => setPorcentajeFinalT1(e.target.value)}
+                placeholder="Porcentaje T1"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 2</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeFinalT2}
+                onChange={(e) => setPorcentajeFinalT2(e.target.value)}
+                placeholder="Porcentaje T2"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 3</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeFinalT3}
+                onChange={(e) => setPorcentajeFinalT3(e.target.value)}
+                placeholder="Porcentaje T3"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 4</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeFinalT4}
+                onChange={(e) => setPorcentajeFinalT4(e.target.value)}
+                placeholder="Porcentaje T4"
+                />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+                <button
+                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                onClick={() => setIsPorcentajesFinalesModalOpen(false)}
+                >
+                Cancelar
+                </button>
+                <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                
+                >
+                Guardar
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
+
+
+
+      {/* Modal Kilometraje */}
+      {isKilometrajesModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+            <h2 className="text-lg font-bold mb-2">Agregar Kilometrajes</h2>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Inicial</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={KilometrajeInicial}
+                onChange={(e) => setKilometrajeInicial(e.target.value)}
+                placeholder="Kilometraje Incial"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Kilometraje Final</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={KilometrajeFinal}
+                onChange={(e) => setKilometrajeFinal(e.target.value)}
+                placeholder="Kilometraje Final"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                onClick={() => setIsKilometrajesModalOpen(false)}
+              >
+                Cancelar
+              </button>
+             <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de edición */}
       {isModalOpen && itemEditando && (
