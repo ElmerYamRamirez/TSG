@@ -38,7 +38,7 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
     const opcionesPapeleria = ['Pendiente', 'Entregada', ''];
     const router = useRouter();
     //Modal Combustibles
-    const abrirModalEditar = (item: any) => {
+    const abrirModalEditar = (item: ProgramacionI) => {
         setItemEditando(item);
         setIsEditing(true);
         setIsModalOpen(true);
