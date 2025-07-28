@@ -30,21 +30,25 @@ export const getProgramacionesFiltro = async (
           PE.*, 
           D.Nombre AS Nombre_destino,
           C.Nombre AS cliente_name,
-          O.Nombre AS operador_name
+          O.Nombre AS operador_name,
+          U.Nombre AS unidad_name
       FROM 
           Programacion_de_envio PE
-      INNER JOIN 
+      LEFT JOIN 
           Destino D ON PE.Destino_de_la_unidad = D.uniqueId
-      INNER JOIN
+      LEFT JOIN
           Cliente C ON PE.Cliente = C.uniqueId
-      INNER JOIN
+      LEFT JOIN
           Operador O ON PE.Operador = O.uniqueId
+      LEFT JOIN
+            Unidad U ON PE.Unidad = U.uniqueId
       WHERE 
-        PE.folio LIKE @searchTerm
+        (PE.folio LIKE @searchTerm
         OR D.Nombre LIKE @searchTerm
         OR C.Nombre LIKE @searchTerm
         OR O.Nombre LIKE @searchTerm
-        ${dateCondition || `OR FORMAT(PE.Fecha_programada, 'dd/MM/yy') LIKE @searchTerm`}
+        ${dateCondition || `OR FORMAT(PE.Fecha_programada, 'dd/MM/yy') LIKE @searchTerm`})
+        AND PE.Bit_Activo = 1
       ORDER BY 
         PE.Fecha_programada DESC
       OFFSET @offset ROWS

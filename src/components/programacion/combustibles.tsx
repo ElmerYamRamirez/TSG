@@ -562,7 +562,7 @@ const abrirModalLitros = async () => {
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Carga de Combustible'}</h2>
+            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Carga de Combustible' : 'Agregar Carga de Combustible'}</h2>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
