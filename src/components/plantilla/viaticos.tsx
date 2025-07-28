@@ -99,7 +99,7 @@ export default function Viaticos({ viaticos, plantilla }: { viaticos: ViaticoPla
 
     alert("Plantilla actualizada correctamente.");
     router.refresh();
-  }, [plantilla, selectedIds]);
+  }, [plantilla, selectedIds, router]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
