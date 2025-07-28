@@ -10,12 +10,12 @@ export interface ProgramacionI {
   Destino_de_la_unidad: number;
   Fecha_programada: string;
   Hora_programada: string;
-  Sueldo: number;
+  Sueldo: number | null;
   nomina: number;
   folio: string;
   status_programacion: string;
   papeleria: string;
-  cantidad_cobrada: number;
+  cantidad_cobrada: number | null;
   fecha_entrega_papeleria: string;
   vendedor: string;
   unidad_name: string;

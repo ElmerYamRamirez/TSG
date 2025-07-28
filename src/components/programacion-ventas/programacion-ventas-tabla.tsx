@@ -15,17 +15,17 @@ const handleEdit = async (programacion: ProgramacionI) => {
     return { ok: response.ok, combustibles };
 }
 
-const handleDarDeBaja = async(programacion: ProgramacionI) => {
-  console.log('Dar de baja:', programacion.folio);
-  // Ejemplo: confirmar y hacer una petición a una API
-  if (confirm(`¿Estás seguro de eliminar: ${programacion.cliente_name} - ${programacion.operador_name}?`)) {
-    //llamar server action to delete
-    const { ok } = await deleteProgramacionById(programacion) ?? { ok: false, programacion: [] };
+const handleDarDeBaja = async (programacion: ProgramacionI) => {
+    console.log('Dar de baja:', programacion.folio);
+    // Ejemplo: confirmar y hacer una petición a una API
+    if (confirm(`¿Estás seguro de eliminar: ${programacion.cliente_name} - ${programacion.operador_name}?`)) {
+        //llamar server action to delete
+        const { ok } = await deleteProgramacionById(programacion) ?? { ok: false, programacion: [] };
 
-    if (!ok) {
-      alert("Hubo un error al eliminar la programación.");
+        if (!ok) {
+            alert("Hubo un error al eliminar la programación.");
+        }
     }
-  }
 }
 
 export default function UserTable({ programaciones, destinosList, unidades, operadores, clientes }:
@@ -64,9 +64,9 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
             //const responce = await handleCreate(itemEditando);
 
             //if (responce.ok) {
-                //router.refresh()
+            //router.refresh()
             //} else {
-                //alert('Error al guardar')
+            //alert('Error al guardar')
             //}
         }
         setIsModalOpen(false)
@@ -291,8 +291,14 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                                     <input
                                         type="number"
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        onChange={e => setItemEditando({ ...itemEditando, Sueldo: Number(e.target.value) })}
-                                        value={itemEditando.Sueldo?.toFixed(2) ?? ''}
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Sueldo: valor === '' ? null : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Sueldo ?? ''}
                                         placeholder="Total"
                                     />
                                 </div>
@@ -301,8 +307,14 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                                     <input
                                         type="number"
                                         className="border rounded px-3 py-2 w-full text-xs"
-                                        onChange={e => setItemEditando({ ...itemEditando, cantidad_cobrada: Number(e.target.value) })}
-                                        value={itemEditando.cantidad_cobrada?.toFixed(2) ?? ''}
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                cantidad_cobrada: valor === '' ? null : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.cantidad_cobrada ?? ''}
                                         placeholder="Total"
                                     />
                                 </div>
