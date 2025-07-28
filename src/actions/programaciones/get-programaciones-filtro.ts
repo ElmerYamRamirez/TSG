@@ -34,13 +34,13 @@ export const getProgramacionesFiltro = async (
           U.Nombre AS unidad_name
       FROM 
           Programacion_de_envio PE
-      INNER JOIN 
+      LEFT JOIN 
           Destino D ON PE.Destino_de_la_unidad = D.uniqueId
-      INNER JOIN
+      LEFT JOIN
           Cliente C ON PE.Cliente = C.uniqueId
-      INNER JOIN
+      LEFT JOIN
           Operador O ON PE.Operador = O.uniqueId
-      INNER JOIN
+      LEFT JOIN
             Unidad U ON PE.Unidad = U.uniqueId
       WHERE 
         (PE.folio LIKE @searchTerm
