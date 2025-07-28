@@ -9,6 +9,7 @@ export interface RendimientoHibrido {
   Porcentaje_Inicial_T2?: number | null;
   Porcentaje_Inicial_T3?: number | null;
   Porcentaje_Inicial_T4?: number | null;
+  Porcentaje_Inicial_TG?: number | null;
   Porcentaje_Final_T1?: number | null;
   Porcentaje_Final_T2?: number | null;
   Porcentaje_Final_T3?: number | null;

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState} from 'react';
 import { CombustibleHibrido } from "components/interfaces/combustible_hibrido";
 import { RendimientoHibrido } from "components/interfaces/rendimiento_hibrido";
+import { ReporteHibrido } from "components/interfaces/reporte_hibrido";
 
 const handleDarDeBaja = async(combustible: CombustibleHibrido) => {
   console.log('Dar de baja:', combustible);
@@ -30,23 +31,22 @@ const handleEdit = async (combustible: CombustibleHibrido) => {
   return { ok: response.ok, combustibles };
 }
 
-export default function CombustiblesHibrido({ combustibles, programacion }: { combustibles: CombustibleHibrido[], programacion: number }) {
+export default function CombustiblesHibrido({ combustibles, programacion}: { combustibles: CombustibleHibrido[], programacion: number }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [itemEditando, setItemEditando] = useState<CombustibleHibrido | null>(null)
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter();
 
   //Porcentajes Iniciales
   const [isPorcentajesInicialesModalOpen, setIsPorcentajesInicialesModalOpen] = useState(false);
-  const [PorcentajesIniciales, setPorcentajesIniciales] = useState('');
   const [PorcentajeInicialT1, setPorcentajeInicialT1] = useState('');
   const [PorcentajeInicialT2, setPorcentajeInicialT2] = useState('');
   const [PorcentajeInicialT3, setPorcentajeInicialT3] = useState('');
   const [PorcentajeInicialT4, setPorcentajeInicialT4] = useState('');
+  const [PorcentajeInicialTG, setPorcentajeInicialTG] = useState('');
 
   //Porcentajes Finales
   const [isPorcentajesFinalesModalOpen, setIsPorcentajesFinalesModalOpen] = useState(false);
-  const [PorcentajesFinales, setPorcentajesFinales] = useState('');
   const [PorcentajeFinalT1, setPorcentajeFinalT1] = useState('');
   const [PorcentajeFinalT2, setPorcentajeFinalT2] = useState('');
   const [PorcentajeFinalT3, setPorcentajeFinalT3] = useState('');
@@ -59,13 +59,27 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   const [KilometrajeFinal, setKilometrajeFinal] = useState('');
 
   //Modal Porcentajes Iniciales
-  const abrirModalPorcentajesIniciales = () => {
+  const abrirModalPorcentajesIniciales = async () => {
     try {
-        setPorcentajesIniciales('');
-        setIsPorcentajesInicialesModalOpen(true);
+      const existente = await getRendimientoHibridoByProgramacion(programacion);
+      if (existente) {
+        setPorcentajeInicialT1(existente.Porcentaje_Inicial_T1?.toString() ?? '');
+        setPorcentajeInicialT2(existente.Porcentaje_Inicial_T2?.toString() ?? '');
+        setPorcentajeInicialT3(existente.Porcentaje_Inicial_T3?.toString() ?? '');
+        setPorcentajeInicialT4(existente.Porcentaje_Inicial_T4?.toString() ?? '');
+        setPorcentajeInicialTG(existente.Porcentaje_Inicial_TG?.toString() ?? '');
+      } else {
+        setPorcentajeInicialT1('');
+        setPorcentajeInicialT2('');
+        setPorcentajeInicialT3('');
+        setPorcentajeInicialT4('');
+        setPorcentajeInicialTG('');
+      }
+
+      setIsPorcentajesInicialesModalOpen(true);
     } catch (error) {
-        console.error("Error al abrir el modal:", error);
-        alert("Error al abrir el modal de porcentajes iniciales.");
+      console.error("Error al abrir el modal:", error);
+      alert("Error al abrir el modal de porcentajes iniciales.");
     }
   };
 
@@ -95,14 +109,21 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   };
 
   //Modal Kilometrajes
-  const abrirModalKilometraje = () => {
+  const abrirModalKilometraje = async () => {
     try {
+      const existente = await getRendimientoHibridoByProgramacion(programacion);
+      if (existente) {
+        setKilometrajeInicial(existente.Km_Inicial?.toString() ?? '');
+        setKilometrajeFinal(existente.Km_Final?.toString() ?? '');
+      } else {
         setKilometrajeInicial('');
         setKilometrajeFinal('');
-        setIsKilometrajesModalOpen(true);
+      }
+
+      setIsKilometrajesModalOpen(true);
     } catch (error) {
-        console.error("Error al abrir el modal:", error);
-        alert("Error al abrir el modal de kilometraje.");
+      console.error("Error al abrir el modal:", error);
+      alert("Error al abrir el modal de kilometrajes.");
     }
   };
 
@@ -136,7 +157,45 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   }
 
   // Guardar Porcentajes Iniciales 
-  
+  const guardarPorcentajesIniciales = async () => {
+    try {
+    
+      const existente = await getRendimientoHibridoByProgramacion(programacion);
+
+      const datos: RendimientoHibrido = {
+        ...existente,
+        uniqueId: existente ? existente.uniqueId : 0,
+        Bit_Activo: 1,
+        Fec_Alta: new Date().toISOString(),
+        Porcentaje_Inicial_T1: parseFloat(PorcentajeInicialT1) || 0,
+        Porcentaje_Inicial_T2: parseFloat(PorcentajeInicialT2) || 0,
+        Porcentaje_Inicial_T3: parseFloat(PorcentajeInicialT3) || 0,
+        Porcentaje_Inicial_T4: parseFloat(PorcentajeInicialT4) || 0,
+        Porcentaje_Inicial_TG: parseFloat(PorcentajeInicialTG) || 0,
+        programacion: programacion,
+      };
+
+      let response;
+
+      if (existente) {
+        response = await updateRendimientoHibridoById(datos);
+      } else {
+        response = await createRendimientoHibrido(datos);
+      }
+
+      if (response.ok) {
+        alert("Porcentajes iniciales guardados.");
+        setIsPorcentajesInicialesModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar porcentajes iniciales.");
+      }
+
+    } catch (error) {
+      console.error("Error al guardar porcentajes iniciales:", error);
+      alert("Error inesperado.");
+    }
+  };
 
   // Guardar Porcentajes Finales
   const guardarPorcentajesFinales = async () => {
@@ -145,6 +204,7 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
       const existente = await getRendimientoHibridoByProgramacion(programacion);
 
       const datos: RendimientoHibrido = {
+        ...existente,
         uniqueId: existente ? existente.uniqueId : 0,
         Bit_Activo: 1,
         Fec_Alta: new Date().toISOString(),
@@ -178,9 +238,43 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
     }
   };
  
-
   // Guardar Kilometrajes
-  
+  const guardarKilometrajes = async () => {
+    try {
+    
+      const existente = await getRendimientoHibridoByProgramacion(programacion);
+
+      const datos: RendimientoHibrido = {
+        ...existente,
+        uniqueId: existente ? existente.uniqueId : 0,
+        Bit_Activo: 1,
+        Fec_Alta: new Date().toISOString(),
+        Km_Inicial: parseFloat(KilometrajeInicial) || 0,
+        Km_Final: parseFloat(KilometrajeFinal) || 0,
+        programacion: programacion,
+      };
+
+      let response;
+
+      if (existente) {
+        response = await updateRendimientoHibridoById(datos);
+      } else {
+        response = await createRendimientoHibrido(datos);
+      }
+
+      if (response.ok) {
+        alert("Kilometrajes guardados.");
+        setIsKilometrajesModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar kilometrajes.");
+      }
+
+    } catch (error) {
+      console.error("Error al guardar kilometrajes:", error);
+      alert("Error inesperado.");
+    }
+  };
 
   //Guardar Carga de Combustible
   const guardarCambios = async () => {
@@ -250,6 +344,7 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T2</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T3</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial TG</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T1</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T2</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T3</th>
@@ -257,6 +352,9 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final TG</th>
             </tr>
           </thead>
+          
+
+          
         </table>
       </div>
 
@@ -360,6 +458,17 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
                 />
             </div>
 
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque TG</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeInicialTG}
+                onChange={(e) => setPorcentajeInicialTG(e.target.value)}
+                placeholder="Porcentaje TG"
+                />
+            </div>
+
             <div className="flex justify-end space-x-2">
                 <button
                 className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
@@ -369,7 +478,7 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
                 </button>
                 <button
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                
+                onClick={guardarPorcentajesIniciales}
                 >
                 Guardar
                 </button>
@@ -494,7 +603,7 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
               </button>
              <button
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                
+                onClick={guardarKilometrajes}
               >
                 Guardar
               </button>

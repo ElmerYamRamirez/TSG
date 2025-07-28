@@ -332,21 +332,21 @@ const abrirModalLitros = async () => {
             </tr>
           </thead>
           <tbody>
-              <tr>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_final}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_inicial}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_ideal}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_fi}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
-              </tr>
-            </tbody>
+            <tr>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_final}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_inicial}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_ideal}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_fi}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 

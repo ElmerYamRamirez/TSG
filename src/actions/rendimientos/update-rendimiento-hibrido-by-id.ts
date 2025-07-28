@@ -18,6 +18,7 @@ export const updateRendimientoHibridoById = async (item: RendimientoHibrido) => 
             Porcentaje_Inicial_T2 = @Porcentaje_Inicial_T2,
             Porcentaje_Inicial_T3 = @Porcentaje_Inicial_T3,
             Porcentaje_Inicial_T4 = @Porcentaje_Inicial_T4,
+            Porcentaje_Inicial_TG = @Porcentaje_Inicial_TG,
             Porcentaje_Final_T1 = @Porcentaje_Final_T1,
             Porcentaje_Final_T2 = @Porcentaje_Final_T2,
             Porcentaje_Final_T3 = @Porcentaje_Final_T3,
@@ -35,6 +36,7 @@ export const updateRendimientoHibridoById = async (item: RendimientoHibrido) => 
             { name: 'Porcentaje_Inicial_T2', value: item.Porcentaje_Inicial_T2 ?? null},
             { name: 'Porcentaje_Inicial_T3', value: item.Porcentaje_Inicial_T3 ?? null},
             { name: 'Porcentaje_Inicial_T4', value: item.Porcentaje_Inicial_T4 ?? null},
+            { name: 'Porcentaje_Inicial_TG', value: item.Porcentaje_Inicial_TG ?? null},
             { name: 'Porcentaje_Final_T1', value: item.Porcentaje_Final_T1 ?? null},
             { name: 'Porcentaje_Final_T2', value: item.Porcentaje_Final_T2 ?? null},
             { name: 'Porcentaje_Final_T3', value: item.Porcentaje_Final_T3 ?? null},
@@ -42,7 +44,7 @@ export const updateRendimientoHibridoById = async (item: RendimientoHibrido) => 
             { name: 'Porcentaje_Final_TG', value: item.Porcentaje_Final_TG ?? null},
             { name: 'programacion', value: item.programacion },
             { name: 'Fec_Alta', value: item.Fec_Alta ?? new Date().toISOString() },
-            { name: 'uniqueId', value: item.uniqueId },  // <--- este faltaba
+            { name: 'uniqueId', value: item.uniqueId },
         ];
 
         const response = await executeQuery(query, paramsList);
