@@ -1,7 +1,9 @@
 import { createCombustibleHibrido, updateCombustibleHibridoById, deleteCombustibleHibridoById} from "components/actions";
+import { createRendimientoHibrido, getRendimientoHibridoByProgramacion, updateRendimientoHibridoById} from "components/actions";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState} from 'react';
 import { CombustibleHibrido } from "components/interfaces/combustible_hibrido";
+import { RendimientoHibrido } from "components/interfaces/rendimiento_hibrido";
 
 const handleDarDeBaja = async(combustible: CombustibleHibrido) => {
   console.log('Dar de baja:', combustible);
@@ -51,13 +53,12 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   const [PorcentajeFinalT4, setPorcentajeFinalT4] = useState('');
   const [PorcentajeFinalTG, setPorcentajeFinalTG] = useState('');
 
-
   //Kilometrajes
   const [isKilometrajesModalOpen, setIsKilometrajesModalOpen] = useState(false);
   const [KilometrajeInicial, setKilometrajeInicial] = useState('');
   const [KilometrajeFinal, setKilometrajeFinal] = useState('');
 
-  //////Modal Porcentajes Iniciales
+  //Modal Porcentajes Iniciales
   const abrirModalPorcentajesIniciales = () => {
     try {
         setPorcentajesIniciales('');
@@ -69,13 +70,27 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   };
 
   //Modal Porcentajes Finales
-  const abrirModalPorcentajesFinales = () => {
+  const abrirModalPorcentajesFinales = async () => {
     try {
-        setPorcentajesFinales('');
-        setIsPorcentajesFinalesModalOpen(true);
+      const existente = await getRendimientoHibridoByProgramacion(programacion);
+      if (existente) {
+        setPorcentajeFinalT1(existente.Porcentaje_Final_T1?.toString() ?? '');
+        setPorcentajeFinalT2(existente.Porcentaje_Final_T2?.toString() ?? '');
+        setPorcentajeFinalT3(existente.Porcentaje_Final_T3?.toString() ?? '');
+        setPorcentajeFinalT4(existente.Porcentaje_Final_T4?.toString() ?? '');
+        setPorcentajeFinalTG(existente.Porcentaje_Final_TG?.toString() ?? '');
+      } else {
+        setPorcentajeFinalT1('');
+        setPorcentajeFinalT2('');
+        setPorcentajeFinalT3('');
+        setPorcentajeFinalT4('');
+        setPorcentajeFinalTG('');
+      }
+
+      setIsPorcentajesFinalesModalOpen(true);
     } catch (error) {
-        console.error("Error al abrir el modal:", error);
-        alert("Error al abrir el modal de porcentajes iniciales.");
+      console.error("Error al abrir el modal:", error);
+      alert("Error al abrir el modal de porcentajes finales.");
     }
   };
 
@@ -124,6 +139,45 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
   
 
   // Guardar Porcentajes Finales
+  const guardarPorcentajesFinales = async () => {
+    try {
+    
+      const existente = await getRendimientoHibridoByProgramacion(programacion);
+
+      const datos: RendimientoHibrido = {
+        uniqueId: existente ? existente.uniqueId : 0,
+        Bit_Activo: 1,
+        Fec_Alta: new Date().toISOString(),
+        Porcentaje_Final_T1: parseFloat(PorcentajeFinalT1) || 0,
+        Porcentaje_Final_T2: parseFloat(PorcentajeFinalT2) || 0,
+        Porcentaje_Final_T3: parseFloat(PorcentajeFinalT3) || 0,
+        Porcentaje_Final_T4: parseFloat(PorcentajeFinalT4) || 0,
+        Porcentaje_Final_TG: parseFloat(PorcentajeFinalTG) || 0,
+        programacion: programacion,
+      };
+
+      let response;
+
+      if (existente) {
+        response = await updateRendimientoHibridoById(datos);
+      } else {
+        response = await createRendimientoHibrido(datos);
+      }
+
+      if (response.ok) {
+        alert("Porcentajes finales guardados.");
+        setIsPorcentajesFinalesModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar porcentajes finales.");
+      }
+
+    } catch (error) {
+      console.error("Error al guardar porcentajes finales:", error);
+      alert("Error inesperado.");
+    }
+  };
+ 
 
   // Guardar Kilometrajes
   
@@ -374,6 +428,17 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
                 />
             </div>
 
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque TG</label>
+                <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={PorcentajeFinalTG}
+                onChange={(e) => setPorcentajeFinalTG(e.target.value)}
+                placeholder="Porcentaje TG"
+                />
+            </div>
+
             <div className="flex justify-end space-x-2">
                 <button
                 className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
@@ -383,7 +448,7 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
                 </button>
                 <button
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                
+                onClick={guardarPorcentajesFinales}
                 >
                 Guardar
                 </button>
@@ -391,8 +456,6 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
             </div>
         </div>
         )}
-
-
 
       {/* Modal Kilometraje */}
       {isKilometrajesModalOpen && (
@@ -546,7 +609,6 @@ export default function CombustiblesHibrido({ combustibles, programacion }: { co
                 placeholder="Litros_TG"
               />
             </div>
-
 
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
