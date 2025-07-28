@@ -18,4 +18,8 @@ export interface ProgramacionI {
   cantidad_cobrada: number;
   fecha_entrega_papeleria: string;
   vendedor: string;
+  unidad_name: string;
+  operador_name: string;
+  Nombre_destino: string;
+  cliente_name: string;
 }

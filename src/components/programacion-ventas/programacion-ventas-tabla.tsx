@@ -1,6 +1,6 @@
 'use client';
 
-import { updateProgramacionById } from "components/actions";
+import { deleteProgramacionById, updateProgramacionById } from "components/actions";
 import { ClientesI } from "components/interfaces/clientes";
 import { DestinoI } from "components/interfaces/destino";
 import { OperadorI } from "components/interfaces/operador";
@@ -9,10 +9,23 @@ import { UnidadI } from "components/interfaces/unidad";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const handleEdit = async (programacion: any) => {
+const handleEdit = async (programacion: ProgramacionI) => {
     const response = await updateProgramacionById(programacion) ?? { ok: false, res: [] };
     const combustibles = response.res ?? [];
     return { ok: response.ok, combustibles };
+}
+
+const handleDarDeBaja = async(programacion: ProgramacionI) => {
+  console.log('Dar de baja:', programacion.folio);
+  // Ejemplo: confirmar y hacer una petición a una API
+  if (confirm(`¿Estás seguro de eliminar: ${programacion.cliente_name} - ${programacion.operador_name}?`)) {
+    //llamar server action to delete
+    const { ok } = await deleteProgramacionById(programacion) ?? { ok: false, programacion: [] };
+
+    if (!ok) {
+      alert("Hubo un error al eliminar la programación.");
+    }
+  }
 }
 
 export default function UserTable({ programaciones, destinosList, unidades, operadores, clientes }:
@@ -48,15 +61,20 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
         } else {
             //call server action to create
             console.log(itemEditando)
-            const responce = await handleCreate(itemEditando);
+            //const responce = await handleCreate(itemEditando);
 
-            if (responce.ok) {
-                router.refresh()
-            } else {
-                alert('Error al guardar')
-            }
+            //if (responce.ok) {
+                //router.refresh()
+            //} else {
+                //alert('Error al guardar')
+            //}
         }
         setIsModalOpen(false)
+    }
+
+    const deleteProgramacion = async (item: ProgramacionI) => {
+        await handleDarDeBaja(item);
+        router.refresh();
     }
 
     return (
@@ -105,14 +123,21 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.papeleria}</td>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo}</td>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.cantidad_cobrada}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.fecha_entrega_papeleria}</td>
+                                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.fecha_entrega_papeleria
+                                    ? new Date(programacion.fecha_entrega_papeleria).toLocaleDateString("es-MX", {
+                                        timeZone: "UTC",
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "2-digit",
+                                    })
+                                    : ''}</td>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.vendedor}</td>
                                 <td className="px-1 text-xs text-indigo-600 font-medium">
                                     <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(programacion)}>
                                         Editar
                                     </button>
                                     <button
-                                        onClick={() => deleteViatico(item)}
+                                        onClick={() => deleteProgramacion(programacion)}
                                         className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
                                         Eliminar
                                     </button>

@@ -24,6 +24,8 @@ export const getProgramacionesPagination = async (page: number, pageSize = 15) =
             Operador O ON PE.Operador = O.uniqueId
         INNER JOIN
             Unidad U ON PE.Unidad = U.uniqueId
+        WHERE 
+            PE.Bit_Activo = 1
         ORDER BY PE.Fecha_programada DESC
         OFFSET @offset ROWS
         FETCH NEXT @pageSize ROWS ONLY;
