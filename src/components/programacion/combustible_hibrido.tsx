@@ -338,19 +338,18 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Inicial</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Final</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Recorridos</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Rec_Gasolina</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Rec_Gas</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km Inicial</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km Final</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km Recorridos</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km Rec Gasolina</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km Rec Gas</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rendimiento</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T1</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T2</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T3</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T4</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_Total</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_TG</th>
-
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo T1</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo T2</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo T3</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo Total</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo TG</th>
             </tr>
           </thead>
           <tbody>
@@ -368,9 +367,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_total_gas}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_tg}</td>
             </tr>
-          </tbody>
-
-          
+          </tbody>  
         </table>
       </div>
 
@@ -432,7 +429,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Iniciales</h2>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 1</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 1</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -443,7 +440,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 2</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 2</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -454,7 +451,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 3</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 3</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -465,7 +462,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 4</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 4</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -476,7 +473,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque TG</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque TG</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -511,7 +508,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Finales</h2>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 1</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 1</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -522,7 +519,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 2</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 2</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -533,7 +530,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 3</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 3</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -544,7 +541,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque 4</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 4</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
@@ -555,7 +552,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tanque TG</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque TG</label>
                 <input
                 type="number"
                 className="border rounded px-3 py-2 w-full"
