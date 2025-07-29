@@ -340,32 +340,33 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             <tr>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Inicial</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">km Final</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T1</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T2</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T3</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial T4</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Inicial TG</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T1</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T2</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T3</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final T4</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final TG</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Recorridos</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Rec_Gasolina</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Rec_Gas</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rendimiento</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T1</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T2</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T3</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_Total</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_TG</th>
+
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.Km_Inicial}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.Km_Final}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t1}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t2}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t3}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t4}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_tg}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t1}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t2}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t3}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t4}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_tg}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.km_recorridos}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.km_rec_gasolina}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.km_rec_gas}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.rendimiento}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t1}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t2}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t3}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t4}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_total_gas}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_tg}</td>
             </tr>
           </tbody>
 
