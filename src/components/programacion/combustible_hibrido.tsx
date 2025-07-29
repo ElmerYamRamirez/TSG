@@ -31,7 +31,7 @@ const handleEdit = async (combustible: CombustibleHibrido) => {
   return { ok: response.ok, combustibles };
 }
 
-export default function CombustiblesHibrido({ combustibles, programacion}: { combustibles: CombustibleHibrido[], programacion: number }) {
+export default function CombustiblesHibrido({ combustibles, programacion, reporte_hibrido}: { combustibles: CombustibleHibrido[], programacion: number, reporte_hibrido: ReporteHibrido }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [itemEditando, setItemEditando] = useState<CombustibleHibrido | null>(null)
   const [isEditing, setIsEditing] = useState(false)
@@ -352,7 +352,22 @@ export default function CombustiblesHibrido({ combustibles, programacion}: { com
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">% Final TG</th>
             </tr>
           </thead>
-          
+          <tbody>
+            <tr>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.Km_Inicial}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.Km_Final}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t1}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t2}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t3}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_t4}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_iniciales_tg}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t1}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t2}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t3}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_t4}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_finales_tg}</td>
+            </tr>
+          </tbody>
 
           
         </table>
@@ -380,6 +395,7 @@ export default function CombustiblesHibrido({ combustibles, programacion}: { com
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T3</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T4</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros TG</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200 space-x-2">

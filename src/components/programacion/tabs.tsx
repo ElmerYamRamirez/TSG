@@ -5,6 +5,7 @@ import Casetas from './casetas';
 import Combustibles from './combustibles';
 import CombustiblesDual from './combustible_hibrido';
 import { ReporteCombustibleI } from 'components/interfaces/reporteCombustible';
+import { ReporteHibrido } from 'components/interfaces/reporte_hibrido';
 
 const tabs = ['Combustible', 'Viáticos', 'Casetas'];
 
@@ -32,6 +33,7 @@ interface ProgramacionI {
   combustible: string;
   combustible_hibrido:[];
   reporte: ReporteCombustibleI
+  reporte_hibrido: ReporteHibrido
 } 
 
 
@@ -46,7 +48,7 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
 
   if (tipo === 'gas/gasolina') {
     return (
-      <CombustiblesDual combustibles={programacion.combustible_hibrido} programacion={programacion.uniqueId}/>);
+      <CombustiblesDual combustibles={programacion.combustible_hibrido} programacion={programacion.uniqueId} reporte_hibrido={programacion.reporte_hibrido}/>);
   } else {
     return (
       <Combustibles combustibles={programacion.combustibles} programacion={programacion.uniqueId} reporte={programacion.reporte}/>

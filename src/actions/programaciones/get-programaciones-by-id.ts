@@ -74,6 +74,14 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const combustible_hibrido = await executeQuery(query7, paramsList);
 
+        const query8 = `
+        SELECT rep.*
+        FROM PC_Rep_ReporteHibrido rep
+        WHERE rep.programacion = @id
+
+        `;
+        const reporte_hibrido = await executeQuery(query8, paramsList);
+
         //return NextResponse.json(envios);
          return {
             ok: true,
@@ -87,10 +95,11 @@ export const getProgramacionesById = async (id:string) => {
                 reporte: {
                 ...reporte[0],
                 },
+                reporte_hibrido: {
+                ...reporte_hibrido[0],
+                },
             },
             };
-
-
 
     } catch (error) {
         console.error("API Error:", error);
