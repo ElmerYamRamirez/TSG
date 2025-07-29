@@ -344,12 +344,12 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Rec_Gasolina</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Km_Rec_Gas</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rendimiento</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T1</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T2</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T3</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_T4</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_Total</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Lt_Cons_TG</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T1</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T2</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T3</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_Total</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo_TG</th>
 
             </tr>
           </thead>
