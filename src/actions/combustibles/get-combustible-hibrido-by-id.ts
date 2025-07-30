@@ -4,18 +4,16 @@ import { executeQuery } from "components/app/lib/connection";
 
 export const getCombustibleHibridoById = async ( id: string ) => {
     try {
+        const paramsList = [{ name: 'id', value: id }];
 
         const query = `
-        SELECT 
-            v.*
-        FROM 
-            carga_hibrido v
+        SELECT *
+        FROM carga_hibrido c
+        WHERE c.programacion = @id;
         `;
 
-        const paramsList = [{ name: 'id', value: id }];
         const combustible_hibrido = await executeQuery(query, paramsList);
 
-        console.log(combustible_hibrido)
         //return NextResponse.json(envios);
         return {
             ok: true,

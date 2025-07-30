@@ -61,13 +61,6 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const reporte = await executeQuery(query5, paramsList);
 
-        const query7 = `
-        SELECT *
-        FROM carga_hibrido c
-        WHERE c.programacion = @id;
-        `;
-        const combustible_hibrido = await executeQuery(query7, paramsList);
-
         //return NextResponse.json(envios);
          return {
             ok: true,
@@ -76,7 +69,6 @@ export const getProgramacionesById = async (id:string) => {
             viaticos,
             casetas,
             combustibles,
-            combustible_hibrido,
             reporte: {
                 ...reporte[0],
             },
