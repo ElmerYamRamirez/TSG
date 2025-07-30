@@ -13,7 +13,8 @@ export const getProgramacionesById = async (id:string) => {
             D.Nombre AS nombre_destino,
             c.Nombre AS cliente_name,
             o.Nombre AS operador_name,
-            u.Nombre AS unidad_name
+            u.Nombre AS unidad_name,
+            u.combustible AS combustible
         FROM 
             Programacion_de_envio pe
         INNER JOIN 
@@ -25,6 +26,7 @@ export const getProgramacionesById = async (id:string) => {
         INNER JOIN
             Unidad u ON PE.Unidad = u.uniqueId
         WHERE pe.uniqueId = @id;
+
         `;
         const programacion = await executeQuery(query, paramsList);
 
@@ -59,14 +61,6 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const reporte = await executeQuery(query5, paramsList);
 
-        const query6 = `
-        SELECT u.combustible
-        FROM Programacion_de_envio pe
-        JOIN Unidad u ON pe.Unidad = u.uniqueId
-        WHERE pe.uniqueId = @id;
-        `;
-        const combustible_unidad = await executeQuery(query6, paramsList);
-
         const query7 = `
         SELECT *
         FROM carga_hibrido c
@@ -85,20 +79,20 @@ export const getProgramacionesById = async (id:string) => {
         //return NextResponse.json(envios);
          return {
             ok: true,
-            programacion: {
-                ...programacion[0],
-                combustible: combustible_unidad[0]?.combustible || null,
-                viaticos,
-                casetas,
-                combustibles,
-                combustible_hibrido,
-                reporte: {
+           programacion: {
+            ...programacion[0],
+            viaticos,
+            casetas,
+            combustibles,
+            combustible_hibrido,
+            reporte: {
                 ...reporte[0],
-                },
-                reporte_hibrido: {
-                ...reporte_hibrido[0],
-                },
             },
+            reporte_hibrido: {
+                ...reporte_hibrido[0],
+            },
+            }
+
             };
 
     } catch (error) {
