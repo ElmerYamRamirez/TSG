@@ -12,7 +12,10 @@ export const getUnidades = async () => {
                 Modelo,
                 Placa,
                 Tipo_De_Unidad,
-                combustible
+                combustible,
+                Caracteristica,
+                Ano,
+                Descripcion
             FROM 
                 Unidad
             WHERE Bit_Activo = 1

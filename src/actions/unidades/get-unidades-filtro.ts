@@ -18,10 +18,8 @@ export const getUnidadesFiltro = async (
     ];
 
     const query = `
-      SELECT 
-        u.*
-      FROM 
-        Unidad u
+      SELECT  u.*
+      FROM  Unidad u
       WHERE 
         u.Nombre LIKE @searchTerm
         OR u.Marca LIKE @searchTerm

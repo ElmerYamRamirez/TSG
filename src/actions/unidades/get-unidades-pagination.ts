@@ -12,10 +12,8 @@ export const getUnidadesPagination = async (page: number, pageSize = 15) => {
     ];
 
     const query = `
-      SELECT 
-        u.*
-      FROM 
-        Unidad u
+      SELECT  u.*
+      FROM  Unidad u
       WHERE 
         Bit_Activo = 1
       ORDER BY 

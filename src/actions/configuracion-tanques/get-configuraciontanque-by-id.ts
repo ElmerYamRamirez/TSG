@@ -4,7 +4,7 @@ import { ConfiguracionTanquesI } from "components/interfaces/configuracion_tanqu
 export const getConfiguracionTanquesById = async (unidadId: number) => {
   try {
     const query = `
-      SELECT  TOP 1 *
+      SELECT *
       FROM configuracion_tanques
       WHERE unidad = @unidad
     `;

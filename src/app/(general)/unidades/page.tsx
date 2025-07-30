@@ -56,21 +56,16 @@ export default function UnidadesTable({ searchParams }: { searchParams: Promise<
       : await handleCreate(itemEditando);
 
     if (response.ok) {
+      alert("La configuracion de tanques se guardo correctamente");
       router.refresh();
     } else {
-      alert("Error al guardar");
+      alert("Error al guardar configuracion de tanques");
     }
 
     setIsModalOpen(false);
   };
 
-  const camposTanques: (keyof ConfiguracionTanquesI)[] = [
-    "litros_maximos_t1",
-    "litros_maximos_t2",
-    "litros_maximos_t3",
-    "litros_maximos_t4",
-    "litros_maximos_tg",
-  ];
+  const camposTanques: (keyof ConfiguracionTanquesI)[] = [ "litros_maximos_t1", "litros_maximos_t2", "litros_maximos_t3", "litros_maximos_t4", "litros_maximos_tg",];
 
   useEffect(() => {
     async function fetchData() {
@@ -108,28 +103,16 @@ export default function UnidadesTable({ searchParams }: { searchParams: Promise<
             placeholder="Buscar por nombre, placa, modelo..."
             className="border border-gray-300 rounded px-4 py-2 flex-grow min-w-[200px]"
           />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Buscar
-          </button>
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" >  Busca </button>
           {searchTerm && (
-            <Link
-              href="/unidades"
-              className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-            >
-              Limpiar
-            </Link>
+            <Link href="/unidades" className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400" > Limpiar </Link>
           )}
         </form>
       </div>
 
       {unidades.length === 0 ? (
-        <div className="text-center text-gray-600 mt-6">
-          <p>No se encontraron unidades que coincidan con la búsqueda.</p>
-        </div>
-      ) : (
+        <div className="text-center text-gray-600 mt-6"> <p>No se encontraron unidades que coincidan con la búsqueda.</p>  </div>
+ ) : (
         <div className="overflow-x-auto">
           <table className="table-auto mx-auto divide-y divide-gray-300">
             <thead className="bg-gray-50">
@@ -159,12 +142,7 @@ export default function UnidadesTable({ searchParams }: { searchParams: Promise<
                   <td className="px-1 py-1 text-xs text-gray-700">{unidad.Descripcion}</td>
                   <td className="px-1 py-1 text-xs text-gray-700">{unidad.Caracteristica}</td>
                   <td className="px-1 py-1 text-xs text-indigo-600 font-medium">
-                    <button
-                      className="hover:underline text-blue-600"
-                      onClick={() => abrirModalCrear(unidad.uniqueId)}
-                    >
-                      Configuración tanques
-                    </button>
+                    <button className="hover:underline text-blue-600" onClick={() => abrirModalCrear(unidad.uniqueId)} > Configuración tanques </button>
                   </td>
                 </tr>
               ))}
@@ -224,18 +202,8 @@ export default function UnidadesTable({ searchParams }: { searchParams: Promise<
                 ))}
 
                 <div className="flex justify-end space-x-2">
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 bg-gray-300 rounded"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={guardarCambios}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Guardar
-                  </button>
+                  <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded"> Cancelar </button>
+                  <button onClick={guardarCambios} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"> Guardar </button>
                 </div>
               </div>
             </div>
