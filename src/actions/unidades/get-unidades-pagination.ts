@@ -16,6 +16,7 @@ export const getUnidadesPagination = async (page: number, pageSize = 15) => {
       FROM  Unidad u
       WHERE 
         Bit_Activo = 1
+        AND combustible = 'Gas/Gasolina'
       ORDER BY 
         u.Nombre
       OFFSET @offset ROWS

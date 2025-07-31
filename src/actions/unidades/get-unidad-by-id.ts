@@ -9,7 +9,7 @@ export const getUnidadById = async (id: string) => {
     const query = `
       SELECT *
       FROM Unidad
-      WHERE uniqueId = @id;
+      WHERE combustible = 'Gas/Gasolina'
     `;
 
     const unidad = await executeQuery(query, paramsList);
