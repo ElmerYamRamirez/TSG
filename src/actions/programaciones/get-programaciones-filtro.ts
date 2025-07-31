@@ -5,12 +5,23 @@ import { executeQuery } from "components/app/lib/connection";
 export const getProgramacionesFiltro = async (
   page: number,
   pageSize = 15,
-  searchTerm = ""
+  searchTerm = "",
+  desde = "",
+  hasta = ""
 ) => {
   try {
     const offset = (page - 1) * pageSize;
     const search = `%${searchTerm.trim()}%`;
-    const isDateSearch = /^\d{2}\/\d{2}\/\d{2}$/.test(searchTerm.trim());
+     let dateFilter = "";
+    if (desde && hasta) {
+      dateFilter = `AND CONVERT(date, Fecha_programada) BETWEEN CONVERT(date, '${desde}') AND CONVERT(date, '${hasta}')`;
+    } else if (desde) {
+      dateFilter = `AND CONVERT(date, Fecha_programada) >= CONVERT(date, '${desde}')`;
+    } else if (hasta) {
+      dateFilter = `AND CONVERT(date, Fecha_programada) <= CONVERT(date, '${hasta}')`;
+    }
+
+   // const isDateSearch = /^\d{2}\/\d{2}\/\d{2}$/.test(searchTerm.trim());
 
     const paramsList = [
       { name: "offset", value: offset },
@@ -18,12 +29,12 @@ export const getProgramacionesFiltro = async (
       { name: "searchTerm", value: search },
     ];
 
-    let dateCondition = "";
+    /*let dateCondition = "";
     if (isDateSearch) {
       const [day, month, year] = searchTerm.trim().split('/');
       const isoDate = `20${year}-${month}-${day}`;
       dateCondition = `OR (PE.Fecha_programada >= '${isoDate}' AND PE.Fecha_programada < DATEADD(day, 1, '${isoDate}'))`;
-    }
+    }*/
 
     const query = `
       SELECT 
@@ -47,8 +58,10 @@ export const getProgramacionesFiltro = async (
         OR D.Nombre LIKE @searchTerm
         OR C.Nombre LIKE @searchTerm
         OR O.Nombre LIKE @searchTerm
-        ${dateCondition || `OR FORMAT(PE.Fecha_programada, 'dd/MM/yy') LIKE @searchTerm`})
+        OR FORMAT(PE.Fecha_programada, 'dd/MM/yy') LIKE @searchTerm
+        )
         AND PE.Bit_Activo = 1
+        ${dateFilter}
       ORDER BY 
         PE.Fecha_programada DESC
       OFFSET @offset ROWS
