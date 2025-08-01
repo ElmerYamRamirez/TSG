@@ -4,11 +4,12 @@ import { executeQuery } from "components/app/lib/connection";
 
 export const getUnidades = async () => {
     try {
-        const query = `
+      const query = `
         SELECT 
             *
         FROM 
             Unidad
+        WHERE Bit_Activo = 1
         ORDER BY 
             uniqueId DESC
         `;
@@ -19,7 +20,12 @@ export const getUnidades = async () => {
             ok: true,
             unidades: unidades,
         };
+
     } catch (error) {
-        console.error("API Error:", error);
+        console.error("Error al obtener unidades:", error);
+        return {
+            ok: false,
+            unidades: [],
+        };
     }
-}
+};
