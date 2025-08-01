@@ -13,15 +13,17 @@ export const getReporteHibridoById = async (id: string) => {
     `;
     const reporte_hibrido = await executeQuery(query, paramsList);
 
+
     return {
       ok: true,
       reporte_hibrido: reporte_hibrido[0] ?? null,
     };
+    
   } catch (error) {
-    console.error("Error al obtener datos híbridos:", error);
+    console.error("API Error - reporte_hibrido de Rendimiento:", error);
     return {
       ok: false,
-      reporte_hibrido: null,
+      reporte_hibrido: [],
     };
   }
 };
