@@ -13,7 +13,8 @@ export const getProgramacionesById = async (id:string) => {
             D.Nombre AS nombre_destino,
             c.Nombre AS cliente_name,
             o.Nombre AS operador_name,
-            u.Nombre AS unidad_name
+            u.Nombre AS unidad_name,
+            u.combustible AS combustible
         FROM 
             Programacion_de_envio pe
         INNER JOIN 
@@ -25,6 +26,7 @@ export const getProgramacionesById = async (id:string) => {
         INNER JOIN
             Unidad u ON PE.Unidad = u.uniqueId
         WHERE pe.uniqueId = @id;
+
         `;
         const programacion = await executeQuery(query, paramsList);
 
@@ -59,21 +61,20 @@ export const getProgramacionesById = async (id:string) => {
         `;
         const reporte = await executeQuery(query5, paramsList);
 
-
         //return NextResponse.json(envios);
          return {
-             ok: true,
-             programacion: {
-                 ...programacion[0],
-                 viaticos,
-                 casetas,
-                 combustibles,
-                 reporte : {
-                    ...reporte[0]
-                 }
-             },
-         };
+            ok: true,
+           programacion: {
+            ...programacion[0],
+            viaticos,
+            casetas,
+            combustibles,
+            reporte: {
+                ...reporte[0],
+            },
+            }
 
+            };
 
     } catch (error) {
         console.error("API Error:", error);

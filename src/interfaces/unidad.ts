@@ -12,5 +12,4 @@ export interface UnidadI {
     Placa: string;
     Ano: number;
     combustible: string;
-
 }

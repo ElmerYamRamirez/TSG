@@ -4,22 +4,14 @@ import { executeQuery } from "components/app/lib/connection";
 
 export const getUnidades = async () => {
     try {
-        let query = `
-            SELECT 
-                uniqueId,
-                Nombre,
-                Marca,
-                Modelo,
-                Placa,
-                Tipo_De_Unidad,
-                combustible,
-                Caracteristica,
-                Ano,
-                Descripcion
-            FROM 
-                Unidad
-            WHERE Bit_Activo = 1
-            ORDER BY Nombre
+      const query = `
+        SELECT 
+            *
+        FROM 
+            Unidad
+        WHERE Bit_Activo = 1
+        ORDER BY 
+            uniqueId DESC
         `;
 
         const unidades = await executeQuery(query, []);

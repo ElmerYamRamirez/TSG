@@ -95,13 +95,12 @@ const abrirModalLitros = async () => {
       setPrecioPorLitro('');
     }
 
-    setIsLitrosModalOpen(true);
-  } catch (error) {
-    console.error("Error al cargar litros:", error);
-    alert("Error al cargar los litros consumidos.");
-  }
-};
-
+      setIsLitrosModalOpen(true);
+    } catch (error) {
+      console.error("Error al cargar litros:", error);
+      alert("Error al cargar los litros consumidos.");
+    }
+  };
 
   // Modal Kilometrajes
   const abrirModalKilometraje = async () => {
@@ -156,37 +155,36 @@ const abrirModalLitros = async () => {
 
   /// Guardar litros consumidos 
   const guardarLitros = async () => {
-  try {
-    const rendimientoExistente = await getRendimientoByProgramacion(programacion);
+    try {
+      const rendimientoExistente = await getRendimientoByProgramacion(programacion);
 
-    const data: Rendimiento = {
-      uniqueId: rendimientoExistente?.uniqueId || 0,
-      rendimiento_ideal: rendimientoExistente?.rendimiento_ideal ?? null,
-      litros_ideales: rendimientoExistente?.litros_ideales ?? null,
-      litros_iniciales: parseFloat(litrosIniciales),
-      litros_finales: parseFloat(litrosFinales),
-      precio_litro: parseFloat(precioPorLitro),
-      km_inicial: rendimientoExistente?.km_inicial ?? null,
-      km_final: rendimientoExistente?.km_final ?? null,
-      programacion,
-    };
+      const data: Rendimiento = {
+        uniqueId: rendimientoExistente?.uniqueId || 0,
+        rendimiento_ideal: rendimientoExistente?.rendimiento_ideal ?? null,
+        litros_ideales: rendimientoExistente?.litros_ideales ?? null,
+        litros_iniciales: parseFloat(litrosIniciales),
+        litros_finales: parseFloat(litrosFinales),
+        precio_litro: parseFloat(precioPorLitro),
+        km_inicial: rendimientoExistente?.km_inicial ?? null,
+        km_final: rendimientoExistente?.km_final ?? null,
+        programacion,
+      };
 
-    const response = rendimientoExistente
-      ? await updateRendimientoById(data)
-      : await createRendimiento(data);
+      const response = rendimientoExistente
+        ? await updateRendimientoById(data)
+        : await createRendimiento(data);
 
-    if (response?.ok) {
-      setIsLitrosModalOpen(false);
-      router.refresh();
-    } else {
-      alert("Error al guardar los litros consumidos.");
+      if (response?.ok) {
+        setIsLitrosModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar los litros consumidos.");
+      }
+    } catch (error) {
+      console.error("Error al guardar litros:", error);
+      alert("Error al guardar los litros consumidos");
     }
-  } catch (error) {
-    console.error("Error al guardar litros:", error);
-    alert("Error al guardar los litros consumidos");
-  }
-};
-
+  };
 
   // Guardar Kilometraje
   const guardarKilometraje = async () => {
@@ -238,26 +236,25 @@ const abrirModalLitros = async () => {
 
     let response;
     
-    if (rendimientoId) {
-      // Actualizar rendimiento existente
-      response = await updateRendimientoById(rendimientoData);
-    } else {
-      // Crear nuevo rendimiento
-      response = await createRendimiento(rendimientoData);
-    }
+      if (rendimientoId) {
+        // Actualizar rendimiento existente
+        response = await updateRendimientoById(rendimientoData);
+      } else {
+        // Crear nuevo rendimiento
+        response = await createRendimiento(rendimientoData);
+      }
 
-    if (response?.ok) {
-      setIsRendimientoModalOpen(false);
-      router.refresh();
-    } else {
-      alert("Error al guardar el rendimiento ideal.");
+      if (response?.ok) {
+        setIsRendimientoModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar el rendimiento ideal.");
+      }
+    } catch (error) {
+      console.error("Error al guardar rendimiento:", error);
+      alert("Error al guardar el rendimiento");
     }
-  } catch (error) {
-    console.error("Error al guardar rendimiento:", error);
-    alert("Error al guardar el rendimiento");
-  }
-};
-
+  };
 
   //Guardar Carga de Combustible
   const guardarCambios = async () => {
@@ -316,7 +313,6 @@ const abrirModalLitros = async () => {
         </div>
       </div>
 
-
       <div className="overflow-x-auto mb-10">
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
@@ -336,135 +332,130 @@ const abrirModalLitros = async () => {
             </tr>
           </thead>
           <tbody>
-              <tr>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_final}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_inicial}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_ideal}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_fi}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
-              </tr>
-            </tbody>
+            <tr>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.total}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_final}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_inicial}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_real}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento_ideal}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_ideal}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.diferencia_litros}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_fi}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">%{reporte.variacion}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
       <div className="border-t border-gray-300 my-4"></div>
 
-      <div className="flex items-center justify-between mb-1">
-        <h3 className="text-lg font-bold text-gray-800 mb-2">Listado de Cargas</h3>
-        <button
-          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-          onClick={abrirModalCrear}
-        >
-          <span>Agregar</span>
-        </button>
-      </div>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-lg font-bold text-gray-800 mb-2">Listado de Cargas</h3>
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalCrear}
+          >
+            <span>Agregar</span>
+          </button>
+        </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
-              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Total</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200 space-x-2">
-            {(combustibles || []).map((item, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toISOString().split("T")[0] : "Sin fecha"}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.comentario}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
-                <td className="px-1 py-2 text-xs text-gray-700">{item.precio_total}</td>
-                
-                <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => deleteViatico(item)}
-                    className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
-                    Eliminar
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-300">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha</th>
+                <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
+                <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
+                <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
+                <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Total</th>
+                <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
               </tr>
-            ))}
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200 space-x-2">
+              {(combustibles || []).map((item, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="px-2 py-1 text-xs text-gray-700">{item.fecha ? new Date(item.fecha).toISOString().split("T")[0] : "Sin fecha"}</td>
+                  <td className="px-1 py-2 text-xs text-gray-700">{item.comentario}</td>
+                  <td className="px-1 py-2 text-xs text-gray-700">{item.litros}</td>
+                  <td className="px-1 py-2 text-xs text-gray-700">{item.precio}</td>
+                  <td className="px-1 py-2 text-xs text-gray-700">{item.precio_total}</td>
+                  
+                  <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
+                    <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => deleteViatico(item)}
+                      className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
 
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
 
        {/* Modal Litros consumidos  */}
        {isLitrosModalOpen && (
-  <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-      <h2 className="text-lg font-bold mb-2">Agregar Litros Consumidos</h2>
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+            <h2 className="text-lg font-bold mb-2">Agregar Litros Consumidos</h2>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Litros Iniciales</label>
-        <input
-          type="number"
-          className="border rounded px-3 py-2 w-full"
-          value={litrosIniciales}
-          onChange={(e) => setLitrosIniciales(e.target.value)}
-          placeholder="Litros Iniciales"
-        />
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros Iniciales</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={litrosIniciales}
+                onChange={(e) => setLitrosIniciales(e.target.value)}
+                placeholder="Litros Iniciales"
+              />
+            </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Litros Finales</label>
-        <input
-          type="number"
-          className="border rounded px-3 py-2 w-full"
-          value={litrosFinales}
-          onChange={(e) => setLitrosFinales(e.target.value)}
-          placeholder="Litros Finales"
-        />
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Litros Finales</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={litrosFinales}
+                onChange={(e) => setLitrosFinales(e.target.value)}
+                placeholder="Litros Finales"
+              />
+            </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio por Litro</label>
+              <input
+                type="number"
+                className="border rounded px-3 py-2 w-full"
+                value={precioPorLitro}
+                onChange={(e) => setPrecioPorLitro(e.target.value)}
+                placeholder="Precio por Litro"
+              />
+            </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Precio por Litro</label>
-        <input
-          type="number"
-          className="border rounded px-3 py-2 w-full"
-          value={precioPorLitro}
-          onChange={(e) => setPrecioPorLitro(e.target.value)}
-          placeholder="Precio por Litro"
-        />
-      </div>
-
-
-      <div className="flex justify-end space-x-2">
-        <button
-          className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
-          onClick={() => setIsLitrosModalOpen(false)}
-        >
-          Cancelar
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={guardarLitros}
-        >
-          Guardar
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                onClick={() => setIsLitrosModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={guardarLitros}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Kilometraje */}
       {isKilometrajeModalOpen && (
@@ -562,7 +553,7 @@ const abrirModalLitros = async () => {
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Viatico' : 'Agregar Carga de Combustible'}</h2>
+            <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Carga de Combustible' : 'Agregar Carga de Combustible'}</h2>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
@@ -646,7 +637,6 @@ const abrirModalLitros = async () => {
                 {isEditing ? 'Guardar' : 'Crear'}
               </button>
             </div>
-
           </div>
         </div>
       )}

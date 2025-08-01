@@ -98,7 +98,7 @@ export default function Casetas({ casetas, plantilla }: { casetas: CasetaPlantil
 
     alert("Plantilla actualizada correctamente.");
     router.refresh();
-  }, [plantilla, selectedIds]);
+  }, [plantilla, selectedIds, router]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
