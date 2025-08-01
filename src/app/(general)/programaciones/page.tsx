@@ -87,7 +87,7 @@ export default async function UserTable({ searchParams }: { searchParams: Promis
                           year: "2-digit",
                         })}
                       </td>
-                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Unidad}</td>
+                      <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.unidad_name}</td>
                       <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Nombre_destino}</td>
                       <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.operador_name}</td>
                       <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.cliente_name}</td>

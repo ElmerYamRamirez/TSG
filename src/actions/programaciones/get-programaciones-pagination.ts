@@ -12,7 +12,8 @@ export const getProgramacionesPagination = async (page: number, pageSize = 15) =
             PE.*, 
             D.Nombre AS Nombre_destino,
             C.Nombre AS cliente_name,
-            O.Nombre AS operador_name
+            O.Nombre AS operador_name,
+            U.Nombre AS unidad_name
         FROM 
             Programacion_de_envio PE
         INNER JOIN 
@@ -21,6 +22,10 @@ export const getProgramacionesPagination = async (page: number, pageSize = 15) =
             Cliente C ON PE.Cliente = C.uniqueId
         INNER JOIN
             Operador O ON PE.Operador = O.uniqueId
+        INNER JOIN
+            Unidad U ON PE.Unidad = U.uniqueId
+        WHERE 
+            PE.Bit_Activo = 1
         ORDER BY PE.Fecha_programada DESC
         OFFSET @offset ROWS
         FETCH NEXT @pageSize ROWS ONLY;
