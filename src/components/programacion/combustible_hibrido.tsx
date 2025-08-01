@@ -422,162 +422,282 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
         </table>
       </div>
 
-      {/* Modal Porcentajes Iniciales*/}
-       {isPorcentajesInicialesModalOpen && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+      {/* Modal Porcentajes Iniciales */}
+        {isPorcentajesInicialesModalOpen && (
+          <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Iniciales</h2>
+              <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Iniciales</h2>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 1</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeInicialT1}
-                onChange={(e) => setPorcentajeInicialT1(e.target.value)}
-                placeholder="Porcentaje T1"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeInicialT1}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeInicialT1(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeInicialT1(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T1"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 2</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeInicialT2}
-                onChange={(e) => setPorcentajeInicialT2(e.target.value)}
-                placeholder="Porcentaje T2"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeInicialT2}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeInicialT2(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeInicialT2(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T2"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 3</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeInicialT3}
-                onChange={(e) => setPorcentajeInicialT3(e.target.value)}
-                placeholder="Porcentaje T3"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeInicialT3}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeInicialT3(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeInicialT3(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T3"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 4</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeInicialT4}
-                onChange={(e) => setPorcentajeInicialT4(e.target.value)}
-                placeholder="Porcentaje T4"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeInicialT4}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeInicialT4(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeInicialT4(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T4"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque TG</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeInicialTG}
-                onChange={(e) => setPorcentajeInicialTG(e.target.value)}
-                placeholder="Porcentaje TG"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeInicialTG}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeInicialTG(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeInicialTG(val);
+                    }
+                  }}
+                  placeholder="Porcentaje TG"
                 />
-            </div>
+              </div>
 
-            <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-2">
                 <button
-                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
-                onClick={() => setIsPorcentajesInicialesModalOpen(false)}
+                  className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                  onClick={() => setIsPorcentajesInicialesModalOpen(false)}
                 >
-                Cancelar
+                  Cancelar
                 </button>
                 <button
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={guardarPorcentajesIniciales}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={guardarPorcentajesIniciales}
                 >
-                Guardar
+                  Guardar
                 </button>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
         )}
 
-        {/* Modal Porcentajes Finales*/}
+        {/* Modal Porcentajes Finales */}
         {isPorcentajesFinalesModalOpen && (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Finales</h2>
+              <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Finales</h2>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 1</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeFinalT1}
-                onChange={(e) => setPorcentajeFinalT1(e.target.value)}
-                placeholder="Porcentaje T1"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeFinalT1}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeFinalT1(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeFinalT1(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T1"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 2</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeFinalT2}
-                onChange={(e) => setPorcentajeFinalT2(e.target.value)}
-                placeholder="Porcentaje T2"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeFinalT2}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeFinalT2(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeFinalT2(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T2"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 3</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeFinalT3}
-                onChange={(e) => setPorcentajeFinalT3(e.target.value)}
-                placeholder="Porcentaje T3"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeFinalT3}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeFinalT3(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeFinalT3(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T3"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 4</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeFinalT4}
-                onChange={(e) => setPorcentajeFinalT4(e.target.value)}
-                placeholder="Porcentaje T4"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeFinalT4}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeFinalT4(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeFinalT4(val);
+                    }
+                  }}
+                  placeholder="Porcentaje T4"
                 />
-            </div>
+              </div>
 
-            <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque TG</label>
                 <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={PorcentajeFinalTG}
-                onChange={(e) => setPorcentajeFinalTG(e.target.value)}
-                placeholder="Porcentaje TG"
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={PorcentajeFinalTG}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setPorcentajeFinalTG(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setPorcentajeFinalTG(val);
+                    }
+                  }}
+                  placeholder="Porcentaje TG"
                 />
-            </div>
+              </div>
 
-            <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-2">
                 <button
-                className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
-                onClick={() => setIsPorcentajesFinalesModalOpen(false)}
+                  className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                  onClick={() => setIsPorcentajesFinalesModalOpen(false)}
                 >
-                Cancelar
+                  Cancelar
                 </button>
                 <button
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={guardarPorcentajesFinales}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={guardarPorcentajesFinales}
                 >
-                Guardar
+                  Guardar
                 </button>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
         )}
 
       {/* Modal Kilometraje */}
