@@ -36,6 +36,7 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
   const [itemEditando, setItemEditando] = useState<CombustibleHibrido | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter();
+  const reporte = reporte_hibrido ?? {};
 
   //Porcentajes Iniciales
   const [isPorcentajesInicialesModalOpen, setIsPorcentajesInicialesModalOpen] = useState(false);
@@ -354,18 +355,18 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
           </thead>
           <tbody>
             <tr>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.Km_Inicial}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.Km_Final}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.km_recorridos}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.km_rec_gasolina}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.km_rec_gas}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.rendimiento}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t1}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t2}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t3}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_t4}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_total_gas}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_hibrido.litros_consumidos_tg}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.Km_Inicial ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.Km_Final ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_recorridos ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_rec_gasolina ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.km_rec_gas ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_t1 ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_t2 ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_t3 ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_t4 ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_total_gas ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_tg ?? ' '}</td>
             </tr>
           </tbody>  
         </table>
