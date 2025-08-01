@@ -641,21 +641,19 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
                 onChange={e => setItemEditando({ ...itemEditando, Fecha_Carga: e.target.value })}
                 placeholder="Fecha_Carga"
               />
-            </div>
-            
+            </div>  
+                
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros T1</label>
               <input
                 type="number"
+                step="0.01"
                 className="border rounded px-3 py-2 w-full"
                 value={itemEditando.Litros_T1 === 0 ? '' : itemEditando.Litros_T1?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
                   const Litros_T1 = value === '' ? 0 : parseFloat(value);
-                  setItemEditando({
-                    ...itemEditando,
-                    Litros_T1,
-                  });
+                  setItemEditando({ ...itemEditando, Litros_T1 });
                 }}
                 placeholder="Litros_T1"
               />
@@ -665,15 +663,13 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros T2</label>
               <input
                 type="number"
+                step="0.01"
                 className="border rounded px-3 py-2 w-full"
                 value={itemEditando.Litros_T2 === 0 ? '' : itemEditando.Litros_T2?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
                   const Litros_T2 = value === '' ? 0 : parseFloat(value);
-                  setItemEditando({
-                    ...itemEditando,
-                    Litros_T2,
-                  });
+                  setItemEditando({ ...itemEditando, Litros_T2 });
                 }}
                 placeholder="Litros_T2"
               />
@@ -683,15 +679,13 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros T3</label>
               <input
                 type="number"
+                step="0.01"
                 className="border rounded px-3 py-2 w-full"
                 value={itemEditando.Litros_T3 === 0 ? '' : itemEditando.Litros_T3?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
                   const Litros_T3 = value === '' ? 0 : parseFloat(value);
-                  setItemEditando({
-                    ...itemEditando,
-                    Litros_T3,
-                  });
+                  setItemEditando({ ...itemEditando, Litros_T3 });
                 }}
                 placeholder="Litros_T3"
               />
@@ -701,15 +695,13 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros T4</label>
               <input
                 type="number"
+                step="0.01"
                 className="border rounded px-3 py-2 w-full"
                 value={itemEditando.Litros_T4 === 0 ? '' : itemEditando.Litros_T4?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
                   const Litros_T4 = value === '' ? 0 : parseFloat(value);
-                  setItemEditando({
-                    ...itemEditando,
-                    Litros_T4,
-                  });
+                  setItemEditando({ ...itemEditando, Litros_T4 });
                 }}
                 placeholder="Litros_T4"
               />
@@ -719,30 +711,32 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros TG</label>
               <input
                 type="number"
+                step="0.01"
                 className="border rounded px-3 py-2 w-full"
                 value={itemEditando.Litros_TG === 0 ? '' : itemEditando.Litros_TG?.toString() ?? ''}
                 onChange={e => {
                   const value = e.target.value;
                   const Litros_TG = value === '' ? 0 : parseFloat(value);
-                  setItemEditando({
-                    ...itemEditando,
-                    Litros_TG,
-                  });
+                  setItemEditando({ ...itemEditando, Litros_TG });
                 }}
                 placeholder="Litros_TG"
               />
             </div>
 
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
                 Cancelar
               </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={guardarCambios}>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={guardarCambios}
+              >
                 {isEditing ? 'Guardar' : 'Crear'}
               </button>
             </div>
-
           </div>
         </div>
       )}
