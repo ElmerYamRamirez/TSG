@@ -48,3 +48,6 @@ export * from './programaciones/update-programacion-by-id'
 export * from './destinos/get-destinos'
 export * from './operadores/get-operadores'
 export * from './programaciones/delete-programacion-by-id'
+export * from './reportes/get-reportehibrido-pagination';
+export * from './reportes/get-reportehibrido';
+export * from './reportes/get-reportehibrido-filtro';
