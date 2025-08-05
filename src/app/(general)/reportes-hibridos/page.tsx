@@ -15,7 +15,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
 
     const response =
         searchTerm || desde || hasta
-            ? await getReporteHibridoFiltro(page, pageSize, searchTerm, desde, hasta)
+            ? await getReporteHibridoFiltro(page, pageSize, searchTerm, )
             : await getReporteHibridoPagination(page, pageSize);
 
 
@@ -93,6 +93,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                                 <tr>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Programacion</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Unidad</th>
+                                    <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Ruta</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Km inicial</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Km final</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Litros iniciales T1</th>
@@ -123,6 +124,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                                     <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.programacion}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.unidad}</td>
+                                        <td className="px-1 lg:py-1 text-gray-700">{r.ruta}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.Km_Inicial}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.Km_Final}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.litros_iniciales_t1}</td>
