@@ -4,6 +4,7 @@ import { getProgramacionesFiltro } from "components/actions/programaciones/get-p
 import Link from "next/link";
 import UserTable from "components/components/programacion-ventas/programacion-ventas-tabla";
 import { getClientes } from "components/actions/clientes/get-clientes";
+import { getVendedores } from "components/actions/vendedores/get-vendedores";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; desde?: string; hasta?: string }> }) {
   const resolvedParams = await searchParams;
@@ -17,6 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const unidades = await getUnidades() ?? { ok: false, unidades: [] };
   const operadores = await getOperadores() ?? { ok: false, operadores: [] };
   const clientes = await getClientes() ?? { ok: false, clientes: []};
+  const vendedores = await getVendedores() ?? { ok: false, vendedores: []};
 
   const response = searchTerm || desde || hasta
     ? await getProgramacionesFiltro(page, pageSize, searchTerm, desde, hasta)
@@ -88,7 +90,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
             </div>
           ) : (
             <>
-              <UserTable programaciones={programaciones} destinosList={destinos.destinos} unidades={unidades.unidades} operadores={operadores.operadores} clientes={clientes.clientes}></UserTable>
+              <UserTable programaciones={programaciones} destinosList={destinos.destinos} unidades={unidades.unidades} operadores={operadores.operadores} clientes={clientes.clientes} vendedores={vendedores.vendedores}></UserTable>
               <div className="flex justify-center mt-4">
                 {page > 1 && (
                   <Link

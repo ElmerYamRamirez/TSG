@@ -22,4 +22,6 @@ export interface ProgramacionI {
   operador_name: string;
   Nombre_destino: string;
   cliente_name: string;
+  vendedor_name: string;
+  
 }

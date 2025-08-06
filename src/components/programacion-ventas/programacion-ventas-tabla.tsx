@@ -2,6 +2,7 @@
 
 import { deleteProgramacionById, updateProgramacionById } from "components/actions";
 import { ClientesI } from "components/interfaces/clientes";
+import { VendedoresI} from "components/interfaces/vendedores";
 import { DestinoI } from "components/interfaces/destino";
 import { OperadorI } from "components/interfaces/operador";
 import { ProgramacionI } from "components/interfaces/programacion";
@@ -28,8 +29,8 @@ const handleDarDeBaja = async (programacion: ProgramacionI) => {
     }
 }
 
-export default function UserTable({ programaciones, destinosList, unidades, operadores, clientes }:
-    { programaciones: ProgramacionI[], destinosList: DestinoI[], unidades: UnidadI[], operadores: OperadorI[], clientes: ClientesI[] }) {
+export default function UserTable({ programaciones, destinosList, unidades, operadores, clientes, vendedores}:
+    { programaciones: ProgramacionI[], destinosList: DestinoI[], unidades: UnidadI[], operadores: OperadorI[], clientes: ClientesI[], vendedores: VendedoresI[] }) {
 
     const [itemEditando, setItemEditando] = useState<ProgramacionI | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,7 +132,7 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                                         year: "2-digit",
                                     })
                                     : ''}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.vendedor}</td>
+                                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.vendedor_name || "Sin vendedor"}</td>
                                 <td className="px-1 text-xs text-indigo-600 font-medium">
                                     <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(programacion)}>
                                         Editar
@@ -146,8 +147,6 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                         ))}
                     </tbody>
                 </table>
-
-
             </div>
 
             {/* Modal de edición */}
@@ -330,17 +329,20 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                                 </div>
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Vendedor</label>
-                                    <input
-                                        type="text"
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        onChange={e => setItemEditando({ ...itemEditando, vendedor: e.target.value })}
+                                    <select
                                         value={itemEditando.vendedor}
-                                        placeholder="Vendedor"
-                                    />
+                                        onChange={e => setItemEditando({ ...itemEditando, vendedor: (e.target.value) })}
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                    >
+                                        <option value="">Selecciona un vendedor</option>
+                                        {vendedores.map(vendedor => (
+                                            <option key={vendedor.uniqueId} value={vendedor.uniqueId}>
+                                                {vendedor.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-
                             </div>
-
 
                             <div className="flex justify-end space-x-2">
                                 <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
@@ -352,9 +354,7 @@ export default function UserTable({ programaciones, destinosList, unidades, oper
                                 </button>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
             )}
         </>);
