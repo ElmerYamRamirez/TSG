@@ -15,7 +15,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
 
     const response =
         searchTerm || desde || hasta
-            ? await getReporteHibridoFiltro(page, pageSize, searchTerm, )
+            ? await getReporteHibridoFiltro(page, pageSize, searchTerm,desde, hasta )
             : await getReporteHibridoPagination(page, pageSize);
 
 
@@ -35,12 +35,12 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                         type="text"
                         name="search"
                         defaultValue={searchTerm}
-                        placeholder="Buscar por unidad..."
+                        placeholder="Buscar por unidad o ruta"
                         className="border border-gray-300 rounded px-4 py-2 flex-grow min-w-[200px]"
                     />
 
                     <div className="flex flex-col">
-                        <label htmlFor="desde" className="text-xs text-gray-500">Fecha Creación Desde</label>
+                        <label htmlFor="desde" className="text-xs text-gray-500">Fecha Desde</label>
                         <input
                             type="date"
                             name="desde"
@@ -50,7 +50,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                     </div>
 
                     <div className="flex flex-col">
-                        <label htmlFor="hasta" className="text-xs text-gray-500">Fecha Creación Hasta</label>
+                        <label htmlFor="hasta" className="text-xs text-gray-500">Fecha Hasta</label>
                         <input
                             type="date"
                             name="hasta"
@@ -94,6 +94,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Programacion</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Unidad</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Ruta</th>
+                                    <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Fecha</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Km inicial</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Km final</th>
                                     <th className="px-1 py-1 lg:py-2 text-left font-semibold text-gray-900">Litros iniciales T1</th>
@@ -125,6 +126,14 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                                         <td className="px-1 lg:py-1 text-gray-700">{r.programacion}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.unidad}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.ruta}</td>
+                                        <td className="px-1 lg:py-1 text-gray-700">
+                                        {new Date(r.fecha).toLocaleDateString("es-MX", {
+                                         timeZone: "UTC",
+                                         day: "2-digit",
+                                         month: "2-digit",
+                                         year: "2-digit",
+                                         })}
+                                        </td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.Km_Inicial}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.Km_Final}</td>
                                         <td className="px-1 lg:py-1 text-gray-700">{r.litros_iniciales_t1}</td>
