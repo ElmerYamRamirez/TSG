@@ -42,7 +42,8 @@ export const getProgramacionesFiltro = async (
           D.Nombre AS Nombre_destino,
           C.Nombre AS cliente_name,
           O.Nombre AS operador_name,
-          U.Nombre AS unidad_name
+          U.Nombre AS unidad_name,
+          v.nombre AS vendedor_name
       FROM 
           Programacion_de_envio PE
       LEFT JOIN 
@@ -53,6 +54,8 @@ export const getProgramacionesFiltro = async (
           Operador O ON PE.Operador = O.uniqueId
       LEFT JOIN
             Unidad U ON PE.Unidad = U.uniqueId
+      LEFT JOIN
+            vendedores v ON PE.vendedor = v.uniqueId
       WHERE 
         (PE.folio LIKE @searchTerm
         OR D.Nombre LIKE @searchTerm
