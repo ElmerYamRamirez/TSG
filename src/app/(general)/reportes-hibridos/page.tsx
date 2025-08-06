@@ -83,7 +83,7 @@ export default async function ReportesHibrido({ searchParams, }: { searchParams:
                 <p className="text-center text-red-500">Error al cargar los reportes.</p>
             ) : rendimientos.length === 0 ? (
                 <div className="text-center text-gray-600 mt-6">
-                    <p>No se encontraron reportes de consumo con los filtros aplicados.</p>
+                    <p>No se encontraron reportes hibridos con los filtros aplicados.</p>
                 </div>
             ) : (
                 <>
