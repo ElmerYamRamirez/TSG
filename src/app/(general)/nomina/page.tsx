@@ -1,17 +1,17 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { Personal } from "./interfaces/personal";
-import { Adelanto } from "./interfaces/adelanto";
-import { Envio } from "./interfaces/envio";
-import { Sueldo } from "./interfaces/sueldo";
-import { Prestamo } from "./interfaces/prestamo";
-import { Table } from "../components/Table";
+import { Personal } from "../../../interfaces/personal";
+import { Adelanto } from "../../../interfaces/adelanto";
+import { Envio } from "../../../interfaces/envio";
+import { Sueldo } from "../../../interfaces/sueldo";
+import { Prestamo } from "../../../interfaces/prestamo";
+import { Table } from "../../../components/Table";
 import PrestamoC from "components/components/Prestamo";
-import { nomina } from "./interfaces/nomina";
-import { prestamo_pago } from "./interfaces/prestamo_pago";
-import { nomina_prestamo } from "./interfaces/nomina_prestamo";
-import { deduccion } from "./interfaces/deduccion";
-import { percepcion } from "./interfaces/percepcion";
+import { nomina } from "../../../interfaces/nomina";
+import { prestamo_pago } from "../../../interfaces/prestamo_pago";
+import { nomina_prestamo } from "../../../interfaces/nomina_prestamo";
+import { deduccion } from "../../../interfaces/deduccion";
+import { percepcion } from "../../../interfaces/percepcion";
 //import html2pdf from 'html2pdf.js';
 
 export default function Page() {
@@ -26,7 +26,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [currentDate] = useState<string>(getFridayDate());
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  //const [nomina, setNomina] = useState<any>();
+  const [folio, setFolio] = useState<number>(0);
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,7 +53,7 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/ticket-nomina/api/personal/");
+        const response = await fetch("/api/personal/");
         if (!response.ok) throw new Error(`Error ${response.status}`);
 
         const data: Personal[] = await response.json();
@@ -82,7 +82,7 @@ export default function Page() {
 
       try {
         const response = await fetch(
-          `/ticket-nomina/api/adelantos/${selectedPersonalId}`
+          `/api/adelantos/${selectedPersonalId}`
         );
 
         if (response.status == 404) {
@@ -112,13 +112,18 @@ export default function Page() {
       }
       try {
         const response = await fetch(
-          `/ticket-nomina/api/prestamos/${selectedPersonalId}`
+          `/api/prestamos/${selectedPersonalId}`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data: Prestamo[] = await response.json();
-        setPrestamo(data);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setPrestamo(data);
+        } else {
+          console.warn("Respuesta inesperada de /api/prestamos:", data);
+          setPrestamo([]); // Evita el error al mapear
+        }
       } catch (err) {
         console.error("Error al cargar prestamos:", err);
         setPrestamo([]);
@@ -154,7 +159,7 @@ export default function Page() {
         };
 
         const response = await fetch(
-          `/ticket-nomina/api/envios/${selectedPersonalId}?startDate=${adjustToMexicoTimezone(
+          `/api/envios/${selectedPersonalId}?startDate=${adjustToMexicoTimezone(
             lastSaturday
           )}&endDate=${adjustToMexicoTimezone(thisFriday)}`
         );
@@ -180,7 +185,7 @@ export default function Page() {
       }
       try {
         const response = await fetch(
-          `/ticket-nomina/api/sueldos/${selectedPersonalId}/`
+          `/api/sueldos/${selectedPersonalId}/`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -194,6 +199,18 @@ export default function Page() {
     };
     fetchSueldos();
   }, [selectedPersonalId]);
+
+  useEffect(() => {
+    fetch('/api/folio?obj=nomina')
+    .then((res) => res.json())
+    .then((folio : { folio:number } ) => {
+      setFolio(folio.folio);
+    })
+    .catch((err) => {
+      console.error("Error al cargar folio:", err);
+      setFolio(0);
+    })
+  }, []);
 
   const totalViajes = () => {
     return envios.reduce((total, envio) => total + (envio.Sueldo || 0), 0);
@@ -335,7 +352,7 @@ export default function Page() {
         await Promise.all(
           adelanto.map(async (item) => {
             const response = await fetch(
-              `/ticket-nomina/api/adelantos/${item.uniqueId}/`,
+              `/api/adelantos/${item.uniqueId}/`,
               {
                 method: "PUT",
                 headers: {
@@ -367,7 +384,7 @@ export default function Page() {
             const isFullyPaid = newSaldo <= 0;
 
             const response = await fetch(
-              `/ticket-nomina/api/prestamos/${item.uniqueId}`,
+              `/api/prestamos/${item.uniqueId}`,
               {
                 method: "PUT",
                 headers: {
@@ -397,7 +414,7 @@ export default function Page() {
       //Hacer la llamada a POST /nominas para poder crear una nueva nomina
       const requestBodyNomina = buildNominaBody();
       console.log(requestBodyNomina);
-      await fetch('/ticket-nomina/api/nominas/', {
+      await fetch('/api/nominas/', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -635,7 +652,7 @@ export default function Page() {
               Período de Pago
             </h3>
             <p className="col-span-2 text-blue-600 print:text-gray-700">{currentDate}</p>
-            <p className="col-span-1 text-blue-600 justify-self-end print:text-gray-700">{'Folio:xxx'}</p>
+            <p className="col-span-1 text-blue-600 justify-self-end print:text-gray-700">Folio:{folio.toString()}</p>
           </div>
 
           {/* Grid de información */}
@@ -693,26 +710,29 @@ export default function Page() {
 
                     <InfoRow
                       label="depósito 1"
-                      value={`$${(sueldos.NETO || 0).toLocaleString("es-MX", {
+                      value={`$${(sueldos.Percepcion_total || 0).toLocaleString("es-MX", {
                         minimumFractionDigits: 2,
                       })}`}
                     />
 
-                    {
-                      totalViajes() > (sueldos?.NETO || 0) ? (
+                    <InfoRow
+                      label="depósito 2"
+                      value={`$${(
+                        totalViajes() > (sueldos?.Percepcion_total || 0)
+                          ? totalViajes() - (sueldos?.Percepcion_total || 0)
+                          : (sueldos?.Sueldo_Real || 0) > 0
+                            ? (sueldos?.Sueldo_Real || 0) - (sueldos?.Percepcion_total || 0)
+                            : 0
+                      ).toLocaleString("es-MX", {
+                        minimumFractionDigits: 2,
+                      })}`}
+                    />
+
+                    {(sueldos?.Extra || 0) > 0 && (
                         <InfoRow
-                          label="depósito 2"
+                          label="Extra"
                           value={`$${(
-                            totalViajes() - (sueldos?.NETO || 0)
-                          ).toLocaleString("es-MX", {
-                            minimumFractionDigits: 2,
-                          })}`}
-                        />
-                      ) : (
-                        <InfoRow
-                          label="depósito 2"
-                          value={`$${(
-                            0
+                            sueldos.Extra
                           ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}`}
@@ -721,11 +741,11 @@ export default function Page() {
                     }
 
                     <div className="pt-2 border-t">
-                      {totalViajes() > (sueldos?.NETO || 0) ? (
+                      {totalViajes() > (sueldos?.Percepcion_total || 0) ? (
                         <InfoRow
                           label="Total Percepciones"
                           value={`$${(
-                            totalViajes()
+                            totalViajes() + sueldos.Extra
                           ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}`}
@@ -735,7 +755,9 @@ export default function Page() {
                         <InfoRow
                           label="Total Percepciones"
                           value={`${(
-                            (sueldos.NETO || 0)
+                            sueldos.Sueldo_Real > 0 
+                            ? (sueldos?.Percepcion_total) + (sueldos.Sueldo_Real - sueldos.Percepcion_total) + sueldos.Extra
+                            : (sueldos?.Percepcion_total) + sueldos?.Extra
                           ).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
                           })}`}
@@ -851,7 +873,7 @@ export default function Page() {
                     <div className="pt-2 border-t">
                       <InfoRow
                         label="Total Deducciones"
-                        value={`-$${(
+                        value={`$${(
                           (sueldos?.Total_de_deducciones || 0) +
                           (adelantoTotal || 0) +
                           (totalDescuentoPrestamos || 0)
@@ -871,10 +893,10 @@ export default function Page() {
                     totalViajes() > (sueldos?.Sueldo || 0) ? (
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-semibold">
+                        <span className="text-md font-semibold">
                           Total percepciones
                         </span>
-                        <span className="text-xl font-bold text-green-600">
+                        <span className="text-l font-bold text-green-600">
                           $
                           {(((totalViajes() || 0) - (sueldos?.NETO || 0)) + (sueldos.NETO || 0)).toLocaleString("es-MX", {
                             minimumFractionDigits: 2,
@@ -882,10 +904,10 @@ export default function Page() {
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-semibold">
+                        <span className="text-md font-semibold">
                           Total deducciones
                         </span>
-                        <span className="text-xl font-bold text-green-600">
+                        <span className="text-l font-bold text-green-600">
                           $
                           {(
                             (totalDescuentoPrestamos || 0) - (adelantoTotal || 0)
@@ -898,7 +920,7 @@ export default function Page() {
                         <span className="text-lg font-semibold">
                           Total Neto a Pagar
                         </span>
-                        <span className="text-2xl font-bold text-green-600">
+                        <span className="text-xl font-bold text-green-600">
                           $
                           {(
                             (totalViajes() || 0) -
@@ -912,23 +934,65 @@ export default function Page() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">
-                        Total Neto a Pagar
-                      </span>
-                      <span className="text-2xl font-bold text-green-600">
-                        $
-                        {(
-                          ((sueldos?.NETO || 0)
-                            //Elmer: comente esta parte por que sueldo_real es igual a cero en la tabla y me restaba el neto dando valores negativos
-                            /* + (sueldos.sueldo_real - sueldos.NETO)*/ +
-                            (sueldos.extra || 0)) -
-                          (totalDescuentoPrestamos || 0) -
-                          (adelantoTotal || 0)
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-md font-semibold">
+                          Total percepciones
+                        </span>
+                        <span className="text-l font-bold text-green-600">
+                          {`${(
+                            sueldos.Sueldo_Real > 0 
+                            ? (sueldos?.Percepcion_total) + (sueldos.Sueldo_Real - sueldos.Percepcion_total) + sueldos.Extra
+                            : (sueldos?.Percepcion_total) + sueldos?.Extra
+                          ).toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                          })}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-md font-semibold">
+                          Total deducciones
+                        </span>
+                        <span className="text-l font-bold text-green-600">
+                          $
+                          {(
+                          (sueldos?.Total_de_deducciones || 0) +
+                          (adelantoTotal || 0) +
+                          (totalDescuentoPrestamos || 0)
                         ).toLocaleString("es-MX", {
                           minimumFractionDigits: 2,
                         })}
-                      </span>
+                        </span>
+                      </div>
+                      <div className="pt-2 border-t flex justify-between items-center">
+                        <span className="text-lg font-semibold">
+                          Total Neto a Pagar
+                        </span>
+                        <span className="text-xl font-bold text-green-600">
+                          $
+                          {(
+
+                            sueldos.Sueldo_Real > 0 
+                            ? (  
+                              ((sueldos?.Sueldo_Real || 0)
+                                //Elmer: comente esta parte por que sueldo_real es igual a cero en la tabla y me restaba el neto dando valores negativos
+                                /* + (sueldos.sueldo_real - sueldos.NETO)*/ +
+                                (sueldos.Extra || 0)) -
+                              (totalDescuentoPrestamos || 0) -
+                              (adelantoTotal || 0) - (sueldos.Total_de_deducciones)
+                            )
+                            : (  
+                              ((sueldos?.Percepcion_total || 0) +
+                                (sueldos.Extra || 0)) -
+                              (totalDescuentoPrestamos || 0) -
+                              (adelantoTotal || 0) - (sueldos.Total_de_deducciones)
+                            )
+
+                          ).toLocaleString("es-MX", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>

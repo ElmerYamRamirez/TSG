@@ -4,7 +4,7 @@ import { executeQuery } from '../../lib/connection';
 
 export async function GET() {
     try {
-        const personal = await executeQuery('SELECT * FROM operador');
+        const personal = await executeQuery('SELECT * FROM operador WHERE Bit_Activo = 1');
         return NextResponse.json(personal);
     } catch (error) {
         console.error('❌ API Error:', error);

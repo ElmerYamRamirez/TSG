@@ -18,6 +18,9 @@ export interface Sueldo {
     Total_de_deducciones: number;
     uniqueId: string;
     Usu_Alta: string;
-    sueldo_real: number;
-    extra: number;
+    Sueldo_Real: number;
+    Extra: number;
+    Bono_Puntualidad: number;
+	Rebaje: number;
+	Sueldo_Real_Total: number;
 }

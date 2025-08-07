@@ -1,6 +1,6 @@
 //import { Concept } from "@/types"; //importa clase concep
 import { Table } from "./Table";
-import { Prestamo } from "components/app/interfaces/prestamo";
+import { Prestamo } from "components/interfaces/prestamo";
 
 const formatDateTime = (dateString: string | undefined): string => {
   if (!dateString) return "-";
