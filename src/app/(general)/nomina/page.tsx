@@ -934,7 +934,7 @@ export default function Page() {
                           ((sueldos?.NETO || 0)
                             //Elmer: comente esta parte por que sueldo_real es igual a cero en la tabla y me restaba el neto dando valores negativos
                             /* + (sueldos.sueldo_real - sueldos.NETO)*/ +
-                            (sueldos.extra || 0)) -
+                            (sueldos.Extra || 0)) -
                           (totalDescuentoPrestamos || 0) -
                           (adelantoTotal || 0)
                         ).toLocaleString("es-MX", {
