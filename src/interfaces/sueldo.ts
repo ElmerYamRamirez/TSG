@@ -4,8 +4,8 @@ export interface Sueldo {
     Usu_Alta: string;
     Fec_Alta: string;
     Percepcion_total: number;
-    Sueldo: number;
-    Septimo_dia: number;
+    Sueldo: number | null;
+    Septimo_dia: number | null;
     Prestamo_infonavit__FD_: number;
     Total_de_deducciones: number; 
     Prestamo_Infonavit__CF_: number;
@@ -20,7 +20,8 @@ export interface Sueldo {
     Empleado: string;
     Sueldo_Real: number;
     Extra: number;
-    Bono_Puntualidad: number;
+    Bono_Puntualidad: number | null;
     Rebaje: number;
     Sueldo_Real_Total: number;
+    operador_name: string;
 }

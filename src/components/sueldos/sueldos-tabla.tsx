@@ -29,8 +29,6 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
     const [itemEditando, setItemEditando] = useState<Sueldo | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const opcionesStatus = ['Programado', 'Despachado', 'Finalizado', ''];
-    const opcionesPapeleria = ['Pendiente', 'Entregada', ''];
     const router = useRouter(); 
 
     const abrirModalEditar = (item: Sueldo) => {
@@ -174,6 +172,314 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
                                         ))}
                                     </select>
                                 </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Sueldo: valor === '' ? null : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Sueldo ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Septimo Dia</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Septimo_dia: valor === '' ? null : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Septimo_dia ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Bono de Puntualidad</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Bono_Puntualidad: valor === '' ? null : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Bono_Puntualidad ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Prestamo Infonavit (FD)</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Prestamo_infonavit__FD_: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Prestamo_infonavit__FD_ ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Prestamo Infonavit (CF)</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Prestamo_Infonavit__CF_: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Prestamo_Infonavit__CF_ ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Prestamo Infonativ (PORC)</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Prestamo_Infonavit__PORC_: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Prestamo_Infonavit__PORC_ ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Subs al empleo (Mes)</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Subs_al_Empleo__mes_: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Subs_al_Empleo__mes_ ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">I.S.R (Mes)</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                I_S_R___mes_: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.I_S_R___mes_ ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">I.M.S.S</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                I_M_S_S_: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.I_M_S_S_ ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Ajuste al Neto</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Ajuste_al_neto: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Ajuste_al_neto ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Pension Alimenticia</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Pension_Alimenticia: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Pension_Alimenticia ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Total Percibido</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Percepcion_total: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Percepcion_total ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Total de Deducciones</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Total_de_deducciones: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Total_de_deducciones ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">NETO</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                NETO: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.NETO ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo Real</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Sueldo_Real: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Sueldo_Real ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Rebaje</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Rebaje: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Rebaje ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo Real Total</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Sueldo_Real_Total: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Sueldo_Real_Total ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">Extra</label>
+                                    <input
+                                        type="number"
+                                        className="border rounded px-3 py-2 w-full text-xs"
+                                        onChange={e => {
+                                            const valor = e.target.value;
+                                            setItemEditando({
+                                                ...itemEditando,
+                                                Extra: valor === '' ? 0 : Number(valor)
+                                            });
+                                        }}
+                                        value={itemEditando.Extra ?? ''}
+                                        placeholder="Total"
+                                    />
+                                </div>
+
+
                             </div>
 
                             <div className="flex justify-end space-x-2">
