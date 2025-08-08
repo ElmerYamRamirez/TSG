@@ -18,11 +18,18 @@ export const getSueldosFiltro = async (
     ];
 
     const query = `
-      SELECT *
-      FROM Sueldos
+      SELECT 
+        Su.*,
+        O.Nombre AS operador_name
+      FROM 
+        Sueldos Su
+      LEFT JOIN 
+        Operador O ON Su.Empleado = O.uniqueId
       WHERE 
-        (CAST(codigo AS VARCHAR) LIKE @searchTerm OR empleado LIKE @searchTerm)
-      ORDER BY Fec_Alta DESC
+        CAST(Su.codigo AS VARCHAR) LIKE @searchTerm
+        OR CAST(Su.Empleado AS VARCHAR) LIKE @searchTerm
+        OR O.Nombre LIKE @searchTerm
+      ORDER BY Su.Fec_Alta DESC
       OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
     `;
 

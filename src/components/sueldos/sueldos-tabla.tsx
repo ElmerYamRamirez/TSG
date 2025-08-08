@@ -102,7 +102,7 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
                         {sueldos.map((programacion, index) => (
                             <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.codigo}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Empleado}</td>
+                                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.operador_name}</td>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo}</td>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Septimo_dia}</td>
                                 <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Bono_Puntualidad}</td>
