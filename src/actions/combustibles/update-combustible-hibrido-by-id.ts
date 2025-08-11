@@ -16,7 +16,10 @@ export const updateCombustibleHibridoById = async (item: CombustibleHibrido) => 
             Litros_T3 = @Litros_T3,
             Litros_T4 = @Litros_T4,
             Litros_TG = @Litros_TG,
-            programacion = @programacion
+            programacion = @programacion,
+            precio_litro_gas = @precio_litro_gas,
+            precio_litro_gasolina = @precio_litro_gasolina
+
         WHERE uniqueId = @uniqueId
         `;
 
@@ -30,6 +33,8 @@ export const updateCombustibleHibridoById = async (item: CombustibleHibrido) => 
             { name: 'Litros_T4', value: item.Litros_T4},
             { name: 'Litros_TG', value: item.Litros_TG},
             { name: 'programacion', value: item.programacion},
+            { name: 'precio_litro_gas', value: item.precio_litro_gas},
+            { name: 'precio_litro_gasolina', value: item.precio_litro_gasolina},
             { name: 'uniqueId', value: item.uniqueId }];
 
         const responce = await executeQuery(query, paramsList);
