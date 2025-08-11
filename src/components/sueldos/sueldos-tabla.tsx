@@ -1,10 +1,15 @@
 'use client';
 
-import { deleteSueldoById, updateSueldoById } from "components/actions";
+import { deleteSueldoById, updateSueldoById, createSueldo} from "components/actions";
 import { Sueldo } from "components/interfaces/sueldo";
 import { OperadorI } from "components/interfaces/operador";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+const handleCreate = async (item: Sueldo) => {
+  const response = await createSueldo(item) ?? { ok: false };
+  return response;
+};
 
 const handleEdit = async (programacion: Sueldo) => {
     const response = await updateSueldoById(programacion) ?? { ok: false, res: [] };
@@ -37,32 +42,56 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
         setIsModalOpen(true);
     };
 
+    const abrirModalCrear = () => {
+    setItemEditando({
+        Percepcion_total: 0,
+        Sueldo: null,
+        Septimo_dia: null,
+        Prestamo_infonavit__FD_: 0,
+        Total_de_deducciones: 0,
+        Prestamo_Infonavit__CF_: 0,
+        Prestamo_Infonavit__PORC_: 0,
+        Subs_al_Empleo__mes_: 0,
+        I_S_R___mes_: 0,
+        I_M_S_S_: 0,
+        Ajuste_al_neto: 0,
+        NETO: 0,
+        Pension_Alimenticia: 0,
+        codigo: 0,
+        Empleado: '',
+        Sueldo_Real: 0,
+        Extra: 0,
+        Bono_Puntualidad: null,
+        Rebaje: 0,
+        Sueldo_Real_Total: 0
+    });
+    setIsEditing(false);
+    setIsModalOpen(true);
+    };
+
     const guardarCambios = async () => {
-        if (!itemEditando) return
+    if (!itemEditando) return;
 
-        if (isEditing) {
-            //call server action to edit
-            const responce = await handleEdit(itemEditando);
+    if (isEditing) {
+        const response = await handleEdit(itemEditando);
 
-            if (responce.ok) {
-                router.refresh()
-            } else {
-                alert('Error al guardar')
-            }
-
+        if (response.ok) {
+        router.refresh();
         } else {
-            //call server action to create
-            console.log(itemEditando)
-            //const responce = await handleCreate(itemEditando);
-
-            //if (responce.ok) {
-            //router.refresh()
-            //} else {
-            //alert('Error al guardar')
-            //}
+        alert('Error al guardar');
         }
-        setIsModalOpen(false)
+    } else {
+        const response = await handleCreate(itemEditando);
+
+        if (response.ok) {
+        router.refresh();
+        } else {
+        alert(response.message || 'Error al crear');
+        }
     }
+
+    setIsModalOpen(false);
+    };
 
     const deleteProgramacion = async (item: Sueldo) => {
         await handleDarDeBaja(item);
@@ -72,6 +101,12 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
     return (
         <>
             <div className="overflow-x-auto">
+                <button
+                    className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+                    onClick={abrirModalCrear}
+                    >
+                    <span>Agregar Sueldo</span>
+                    </button>
                 <table className="table-auto mx-auto divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                         <tr>
@@ -146,7 +181,7 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
                                 <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Programación' : 'Agregar Programación'}</h2>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/*
+                                
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Codigo</label>
                                     <input
@@ -156,7 +191,7 @@ export default function UserTable({ sueldos,operadores}:{ sueldos: Sueldo[], ope
                                     >
                                     </input>
                                 </div>
-                                */}
+                                
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
                                     <select

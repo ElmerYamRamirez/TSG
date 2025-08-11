@@ -18,7 +18,7 @@ export const getSueldosPagination = async (page: number, pageSize: number = 15) 
         Sueldos Su
       LEFT JOIN
         Operador O ON Su.Empleado = O.uniqueId
-      ORDER BY Su.Fec_Alta DESC
+      ORDER BY Su.codigo ASC
       OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
     `;
 

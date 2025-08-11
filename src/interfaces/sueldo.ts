@@ -1,8 +1,8 @@
 export interface Sueldo {
-    uniqueId: string;
-    Bit_Activo: number;
-    Usu_Alta: string;
-    Fec_Alta: string;
+    uniqueId?: string;
+    Bit_Activo?: number;
+    Usu_Alta?: string;
+    Fec_Alta?: string;
     Percepcion_total: number;
     Sueldo: number | null;
     Septimo_dia: number | null;
@@ -23,5 +23,5 @@ export interface Sueldo {
     Bono_Puntualidad: number | null;
     Rebaje: number;
     Sueldo_Real_Total: number;
-    operador_name: string;
+    operador_name?: string;
 }
