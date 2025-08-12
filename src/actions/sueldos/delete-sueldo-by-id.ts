@@ -13,7 +13,7 @@ export const deleteSueldoById = async (item: Sueldo) => {
         `;
 
         const paramsList = [
-            { name: 'Bit_Activo', value: 0 || null},
+            { name: 'Bit_Activo', value: 0 },
             { name: 'uniqueId', value: item.uniqueId || null},
         ];
 
