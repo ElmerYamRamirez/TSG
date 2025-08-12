@@ -1,7 +1,9 @@
 export interface ReporteHibrido {
 uniqueId: number;    
 programacion: number;
-unidad: number;
+unidad: string;
+ruta: string;
+fecha: string;
 litros_iniciales_t1: number;
 litros_iniciales_t2: number;
 litros_iniciales_t3: number;

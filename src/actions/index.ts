@@ -54,3 +54,6 @@ export * from './sueldos/update-sueldo-by-id'
 export * from './sueldos/delete-sueldo-by-id'
 export * from './sueldos/get-sueldo-by-id'
 export * from './sueldos/create-sueldo-by-codigo'
+export * from './reportes/get-reportehibrido-pagination';
+export * from './reportes/get-reportehibrido';
+export * from './reportes/get-reportehibrido-filtro';
