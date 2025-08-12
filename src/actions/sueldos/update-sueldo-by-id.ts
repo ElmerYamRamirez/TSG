@@ -32,9 +32,6 @@ export const updateSueldoById = async (item: Sueldo) => {
         `;
 
         const paramsList = [
-            { name: 'Bit_Activo', value: item.Bit_Activo || 1 },
-            { name: 'Fec_Alta', value: item.Fec_Alta || new Date().toISOString() },
-            { name: 'uniqueId', value: item.uniqueId },
             { name: 'Percepcion_total' , value: item.Percepcion_total }, 
             { name: 'Sueldo' , value: item.Sueldo }, 
             { name: 'Septimo_dia' , value: item.Septimo_dia }, 

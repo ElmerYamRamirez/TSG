@@ -13,11 +13,11 @@ export const deleteSueldoById = async (item: Sueldo) => {
         `;
 
         const paramsList = [
-            { name: 'Bit_Activo', value: 0 },
-            { name: 'uniqueId', value: item.uniqueId },
+            { name: 'Bit_Activo', value: 0 || null},
+            { name: 'uniqueId', value: item.uniqueId || null},
         ];
 
-        const responce = await executeQuery(query, paramsList);
+        const responce = await executeQuery(query, paramsList );
 
         console.log(responce);
         return {
