@@ -220,7 +220,8 @@ export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], 
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Codigo</label>
                   <input
-                    value={itemEditando.codigo}
+                    type="number"
+                    value={itemEditando.codigo === null ? '' : itemEditando.codigo.toString() ?? ''}
                     onChange={e => setItemEditando({ ...itemEditando, codigo: Number(e.target.value) })}
                     className="border rounded px-3 py-2 w-full text-xs"
                   />
