@@ -19,7 +19,6 @@ export const createSueldo = async (item: Sueldo) => {
     const inactiveResult = await executeQuery(queryCheckInactive, paramsCheck);
 
     if (inactiveResult.length > 0) {
-      const uniqueIdToRestore = inactiveResult[0].uniqueId;
 
       const queryRestore = `
         UPDATE Sueldos
