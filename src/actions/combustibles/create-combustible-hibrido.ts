@@ -7,7 +7,7 @@ export const createCombustibleHibrido = async ( item: CombustibleHibrido ) => {
     try {
 
         const query = `
-        INSERT INTO carga_hibrido ( uniqueId, Bit_Activo, Fec_Alta, Fecha_Carga, Litros_T1, Litros_T2, Litros_T3, Litros_T4, Litros_TG, programacion, precio_litros_gas, precio_litros_gasolina )
+        INSERT INTO carga_hibrido ( uniqueId, Bit_Activo, Fec_Alta, Fecha_Carga, Litros_T1, Litros_T2, Litros_T3, Litros_T4, Litros_TG, programacion, precio_litro_gas, precio_litro_gasolina )
         VALUES(
             (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM carga_hibrido),
             1,
@@ -18,9 +18,10 @@ export const createCombustibleHibrido = async ( item: CombustibleHibrido ) => {
             @Litros_T3,
             @Litros_T4,
             @Litros_TG,
+            @programacion,
             @precio_litro_gas,
-            @precio_litro_gasolina,
-            @programacion)
+            @precio_litro_gasolina
+            )
         `;
 
         const paramsList = [{ name: 'Fec_Alta', value: item.Fec_Alta = new Date().toISOString()},
@@ -30,9 +31,9 @@ export const createCombustibleHibrido = async ( item: CombustibleHibrido ) => {
                 {name: 'Litros_T3', value: item.Litros_T3},
                 {name: 'Litros_T4', value: item.Litros_T4},
                 {name: 'Litros_TG', value: item.Litros_TG},
+                {name: 'programacion', value: item.programacion},
                 {name: 'precio_litro_gas', value: item.precio_litro_gas},
-                {name: 'precio_litro_gasolina', value: item.precio_litro_gasolina},
-                {name: 'programacion', value: item.programacion}];
+                {name: 'precio_litro_gasolina', value: item.precio_litro_gasolina}];
                 
                 
         const responce = await executeQuery(query, paramsList);

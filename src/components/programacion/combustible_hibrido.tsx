@@ -38,6 +38,10 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
   const router = useRouter();
   const reporte = reporte_hibrido ?? {};
 
+  ///consumo total
+  const [costoConsumidoTotalGas, setCostoConsumidoTotalGas] = useState('');
+  const [costoConsumidoTotalGasolina, setCostoConsumidoTotalGasolina] = useState('');
+
   ///precio litros 
   const [precioLitroGas, setPrecioLitroGas] = useState('');
   const [precioLitroGasolina, setPrecioLitroGasolina] = useState('');
@@ -369,6 +373,8 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo T4</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo Total</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo TG</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo Consumido Total Gas</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo Consumido Total Gasolina</th>
             </tr>
           </thead>
           <tbody>
@@ -385,6 +391,8 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_t4 ?? ' '}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_total_gas ?? ' '}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_tg ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido_total_gas ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido_total_gasolina ?? ' '}</td>
             </tr>
           </tbody>  
         </table>
