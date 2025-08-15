@@ -15,9 +15,33 @@ export async function GET(
       );
     }
 
+    const hoy = new Date();
+    const diaSemana = hoy.getDay();
+    const diasHastaViernes = (5 - diaSemana + 7) % 7;
+    const fechaFinCorte = new Date(hoy);
+    fechaFinCorte.setDate(hoy.getDate() + diasHastaViernes);
+    const fechaFinCorteStr = fechaFinCorte.toISOString().split("T")[0];
+
+    await executeQuery(
+      `UPDATE Adelanto
+       SET Status = 'DESCONTADO'
+       WHERE nombre = @id
+         AND Status = 'RECURRENTE'
+         AND Fecha_Finalizacion IS NOT NULL
+         AND Fecha_Finalizacion <= @FechaFinCorte`,
+      [
+        { name: "id", value: id },
+        { name: "FechaFinCorte", value: fechaFinCorteStr }
+      ]
+    );
+
     const adelantos = await executeQuery(
-      'SELECT * FROM Adelanto WHERE nombre = @id and Status = \'pendiente\' ORDER BY Fec_Alta DESC', 
-      [{ name: 'id', value: id }]
+      `SELECT *
+       FROM Adelanto
+       WHERE nombre = @id
+         AND Status IN ('PENDIENTE', 'RECURRENTE')
+       ORDER BY Fec_Alta DESC`,
+      [{ name: "id", value: id }]
     );
 
     if (!adelantos || adelantos.length === 0) {
