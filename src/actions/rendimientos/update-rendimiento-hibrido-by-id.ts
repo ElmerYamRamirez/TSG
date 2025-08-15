@@ -25,6 +25,8 @@ export const updateRendimientoHibridoById = async (item: RendimientoHibrido) => 
             Porcentaje_Final_T4 = @Porcentaje_Final_T4,
             Porcentaje_Final_TG = @Porcentaje_Final_TG,
             programacion = @programacion,
+            precio_litro_gas = @precio_litro_gas,
+            precio_litro_gasolina = @precio_litro_gasolina,
             Fec_Alta = @Fec_Alta
         WHERE uniqueId = @uniqueId;
         `;
@@ -43,6 +45,8 @@ export const updateRendimientoHibridoById = async (item: RendimientoHibrido) => 
             { name: 'Porcentaje_Final_T4', value: item.Porcentaje_Final_T4 ?? null},
             { name: 'Porcentaje_Final_TG', value: item.Porcentaje_Final_TG ?? null},
             { name: 'programacion', value: item.programacion },
+            { name: 'precio_litro_gas', value: item.precio_litro_gas ?? null},
+            { name: 'precio_litro_gasolina', value: item.precio_litro_gasolina ?? null},
             { name: 'Fec_Alta', value: item.Fec_Alta ?? new Date().toISOString() },
             { name: 'uniqueId', value: item.uniqueId },
         ];

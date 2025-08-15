@@ -25,6 +25,8 @@ km_recorridos: number;
 litros_consumidos_total_gas: number;
 km_rec_gasolina: number;
 km_rec_gas: number;
+costo_consumido_total_gas: number;
+costo_consumido_total_gasolina: number;
 rendimiento: number;
 
 }

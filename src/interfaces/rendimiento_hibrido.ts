@@ -15,5 +15,7 @@ export interface RendimientoHibrido {
   Porcentaje_Final_T3?: number | null;
   Porcentaje_Final_T4?: number | null;
   Porcentaje_Final_TG?: number | null;
+  precio_litro_gas?: number | null;
+  precio_litro_gasolina?: number | null;
   programacion: number;
 }
