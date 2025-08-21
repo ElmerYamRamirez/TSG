@@ -8,4 +8,7 @@ export interface Adelanto {
     uniqueId: string;
     Usuario: string;
     Usu_Alta: string;
+    Fecha_Finalizacion: string;
+    Fecha_Inicio: string;
+     operador_name?: string;
 }
