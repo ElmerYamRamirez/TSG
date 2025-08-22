@@ -57,9 +57,3 @@ export * from './sueldos/create-sueldo-by-codigo'
 export * from './reportes/get-reportehibrido-pagination';
 export * from './reportes/get-reportehibrido';
 export * from './reportes/get-reportehibrido-filtro';
-export * from './adelantos/get-adelantos';
-export * from './prestamos/get-prestamos';
-export * from './programaciones/get-programaciones-by-week';
-export * from './sueldos/get-sueldos-all';
-export * from './sueldos/get-sueldos-filtro';
-export * from './sueldos/get-sueldos-pagination';

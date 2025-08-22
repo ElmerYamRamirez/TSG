@@ -9,7 +9,6 @@ export const getOperadores = async () => {
             *
         FROM 
             Operador
-        WHERE Bit_Activo = 1
         ORDER BY 
             uniqueId DESC
         `;
