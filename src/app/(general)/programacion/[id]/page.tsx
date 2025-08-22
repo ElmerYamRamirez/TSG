@@ -1,6 +1,8 @@
 import { getProgramacionesById } from "components/actions";
 import { getReporteHibridoById } from "components/actions";
 import { getCombustibleHibridoById } from "components/actions";
+import { getThermoById} from "components/actions";
+import { getReporteThermoById } from "components/actions";
 import Tabs from "components/components/programacion/tabs";
 import Link from "next/link";
 import React from "react";
@@ -11,6 +13,8 @@ export default async function ProgramacionPage(props: { params : Promise<{id: st
   const programacion = await getProgramacionesById(id);
   const reporte_hibrido = await getReporteHibridoById(id);
   const combustible_hibrido = await getCombustibleHibridoById(id);
+  const thermo = await getThermoById(id);
+  const reporte_thermo = await getReporteThermoById(id);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -31,7 +35,10 @@ export default async function ProgramacionPage(props: { params : Promise<{id: st
         </div>
       </div>
 
-      <Tabs programacion={{...programacion?.programacion,reporte_hibrido: reporte_hibrido?.reporte_hibrido ?? null,combustible_hibrido: combustible_hibrido?.combustible_hibrido ?? null}}/>
+      <Tabs programacion={{...programacion?.programacion,reporte_hibrido: reporte_hibrido?.reporte_hibrido ?? null,combustible_hibrido: combustible_hibrido?.combustible_hibrido ?? null,
+        thermos: thermo?.thermos ?? [],
+        reporte_thermo: reporte_thermo ?? null
+      }}/>
     </div>
   );
 };

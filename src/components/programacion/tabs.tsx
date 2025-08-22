@@ -6,15 +6,20 @@ import Combustibles from './combustibles';
 import CombustiblesDual from './combustible_hibrido';
 import { ReporteCombustibleI } from 'components/interfaces/reporteCombustible';
 import { ReporteHibrido } from 'components/interfaces/reporte_hibrido';
+import Thermo from './thermos';
+import {ReporteThermo} from 'components/interfaces/reporte_thermo';
+import { UnidadI } from 'components/interfaces/unidad';
+import { RendimientoThermo } from 'components/interfaces/rendimiento_thermo';
 
-const tabs = ['Combustible', 'Viáticos', 'Casetas'];
+//const esRefrigerado = (programacion.unidad?.Caracteristica ?? '').toLowerCase() === 'refrigerado';
+const tabs = ['Combustible', 'Viáticos', 'Casetas', 'Thermo'];
 
 interface ProgramacionI {
   uniqueId: number;
   Bit_Activo: boolean;
   Usu_Alta: number;
   Fec_Alta: string;
-  Cliente: number;
+  Cliente: number;  
   Operador: number;
   Unidad: number;
   Comentario: string;
@@ -27,6 +32,7 @@ interface ProgramacionI {
   nombre_destino: string;
   cliente_name: string;
   operador_name: string;
+  thermos:[]
   viaticos:[]
   casetas:[]
   combustibles: [];
@@ -34,6 +40,9 @@ interface ProgramacionI {
   combustible_hibrido:[];
   reporte: ReporteCombustibleI
   reporte_hibrido: ReporteHibrido
+  reporte_thermo: ReporteThermo
+  rendimiento_thermo: RendimientoThermo
+  unidad?: UnidadI;
 } 
 
 
@@ -58,6 +67,9 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':
         return <Casetas casetas={programacion.casetas} programacion={programacion.uniqueId}></Casetas>;
+      case 'Thermo':
+  return (
+    <Thermo thermos={programacion.thermos} programacion={programacion.uniqueId} reporte_thermo={programacion.reporte_thermo} rendimiento_thermo={programacion.rendimiento_thermo} />  );
       default:
         return null;
     }
