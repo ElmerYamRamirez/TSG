@@ -16,7 +16,7 @@ export const getSueldosFiltro = async (
       { name: "pageSize", value: pageSize },
       { name: "searchTerm", value: search },
     ];
-    
+
     const query = `
       SELECT 
           Su.*,
