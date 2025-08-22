@@ -35,7 +35,7 @@ import React from "react";
             type="text"
             name="search"
             defaultValue={searchTerm}
-            placeholder="Buscar por codigo o empleado"
+            placeholder="Buscar por empleado"
             className="border border-gray-300 rounded px-4 py-2 flex-grow min-w-[200px]"
             
           />

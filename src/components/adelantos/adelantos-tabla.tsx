@@ -13,12 +13,14 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
   const router = useRouter();
 
   const handleCreate = async (item: Adelanto) => await createAdelanto(item) ?? { ok: false };
+  
   const handleEdit = async (adelanto: Adelanto) => {
     const response = await updateAdelantoById(adelanto) ?? { ok: false, res: [] };
     return { ok: response.ok };
   };
+  
   const handleDarDeBaja = async (adelanto: Adelanto) => {
-    if (confirm(`¿Estás seguro de eliminar: ${adelanto.Nombre}?`)) {
+    if (confirm(`¿Estás seguro de eliminar: ${adelanto.operador_name}?`)) {
       const { ok } = await deleteAdelantoById(adelanto) ?? { ok: false };
       if (!ok) alert("Hubo un error al eliminar el adelanto.");
     }
@@ -32,7 +34,10 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
 
   const guardarCambios = async () => {
     if (!itemEditando) return;
-    const response = isEditing ? await handleEdit(itemEditando) : await handleCreate(itemEditando);
+    const response = isEditing 
+      ? await handleEdit(itemEditando) 
+      : await handleCreate(itemEditando);
+
     if (response.ok) {
       router.refresh();
       setIsModalOpen(false);
@@ -46,22 +51,18 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
     router.refresh();
   };
 
- const formatDate = (date: string | null) => {
+  const formatDate = (date: string | null) => {
     if (!date) return "";
     const d = new Date(date);
-    // Obtener día, mes y año
     const day = String(d.getUTCDate()).padStart(2, "0");
     const month = String(d.getUTCMonth() + 1).padStart(2, "0");
     const year = String(d.getUTCFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
-    };
-
+  };
 
   const handleChange = (field: keyof Adelanto, value: any) => {
     setItemEditando(prev => prev ? { ...prev, [field]: value === '' ? null : value } : null);
   };
-
-  
 
   return (
     <>
@@ -69,7 +70,11 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
         <div className="flex justify-end">
           <button
             className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600"
-            onClick={() => { setItemEditando({} as Adelanto); setIsEditing(false); setIsModalOpen(true); }}
+            onClick={() => { 
+              setItemEditando({} as Adelanto); 
+              setIsEditing(false); 
+              setIsModalOpen(true); 
+            }}
           >
             Agregar Adelanto
           </button>
@@ -99,8 +104,18 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
                 <td className="px-1 py-1 text-xs">{formatDate(adelanto.Fecha_Inicio)}</td>
                 <td className="px-1 py-1 text-xs">{formatDate(adelanto.Fecha_Finalizacion)}</td>
                 <td className="px-1 py-1 text-xs space-x-1">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(adelanto)}>Editar</button>
-                  <button onClick={() => deleteAdelanto(adelanto)} className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">Eliminar</button>
+                  <button 
+                    className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" 
+                    onClick={() => abrirModalEditar(adelanto)}
+                  >
+                    Editar
+                  </button>
+                  <button 
+                    onClick={() => deleteAdelanto(adelanto)} 
+                    className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded"
+                  >
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
@@ -116,55 +131,102 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
               
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
-                <select value={itemEditando.Nombre ?? ''} onChange={e => handleChange('Nombre', e.target.value)} className="border rounded px-3 py-2 w-full text-xs">
+                <select
+                  value={itemEditando.Nombre ?? ''}
+                  onChange={e => handleChange('Nombre', parseInt(e.target.value, 10))}
+                  className="border rounded px-3 py-2 w-full text-xs"
+                >
                   <option value="">Selecciona un Empleado</option>
-                  {operadores.map(op => <option key={op.uniqueId} value={op.Nombre}>{op.Nombre}</option>)}
+                  {operadores.map(op => 
+                    <option key={op.uniqueId} value={op.uniqueId}>
+                      {op.Nombre}
+                    </option>
+                  )}
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Cantidad</label>
-                <input type="number" value={itemEditando.Cantidad ?? ''} onChange={e => handleChange('Cantidad', e.target.value)} className="border rounded px-3 py-2 w-full text-xs" />
+                <input 
+                  type="number" 
+                  value={itemEditando.Cantidad ?? ''} 
+                  onChange={e => handleChange('Cantidad', e.target.value)} 
+                  className="border rounded px-3 py-2 w-full text-xs" 
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                <input type="text" value={itemEditando.Status ?? ''} onChange={e => handleChange('Status', e.target.value)} className="border rounded px-3 py-2 w-full text-xs" />
+                <select
+                  value={itemEditando.Status ?? ''}
+                  onChange={e => handleChange('Status', e.target.value)}
+                  className="border rounded px-3 py-2 w-full text-xs"
+                >
+                  <option value="">Selecciona un Status</option>
+                  <option value="RECURRENTE">RECURRENTE</option>
+                  <option value="PENDIENTE">PENDIENTE</option>
+                  <option value="DESCONTADO">DESCONTADO</option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Comentario</label>
-                <textarea value={itemEditando.Comentario ?? ''} onChange={e => handleChange('Comentario', e.target.value)} className="border p-2 w-full rounded text-sm" />
+                <textarea 
+                  value={itemEditando.Comentario ?? ''} 
+                  onChange={e => handleChange('Comentario', e.target.value)} 
+                  className="border p-2 w-full rounded text-sm" 
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Fecha Papeleria</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Fecha de Inicio</label>
                 <input
-                    type="date"
-                    className="border rounded px-3 py-2 w-full text-xs"
-                    value={itemEditando.Fecha_Inicio ? new Date(itemEditando.Fecha_Inicio).toISOString().split("T")[0] : ""}
-                    onChange={e => setItemEditando({ ...itemEditando, Fecha_Inicio: e.target.value })}
-                    placeholder="Fecha"
+                  type="date"
+                  className="border rounded px-3 py-2 w-full text-xs"
+                  value={
+                    itemEditando.Fecha_Inicio && !isNaN(new Date(itemEditando.Fecha_Inicio).getTime())
+                      ? new Date(itemEditando.Fecha_Inicio).toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={e =>
+                    setItemEditando({
+                      ...itemEditando,
+                      Fecha_Inicio: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
                 />
-            </div>
+              </div>
 
-            <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Fecha Papeleria</label>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Fecha de Finalizacion</label>
                 <input
-                    type="date"
-                    className="border rounded px-3 py-2 w-full text-xs"
-                    value={itemEditando.Fecha_Finalizacion ? new Date(itemEditando.Fecha_Finalizacion).toISOString().split("T")[0] : ""}
-                    onChange={e => setItemEditando({ ...itemEditando, Fecha_Finalizacion: e.target.value })}
-                    placeholder="Fecha"
+                  type="date"
+                  className="border rounded px-3 py-2 w-full text-xs"
+                  value={
+                    itemEditando.Fecha_Finalizacion && !isNaN(new Date(itemEditando.Fecha_Finalizacion).getTime())
+                      ? new Date(itemEditando.Fecha_Finalizacion).toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={e =>
+                    setItemEditando({
+                      ...itemEditando,
+                      Fecha_Finalizacion: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
                 />
-            </div>
+              </div>
 
               <div className="flex justify-end space-x-2">
-                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
+                <button 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
                   Cancelar
                 </button>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  onClick={guardarCambios}>
+                <button 
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={guardarCambios}
+                >
                   {isEditing ? 'Guardar' : 'Crear'}
                 </button>
               </div>
