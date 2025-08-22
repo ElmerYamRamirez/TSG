@@ -5,7 +5,7 @@ import { executeQuery } from "components/app/lib/connection";
 export const getSueldosFiltro = async (
   page: number,
   pageSize = 15,
-  searchTerm = "",
+  searchTerm = ""
 ) => {
   try {
     const offset = (page - 1) * pageSize;
@@ -16,37 +16,38 @@ export const getSueldosFiltro = async (
       { name: "pageSize", value: pageSize },
       { name: "searchTerm", value: search },
     ];
-
-
+    
     const query = `
       SELECT 
-          su.*
+          Su.*,
+          O.Nombre AS operador_name
       FROM 
-          Sueldos su
-      LEFT JOIN
-          Operador O ON su.Empleado = O.uniqueId
+          Sueldos Su
+      LEFT JOIN 
+          Operador O ON Su.Empleado = O.uniqueId
       WHERE 
-        ( O.Nombre LIKE @searchTerm
-        )
-        AND su.Bit_Activo = 1
-      ORDER BY 
-        su.uniqueId DESC
-      OFFSET @offset ROWS
-      FETCH NEXT @pageSize ROWS ONLY;
+          (
+            CAST(Su.codigo AS VARCHAR) LIKE @searchTerm
+            OR CAST(Su.Empleado AS VARCHAR) LIKE @searchTerm
+            OR O.Nombre LIKE @searchTerm
+          )
+          AND Su.Bit_Activo = 1
+      ORDER BY Su.Fec_Alta DESC
+      OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
     `;
 
-    const sueldos = await executeQuery(query, paramsList);
+    const reportes = await executeQuery(query, paramsList);
 
     return {
       ok: true,
-      sueldos: sueldos
+      sueldos: reportes
     };
 
   } catch (error) {
     console.error("API Error:", error);
     return {
       ok: false,
-      programaciones: []
+      sueldos: []
     };
   }
 };

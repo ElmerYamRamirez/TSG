@@ -1,313 +1,472 @@
 'use client';
 
-import { updateProgramacionById } from "components/actions";
-import { ProgramacionI } from "components/interfaces/programacion";
+import { deleteSueldoById, updateSueldoById, createSueldo } from "components/actions";
+import { Sueldo } from "components/interfaces/sueldo";
+import { OperadorI } from "components/interfaces/operador";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const handleEdit = async (programacion: ProgramacionI) => {
-    const response = await updateProgramacionById(programacion) ?? { ok: false, res: [] };
-    const combustibles = response.res ?? [];
-    return { ok: response.ok, combustibles };
+const handleCreate = async (item: Sueldo) => {
+  const response = await createSueldo(item) ?? { ok: false };
+  return response;
+};
+
+const handleEdit = async (programacion: Sueldo) => {
+  const response = await updateSueldoById(programacion) ?? { ok: false, res: [] };
+  const combustibles = response.res ?? [];
+  return { ok: response.ok, combustibles };
 }
 
-export default function SueldosTable({ nominas }:
-    { nominas: {} }) {
+const handleDarDeBaja = async (programacion: Sueldo) => {
+  console.log('Dar de baja:', programacion.codigo);
+  if (confirm(`¿Estás seguro de eliminar: ${programacion.Empleado}?`)) {
+    const { ok } = await deleteSueldoById(programacion) ?? { ok: false, programacion: [] };
+    if (!ok) {
+      alert("Hubo un error al eliminar la programación.");
+    }
+  }
+}
 
-    const [itemEditando, setItemEditando] = useState<ProgramacionI | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const opcionesStatus = ['Programado', 'Despachado', 'Finalizado', ''];
-    const opcionesPapeleria = ['Pendiente', 'Entregada', ''];
-    const router = useRouter();
-    //Modal Combustibles
-    const abrirModalEditar = (item: ProgramacionI) => {
-        setItemEditando(item);
-        setIsEditing(true);
-        setIsModalOpen(true);
-    };
+// Calcular el total de deducciones
+const calcularTotalDeducciones = (item: Sueldo): number => {
+  return (
+    (item.Prestamo_Infonavit__CF_ || 0) +
+    (item.Prestamo_infonavit__FD_ || 0) +
+    (item.Prestamo_Infonavit__PORC_ || 0) +
+    (item.Subs_al_Empleo__mes_ || 0) +
+    (item.I_S_R___mes_ || 0) +
+    (item.I_M_S_S_ || 0) +
+    (item.Ajuste_al_neto || 0) +
+    (item.Pension_Alimenticia || 0)
+  );
+};
 
-    //Guardar Carga de Combustible
-    const guardarCambios = async () => {
-        if (!itemEditando) return
+export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], operadores: OperadorI[] }) {
+  const [itemEditando, setItemEditando] = useState<Sueldo | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
 
-        if (isEditing) {
-            //call server action to edit
-            const responce = await handleEdit(itemEditando);
+  const abrirModalEditar = (item: Sueldo) => {
+    setItemEditando(item);
+    setIsEditing(true);
+    setIsModalOpen(true);
+  };
 
-            if (responce.ok) {
-                router.refresh()
-            } else {
-                alert('Error al guardar')
-            }
+  const abrirModalCrear = () => {
+    setItemEditando({
+      Percepcion_total: 0,
+      Sueldo: null,
+      Septimo_dia: null,
+      Prestamo_infonavit__FD_: 0,
+      Total_de_deducciones: 0,
+      Prestamo_Infonavit__CF_: 0,
+      Prestamo_Infonavit__PORC_: 0,
+      Subs_al_Empleo__mes_: 0,
+      I_S_R___mes_: 0,
+      I_M_S_S_: 0,
+      Ajuste_al_neto: 0,
+      NETO: 0,
+      Pension_Alimenticia: 0,
+      codigo: 0,
+      Empleado: '',
+      Sueldo_Real: 0,
+      Extra: 0,
+      Bono_Puntualidad: null,
+      Rebaje: 0,
+      Sueldo_Real_Total: 0,
+      operador_name: ''
+    });
+    setIsEditing(false);
+    setIsModalOpen(true);
+  };
 
-        } else {
-            //call server action to create
-            console.log(itemEditando)
-            //const responce = await handleCreate(itemEditando);
+  const handleChange = (field: keyof Sueldo, value: string) => {
+    if (!itemEditando) return;
 
-            //if (responce.ok) {
-            //router.refresh()
-            //} else {
-            //alert('Error al guardar')
-            //}
-        }
-        setIsModalOpen(false)
+    const numericValue = value === '' ? 0 : parseFloat(value);
+    const updatedItem = { ...itemEditando, [field]: numericValue };
+
+    // Recalcular Percepcion_total
+    if (field === 'Sueldo' || field === 'Septimo_dia') {
+      updatedItem.Percepcion_total = (updatedItem.Sueldo || 0) + (updatedItem.Septimo_dia || 0);
     }
 
-    return (
-        <>
+    // Recalcular Sueldo_Real_Total
+    if (field === 'Sueldo_Real' || field === 'Rebaje') {
+      updatedItem.Sueldo_Real_Total = (updatedItem.Sueldo_Real || 0) - (updatedItem.Rebaje || 0);
+    }
 
-            <div className="overflow-x-auto">
-                <table className="table-auto mx-auto divide-y divide-gray-300">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Empleado</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Viajes</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Infonavit</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">ISR/IMSS/PENSION</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Prestamo</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Adelanto</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Extras</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Dep 1</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Dep 2</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Total</th>
-                            <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {nominas.map((nomina, index) => (
-                            <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.nombre}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.totalViajes}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.Infonavit}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.isrImssPension}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.totalPrestamos}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.totalAdelantos}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.sueldo}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.extras}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.deposito1}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.deposito2}</td>
-                                <td className="px-1 lg:py-1 text-xs text-gray-700">{nomina.total}</td>
-                                <td className="px-1 text-xs text-indigo-600 font-medium">
-                                    <button className="text-2xs bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(nomina)}>
-                                        Generar Nomina
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+    // Recalcular las deducciones y el NETO
+    updatedItem.Total_de_deducciones = calcularTotalDeducciones(updatedItem);
+    updatedItem.NETO = (updatedItem.Percepcion_total || 0) - (updatedItem.Total_de_deducciones || 0);
 
-            {/* Modal de edición */}
-            {isModalOpen && itemEditando && (
-                <div className="fixed inset-0 bg-black/50 bg-opacity-50 overflow-y-auto z-50">
-                    <div className="flex items-center justify-center min-h-screen px-4 py-8">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-2">
-                            <div className="flex items-center justify-center">
-                                <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Programación' : 'Agregar Programación'}</h2>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Unidad</label>
-                                    <select
-                                        value={itemEditando.Unidad}
-                                        onChange={e => setItemEditando({ ...itemEditando, Unidad: Number(e.target.value) })}
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        <option value="">Selecciona una unidad</option>
-                                        {unidades.map(unidad => (
-                                            <option key={unidad.uniqueId} value={unidad.uniqueId}>
-                                                {unidad.Nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+    setItemEditando(updatedItem);
+  };
 
-                                <div>
-                                    <label className="block text-xs text-gray-700 mb-1">Operador</label>
-                                    <select
-                                        value={itemEditando.Operador}
-                                        onChange={e => setItemEditando({ ...itemEditando, Operador: Number(e.target.value) })}
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        <option value="">Selecciona un operador</option>
-                                        {operadores.map(operador => (
-                                            <option key={operador.uniqueId} value={operador.uniqueId}>
-                                                {operador.Nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+  const guardarCambios = async () => {
+    if (!itemEditando) return;
 
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Fecha</label>
-                                    <input
-                                        type="date"
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.Fecha_programada ? new Date(itemEditando.Fecha_programada).toISOString().split("T")[0] : ""}
-                                        onChange={e => setItemEditando({ ...itemEditando, Fecha_programada: e.target.value })}
-                                        placeholder="Fecha"
-                                    />
-                                </div>
+    if (isEditing) {
+      const response = await handleEdit(itemEditando);
+      if (response.ok) {
+        router.refresh();
+      } else {
+        alert('Error al guardar');
+      }
+    } else {
+      const response = await handleCreate(itemEditando);
+      if (response.ok) {
+        router.refresh();
+      } else {
+        alert(response.message || 'Error al crear');
+      }
+    }
 
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Hora</label>
-                                    <input
-                                        type="time"
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.Hora_programada || ''}
-                                        onChange={e => setItemEditando({ ...itemEditando, Hora_programada: e.target.value })}
-                                    />
-                                </div>
+    setIsModalOpen(false);
+  };
 
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Destino</label>
-                                    <select
-                                        value={itemEditando.Destino_de_la_unidad}
-                                        onChange={e => setItemEditando({ ...itemEditando, Destino_de_la_unidad: Number(e.target.value) })}
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        <option value="">Selecciona un destino</option>
-                                        {destinosList.map(destino => (
-                                            <option key={destino.uniqueId} value={destino.uniqueId}>
-                                                {destino.Nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+  const deleteProgramacion = async (item: Sueldo) => {
+    await handleDarDeBaja(item);
+    router.refresh();
+  }
 
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Cliente</label>
-                                    <select
-                                        value={itemEditando.Cliente}
-                                        onChange={e => setItemEditando({ ...itemEditando, Cliente: Number(e.target.value) })}
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        <option value="">Selecciona un cliente</option>
-                                        {clientes.map(cliente => (
-                                            <option key={cliente.uniqueId} value={cliente.uniqueId}>
-                                                {cliente.Nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <div className="flex justify-end">
+          <button
+            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+            onClick={abrirModalCrear}
+          >
+            <span>Agregar Sueldo</span>
+          </button>
+        </div>
+        <table className="table-auto mx-auto divide-y divide-gray-300">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Codigo</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Empleado</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Septimo dia</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Bono de Puntualidad</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Infonavit FD</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Infonavit CF</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Infonavit PORC</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Subs</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">I.S.R</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">I.M.S.S</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Ajuste Neto</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Pension</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Total Percibido</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Total Deducciones</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">NETO</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo Real</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Rebaje</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo Real Total</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Extra</th>
+              <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {sueldos.map((programacion, index) => (
+              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.codigo}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.operador_name}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Septimo_dia}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Bono_Puntualidad}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Prestamo_infonavit__FD_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Prestamo_Infonavit__CF_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Prestamo_Infonavit__PORC_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Subs_al_Empleo__mes_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.I_S_R___mes_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.I_M_S_S_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Ajuste_al_neto}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Pension_Alimenticia}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Percepcion_total}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Total_de_deducciones}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.NETO}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo_Real}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Rebaje}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo_Real_Total}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Extra}</td>
+                <td className="px-1 text-xs text-indigo-600 font-medium">
+                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(programacion)}>
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => deleteProgramacion(programacion)}
+                    className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Comentario</label>
-                                    <textarea
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.Comentario || ''}
-                                        onChange={e => setItemEditando({ ...itemEditando, Comentario: e.target.value })}
-                                        placeholder="Agrega un comentario opcional"
-                                        rows={3}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Estado de envio</label>
-                                    <select
-                                        value={itemEditando.status_programacion}
-                                        onChange={(e) =>
-                                            setItemEditando({ ...itemEditando, status_programacion: e.target.value })
-                                        }
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        {opcionesStatus.map((status, index) => (
-                                            <option key={index} value={status}>
-                                                {status}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Papeleria</label>
-                                    <select
-                                        value={itemEditando.papeleria}
-                                        onChange={(e) =>
-                                            setItemEditando({ ...itemEditando, papeleria: e.target.value })
-                                        }
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        {opcionesPapeleria.map((status, index) => (
-                                            <option key={index} value={status}>
-                                                {status}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo</label>
-                                    <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        onChange={e => {
-                                            const valor = e.target.value;
-                                            setItemEditando({
-                                                ...itemEditando,
-                                                Sueldo: valor === '' ? null : Number(valor)
-                                            });
-                                        }}
-                                        value={itemEditando.Sueldo ?? ''}
-                                        placeholder="Total"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Se cobró</label>
-                                    <input
-                                        type="number"
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        onChange={e => {
-                                            const valor = e.target.value;
-                                            setItemEditando({
-                                                ...itemEditando,
-                                                cantidad_cobrada: valor === '' ? null : Number(valor)
-                                            });
-                                        }}
-                                        value={itemEditando.cantidad_cobrada ?? ''}
-                                        placeholder="Total"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Fecha Papeleria</label>
-                                    <input
-                                        type="date"
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                        value={itemEditando.fecha_entrega_papeleria ? new Date(itemEditando.fecha_entrega_papeleria).toISOString().split("T")[0] : ""}
-                                        onChange={e => setItemEditando({ ...itemEditando, fecha_entrega_papeleria: e.target.value })}
-                                        placeholder="Fecha"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Vendedor</label>
-                                    <select
-                                        value={itemEditando.vendedor}
-                                        onChange={e => setItemEditando({ ...itemEditando, vendedor: (e.target.value) })}
-                                        className="border rounded px-3 py-2 w-full text-xs"
-                                    >
-                                        <option value="">Selecciona un vendedor</option>
-                                        {vendedores.map(vendedor => (
-                                            <option key={vendedor.uniqueId} value={vendedor.uniqueId}>
-                                                {vendedor.nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-2">
-                                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
-                                    Cancelar
-                                </button>
-                                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                    onClick={guardarCambios}>
-                                    {isEditing ? 'Guardar' : 'Crear'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+      {/* Modal de edición */}
+      {isModalOpen && itemEditando && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 overflow-y-auto z-50">
+          <div className="flex items-center justify-center min-h-screen px-4 py-8">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-2">
+              <div className="flex items-center justify-center">
+                <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Programación' : 'Agregar Programación'}</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Codigo</label>
+                  <input
+                    type="number"
+                    value={itemEditando.codigo === null ? '' : itemEditando.codigo.toString() ?? ''}
+                    onChange={e => setItemEditando({ ...itemEditando, codigo: Number(e.target.value) })}
+                    className="border rounded px-3 py-2 w-full text-xs"
+                  />
                 </div>
-            )}
-        </>);
+                
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
+                  <select
+                    value={itemEditando.Empleado}
+                    onChange={e => setItemEditando({ ...itemEditando, Empleado: e.target.value })}
+                    className="border rounded px-3 py-2 w-full text-xs"
+                  >
+                    <option value="">Selecciona un empleado</option>
+                    {operadores.map(operador => (
+                      <option key={operador.uniqueId} value={operador.uniqueId}>
+                        {operador.Nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Sueldo === null ? '' : itemEditando.Sueldo?.toString() ?? ''}
+                    onChange={(e) => handleChange('Sueldo', e.target.value)}
+                    placeholder="Sueldo"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Septimo Dia</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Septimo_dia === null ? '' : itemEditando.Septimo_dia?.toString() ?? ''}
+                    onChange={(e) => handleChange('Septimo_dia', e.target.value)}
+                    placeholder="Septimo Dia"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Bono de Puntualidad</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    onChange={e => {
+                      const valor = e.target.value;
+                      setItemEditando({
+                        ...itemEditando,
+                        Bono_Puntualidad: valor === '' ? null : Number(valor)
+                      });
+                    }}
+                    value={itemEditando.Bono_Puntualidad ?? ''}
+                    placeholder="Total"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Prestamo Infonavit (FD)</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Prestamo_infonavit__FD_ === 0 ? '' : itemEditando.Prestamo_infonavit__FD_?.toString() ?? ''}
+                    onChange={(e) => handleChange('Prestamo_infonavit__FD_', e.target.value)}
+                    placeholder="Prestamo Infonavit (FD)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Prestamo Infonavit (CF)</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Prestamo_Infonavit__CF_ === 0 ? '' : itemEditando.Prestamo_Infonavit__CF_?.toString() ?? ''}
+                    onChange={(e) => handleChange('Prestamo_Infonavit__CF_', e.target.value)}
+                    placeholder="Prestamo Infonavit (CF)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Prestamo Infonavit (PORC)</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Prestamo_Infonavit__PORC_ === 0 ? '' : itemEditando.Prestamo_Infonavit__PORC_?.toString() ?? ''}
+                    onChange={(e) => handleChange('Prestamo_Infonavit__PORC_', e.target.value)}
+                    placeholder="Prestamo Infonavit (PORC)"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Subs al empleo (Mes)</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Subs_al_Empleo__mes_ === 0 ? '' : itemEditando.Subs_al_Empleo__mes_?.toString() ?? ''}
+                    onChange={(e) => handleChange('Subs_al_Empleo__mes_', e.target.value)}
+                    placeholder="Subs al empleo"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">I.S.R (Mes)</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.I_S_R___mes_ === 0 ? '' : itemEditando.I_S_R___mes_?.toString() ?? ''}
+                    onChange={(e) => handleChange('I_S_R___mes_', e.target.value)}
+                    placeholder="I.S.R"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">I.M.S.S</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.I_M_S_S_ === 0 ? '' : itemEditando.I_M_S_S_?.toString() ?? ''}
+                    onChange={(e) => handleChange('I_M_S_S_', e.target.value)}
+                    placeholder="IMSS"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Ajuste al Neto</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Ajuste_al_neto === 0 ? '' : itemEditando.Ajuste_al_neto?.toString() ?? ''}
+                    onChange={(e) => handleChange('Ajuste_al_neto', e.target.value)}
+                    placeholder="Ajuste al Neto"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Pension Alimenticia</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Pension_Alimenticia === 0 ? '' : itemEditando.Pension_Alimenticia?.toString() ?? ''}
+                    onChange={(e) => handleChange('Pension_Alimenticia', e.target.value)}
+                    placeholder="Pension Alimenticia"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Total Percibido</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs bg-gray-100 cursor-not-allowed"
+                    value={itemEditando.Percepcion_total?.toFixed(2) ?? ''}
+                    readOnly
+                    placeholder="Total Percibido"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Total de Deducciones</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs bg-gray-100 cursor-not-allowed"
+                    value={itemEditando.Total_de_deducciones?.toFixed(2) ?? ''}
+                    readOnly
+                    placeholder="Total de deducciones"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">NETO</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs bg-gray-100 cursor-not-allowed"
+                    value={itemEditando.NETO?.toFixed(2) ?? ''}
+                    readOnly
+                    placeholder="NETO"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo Real</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Sueldo_Real === 0 ? '' : itemEditando.Sueldo_Real?.toString() ?? ''}
+                    onChange={(e) => handleChange('Sueldo_Real', e.target.value)}
+                    placeholder="Sueldo Real"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Rebaje</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    value={itemEditando.Rebaje === 0 ? '' : itemEditando.Rebaje?.toString() ?? ''}
+                    onChange={(e) => handleChange('Rebaje', e.target.value)}
+                    placeholder="Rebaje"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Sueldo Real Total</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs bg-gray-100 cursor-not-allowed"
+                    value={itemEditando.Sueldo_Real_Total?.toFixed(2) ?? ''}
+                    readOnly
+                    placeholder="Sueldo Real Total"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Extra</label>
+                  <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs"
+                    onChange={e => {
+                      const valor = e.target.value;
+                      setItemEditando({
+                        ...itemEditando,
+                        Extra: valor === '' ? 0 : Number(valor)
+                      });
+                    }}
+                    value={itemEditando.Extra ?? ''}
+                    placeholder="Total"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">
+                  Cancelar
+                </button>
+                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={guardarCambios}>
+                  {isEditing ? 'Guardar' : 'Crear'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

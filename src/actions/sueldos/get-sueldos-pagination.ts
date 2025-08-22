@@ -2,38 +2,42 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const getSueldosPagination = async (page: number, pageSize = 15) => {
-    try {
-        const offset = (page - 1) * pageSize;
-        const paramsList = [{ name: "offset", value: offset }, { name: "pageSize", value: pageSize }];
+export const getSueldosPagination = async (page: number, pageSize: number = 15) => {
+  try {
+    const offset = (page - 1) * pageSize;
+    const paramsList = [
+      { name: "offset", value: offset },
+      { name: "pageSize", value: pageSize },
+    ];
 
-        const query = `
-        SELECT 
-            su.*
-        FROM 
-            Sueldos su
-        WHERE 
-            su.Bit_Activo = 1
-        ORDER BY su.uniqueId DESC
-        OFFSET @offset ROWS
-        FETCH NEXT @pageSize ROWS ONLY;
-        `;
+    const query = `
+      SELECT 
+        Su.*,
+        O.Nombre AS operador_name
+      FROM 
+        Sueldos Su
+      LEFT JOIN
+        Operador O ON Su.Empleado = O.uniqueId
+      WHERE 
+          Su.Bit_Activo = 1
+      ORDER BY Su.codigo ASC
+      OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
+    `;
 
-        const [sueldos] = await Promise.all([
-            executeQuery(query, paramsList)
-        ]);
-        return {
-            ok: true,
-            sueldos: sueldos,
-        };
+    const totalQuery = `SELECT COUNT(*) AS total FROM Sueldos`;
 
+    const [sueldos, totalResult] = await Promise.all([
+      executeQuery(query, paramsList),
+      executeQuery(totalQuery),
+    ]);
 
-    } catch (error) {
-        console.error("API Error:", error);
-        //return NextResponse.json(
-        //  { message: "Internal Server Error" },
-        //{ status: 500 }
-        //);
-    }
-}
-
+    return {
+      ok: true,
+      sueldos,
+      total: totalResult?.[0]?.total ?? 0,
+    };
+  } catch (error) {
+    console.error("API Error:", error);
+    return { ok: false, sueldos: [], total: 0 };
+  }
+};

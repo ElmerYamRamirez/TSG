@@ -65,7 +65,7 @@ export default function UnidadesTable({ searchParams }: { searchParams: Promise<
     setIsModalOpen(false);
   };
 
-  const camposTanques: (keyof ConfiguracionTanquesI)[] = [ "litros_maximos_t1", "litros_maximos_t2", "litros_maximos_t3", "litros_maximos_t4", "litros_maximos_tg",];
+  //const camposTanques: (keyof ConfiguracionTanquesI)[] = [ "litros_maximos_t1", "litros_maximos_t2", "litros_maximos_t3", "litros_maximos_t4", "litros_maximos_tg",];
 
   useEffect(() => {
     async function fetchData() {
