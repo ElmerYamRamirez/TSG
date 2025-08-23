@@ -87,10 +87,12 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
             <tr>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Empleado</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Cantidad</th>
+              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Total Actual</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Status</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Fecha de Inicio</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Fecha de Finalización</th>
+              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Acciones</th>
               <th></th>
             </tr>
           </thead>
@@ -99,6 +101,7 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-1 py-1 text-xs">{adelanto.operador_name}</td>
                 <td className="px-1 py-1 text-xs">{adelanto.Cantidad}</td>
+                <td className="px-1 py-1 text-xs">{adelanto.Total_Actual}</td>
                 <td className="px-1 py-1 text-xs">{adelanto.Status}</td>
                 <td className="px-1 py-1 text-xs">{adelanto.Comentario}</td>
                 <td className="px-1 py-1 text-xs">{formatDate(adelanto.Fecha_Inicio)}</td>

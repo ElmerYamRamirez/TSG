@@ -15,7 +15,8 @@ export const createAdelanto = async (item: Adelanto) => {
         Comentario,
         Nombre,
         Fecha_Finalizacion,
-        Fecha_Inicio
+        Fecha_Inicio,
+        Total_Actual
       )
       VALUES (
         (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM Adelanto),
@@ -26,7 +27,8 @@ export const createAdelanto = async (item: Adelanto) => {
         @Comentario,
         @Nombre,
         @Fecha_Finalizacion,
-        @Fecha_Inicio
+        @Fecha_Inicio,
+        0
       )
     `;
 
