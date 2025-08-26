@@ -26,7 +26,7 @@ export async function GET(
       `UPDATE Adelanto
        SET Status = 'DESCONTADO'
        WHERE nombre = @id
-         AND Status = 'RECURRENTE'
+         AND Status = 'PENDIENTE'
          AND Fecha_Finalizacion IS NOT NULL
          AND Fecha_Finalizacion <= @FechaFinCorte`,
       [
@@ -78,15 +78,22 @@ export async function PUT(
       );
     }
 
+    const fechaActual = new Date(); // Se puede usar new Date().toISOString() si quieren UTC
+
     const updateQuery = `
       UPDATE Adelanto
-      SET Status = 'DESCONTADO',
-          Total_Actual = ISNULL(Total_Actual, 0) + Cantidad
+      SET 
+          Total_Actual = ISNULL(Total_Actual, 0) + Cantidad,
+          Status = CASE 
+                      WHEN Fecha_Finalizacion <= @fechaActual THEN 'DESCONTADO' 
+                      ELSE Status 
+                  END
       WHERE uniqueId = @id;
     `;
 
     const result = await executeQuery(updateQuery, [
-      { name: "id", value: id }
+      { name: "id", value: id },
+      { name: "fechaActual", value: fechaActual },
     ]);
 
     console.log("Update result:", result);

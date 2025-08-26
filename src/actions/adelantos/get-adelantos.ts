@@ -14,7 +14,7 @@ export const getAdelantos = async () => {
         await executeQuery(`
             UPDATE Adelanto
             SET Status = 'DESCONTADO'
-            WHERE Status = 'RECURRENTE'
+            WHERE Status = 'PENDIENTE'
                 AND Fecha_Finalizacion IS NOT NULL
                 AND Fecha_Finalizacion <= @FechaFinCorte`,
             [
