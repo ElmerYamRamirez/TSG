@@ -60,7 +60,7 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
     return `${day}/${month}/${year}`;
   };
 
-  const handleChange = (field: keyof Adelanto, value: any) => {
+  const handleChange = (field: keyof Adelanto, value: Adelanto[keyof Adelanto]) => {
     setItemEditando(prev => prev ? { ...prev, [field]: value === '' ? null : value } : null);
   };
 
@@ -176,7 +176,6 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
                   className="border rounded px-3 py-2 w-full text-xs"
                 >
                   <option value="">Selecciona un Status</option>
-                  <option value="RECURRENTE">RECURRENTE</option>
                   <option value="PENDIENTE">PENDIENTE</option>
                   <option value="DESCONTADO">DESCONTADO</option>
                 </select>
