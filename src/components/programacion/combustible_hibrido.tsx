@@ -38,10 +38,6 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
   const router = useRouter();
   const reporte = reporte_hibrido ?? {};
 
-  ///consumo total
-  const [costoConsumidoTotalGas, setCostoConsumidoTotalGas] = useState('');
-  const [costoConsumidoTotalGasolina, setCostoConsumidoTotalGasolina] = useState('');
-
   ///precio litros 
   const [precioLitroGas, setPrecioLitroGas] = useState('');
   const [precioLitroGasolina, setPrecioLitroGasolina] = useState('');

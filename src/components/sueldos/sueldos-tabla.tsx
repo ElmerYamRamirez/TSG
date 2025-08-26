@@ -5,22 +5,25 @@ import { Sueldo } from "components/interfaces/sueldo";
 import { OperadorI } from "components/interfaces/operador";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Adelanto } from "components/interfaces/adelanto";
+import { Prestamo } from "components/interfaces/prestamo";
+import { ProgramacionI } from "components/interfaces/programacion";
 
 const handleCreate = async (item: Sueldo) => {
   const response = await createSueldo(item) ?? { ok: false };
   return response;
 };
 
-const handleEdit = async (programacion: Sueldo) => {
-  const response = await updateSueldoById(programacion) ?? { ok: false, res: [] };
+const handleEdit = async (sueldo: Sueldo) => {
+  const response = await updateSueldoById(sueldo) ?? { ok: false, res: [] };
   const combustibles = response.res ?? [];
   return { ok: response.ok, combustibles };
 }
 
-const handleDarDeBaja = async (programacion: Sueldo) => {
-  console.log('Dar de baja:', programacion.codigo);
-  if (confirm(`¿Estás seguro de eliminar: ${programacion.Empleado}?`)) {
-    const { ok } = await deleteSueldoById(programacion) ?? { ok: false, programacion: [] };
+const handleDarDeBaja = async (sueldo: Sueldo) => {
+  console.log('Dar de baja:', sueldo.codigo);
+  if (confirm(`¿Estás seguro de eliminar: ${sueldo.operador_name}?`)) {
+    const { ok } = await deleteSueldoById(sueldo) ?? { ok: false, sueldo: [] };
     if (!ok) {
       alert("Hubo un error al eliminar la programación.");
     }
@@ -41,7 +44,7 @@ const calcularTotalDeducciones = (item: Sueldo): number => {
   );
 };
 
-export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], operadores: OperadorI[] }) {
+export default function UserTable({ sueldos, operadores, adelantos, prestamos, programaciones }: { sueldos: Sueldo[], operadores: OperadorI[], adelantos: Adelanto[], prestamos: Prestamo[], programaciones: ProgramacionI[]}) {
   const [itemEditando, setItemEditando] = useState<Sueldo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -126,9 +129,29 @@ export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], 
     setIsModalOpen(false);
   };
 
-  const deleteProgramacion = async (item: Sueldo) => {
+  const deletesueldo = async (item: Sueldo) => {
     await handleDarDeBaja(item);
     router.refresh();
+  }
+
+    const fusionSueldosAdelantos = () => {
+      return sueldos.map((sueldo) => {
+        const adelantosEmpleado = adelantos.filter(a => a.Nombre === sueldo.Empleado)
+        const prestamosEmpleado = prestamos.filter(p => p.Nombre === sueldo.Empleado)
+        const viajesDelOperador = programaciones?.filter((v) => v.Operador === Number(sueldo.Empleado)) || [];
+        const totalViajes = viajesDelOperador.reduce((acc, v) => acc + (v.Sueldo ?? 0), 0);
+
+        const sueldoDelOperador = sueldos.filter( (s)=> s.Empleado === sueldo.Empleado) || [];
+        const primerSueldo = sueldoDelOperador[0]
+        const sueldoChofer = primerSueldo ? (totalViajes > primerSueldo.Percepcion_total ? totalViajes : primerSueldo.Sueldo_Real) : 0;
+        return {
+          ...sueldo,
+          sueldo : sueldoChofer,
+          adelantos: adelantosEmpleado,
+          prestamos: prestamosEmpleado,
+          rebaje: ((adelantosEmpleado.reduce((acc, a) => acc + (a.Cantidad ?? 0), 0) ?? 0) + (prestamosEmpleado?.reduce((acc2, p) => acc2 + (p.Descuento_por_semana ?? 0), 0 ) ?? 0))
+        };
+      });
   }
 
   return (
@@ -163,40 +186,42 @@ export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], 
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">NETO</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo Real</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Rebaje</th>
+              {/*<th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Rebaje2</th>*/}
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Sueldo Real Total</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Extra</th>
               <th className="px-1 py-1 lg:py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {sueldos.map((programacion, index) => (
+            {fusionSueldosAdelantos().map((sueldo, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.codigo}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.operador_name}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Septimo_dia}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Bono_Puntualidad}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Prestamo_infonavit__FD_}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Prestamo_Infonavit__CF_}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Prestamo_Infonavit__PORC_}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Subs_al_Empleo__mes_}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.I_S_R___mes_}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.I_M_S_S_}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Ajuste_al_neto}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Pension_Alimenticia}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Percepcion_total}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Total_de_deducciones}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.NETO}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo_Real}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Rebaje}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Sueldo_Real_Total}</td>
-                <td className="px-1 lg:py-1 text-xs text-gray-700">{programacion.Extra}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.codigo}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.operador_name}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Sueldo}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Septimo_dia}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Bono_Puntualidad}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Prestamo_infonavit__FD_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Prestamo_Infonavit__CF_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Prestamo_Infonavit__PORC_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Subs_al_Empleo__mes_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.I_S_R___mes_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.I_M_S_S_}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Ajuste_al_neto}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Pension_Alimenticia}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Percepcion_total}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Total_de_deducciones}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.NETO}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Sueldo_Real}</td>
+                {/*<td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Rebaje}</td>*/}
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.rebaje}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Sueldo_Real_Total - sueldo.rebaje}</td>
+                <td className="px-1 lg:py-1 text-xs text-gray-700">{sueldo.Extra}</td>
                 <td className="px-1 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(programacion)}>
+                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(sueldo)}>
                     Editar
                   </button>
                   <button
-                    onClick={() => deleteProgramacion(programacion)}
+                    onClick={() => deletesueldo(sueldo)}
                     className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
                     Eliminar
                   </button>
@@ -213,7 +238,7 @@ export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], 
           <div className="flex items-center justify-center min-h-screen px-4 py-8">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-2">
               <div className="flex items-center justify-center">
-                <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Programación' : 'Agregar Programación'}</h2>
+                <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Sueldo' : 'Agregar Sueldo'}</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
@@ -411,17 +436,6 @@ export default function UserTable({ sueldos, operadores }: { sueldos: Sueldo[], 
                     value={itemEditando.Sueldo_Real === 0 ? '' : itemEditando.Sueldo_Real?.toString() ?? ''}
                     onChange={(e) => handleChange('Sueldo_Real', e.target.value)}
                     placeholder="Sueldo Real"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Rebaje</label>
-                  <input
-                    type="number"
-                    className="border rounded px-3 py-2 w-full text-xs"
-                    value={itemEditando.Rebaje === 0 ? '' : itemEditando.Rebaje?.toString() ?? ''}
-                    onChange={(e) => handleChange('Rebaje', e.target.value)}
-                    placeholder="Rebaje"
                   />
                 </div>
 
