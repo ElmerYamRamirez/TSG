@@ -69,35 +69,36 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    console.log('PUT Request - ID:', id, 'Body:', body);
+    console.log("PUT Request - ID:", id, "Body:", body);
 
     if (!id || isNaN(Number(id))) {
       return NextResponse.json(
-        { message: 'ID de adelanto inválido' },
+        { message: "ID de adelanto inválido" },
         { status: 400 }
       );
     }
 
     const updateQuery = `
       UPDATE Adelanto
-      SET Status = 'DESCONTADO'
-      WHERE uniqueId = @id
+      SET Status = 'DESCONTADO',
+          Total_Actual = ISNULL(Total_Actual, 0) + Cantidad
+      WHERE uniqueId = @id;
     `;
 
     const result = await executeQuery(updateQuery, [
-      { name: 'id', value: id }
+      { name: "id", value: id }
     ]);
 
-    console.log('Update result:', result);
+    console.log("Update result:", result);
 
     return NextResponse.json(
-      { success: true, message: 'Adelanto actualizado' },
+      { success: true, message: "Adelanto descontado y Total_Actual actualizado" },
       { status: 200 }
     );
   } catch (error) {
-    console.error('PUT Error:', error);
+    console.error("PUT Error:", error);
     return NextResponse.json(
-      { success: false, message: 'Error al actualizar adelanto' },
+      { success: false, message: "Error al actualizar adelanto" },
       { status: 500 }
     );
   }
