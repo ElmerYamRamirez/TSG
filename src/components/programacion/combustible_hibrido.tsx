@@ -38,6 +38,11 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
   const router = useRouter();
   const reporte = reporte_hibrido ?? {};
 
+  ///precio litros 
+  const [precioLitroGas, setPrecioLitroGas] = useState('');
+  const [precioLitroGasolina, setPrecioLitroGasolina] = useState('');
+
+
   //Porcentajes Iniciales
   const [isPorcentajesInicialesModalOpen, setIsPorcentajesInicialesModalOpen] = useState(false);
   const [PorcentajeInicialT1, setPorcentajeInicialT1] = useState('');
@@ -64,12 +69,20 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
     try {
       const existente = await getRendimientoHibridoByProgramacion(programacion);
       if (existente) {
+        //////precio litros
+        setPrecioLitroGas(existente.precio_litro_gas?.toString() ?? '');
+        setPrecioLitroGasolina(existente.precio_litro_gasolina?.toString() ?? '');
+        ////porcentajes 
         setPorcentajeInicialT1(existente.Porcentaje_Inicial_T1?.toString() ?? '');
         setPorcentajeInicialT2(existente.Porcentaje_Inicial_T2?.toString() ?? '');
         setPorcentajeInicialT3(existente.Porcentaje_Inicial_T3?.toString() ?? '');
         setPorcentajeInicialT4(existente.Porcentaje_Inicial_T4?.toString() ?? '');
         setPorcentajeInicialTG(existente.Porcentaje_Inicial_TG?.toString() ?? '');
       } else {
+        ////precio litros 
+        setPrecioLitroGas('');
+        setPrecioLitroGasolina('');
+        ////porcentajes
         setPorcentajeInicialT1('');
         setPorcentajeInicialT2('');
         setPorcentajeInicialT3('');
@@ -144,6 +157,8 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
       Litros_T3: 0,
       Litros_T4: 0,
       Litros_TG: 0,
+      precio_litro_gas: 0,
+      precio_litro_gasolina: 0,
       programacion: programacion,
       Bit_Activo: 1,
       Fec_Alta: new Date().toISOString(),
@@ -168,10 +183,13 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
         uniqueId: existente ? existente.uniqueId : 0,
         Bit_Activo: 1,
         Fec_Alta: new Date().toISOString(),
+        ////precio litros 
+        precio_litro_gas: parseFloat(precioLitroGas) || 0,
         Porcentaje_Inicial_T1: parseFloat(PorcentajeInicialT1) || 0,
         Porcentaje_Inicial_T2: parseFloat(PorcentajeInicialT2) || 0,
         Porcentaje_Inicial_T3: parseFloat(PorcentajeInicialT3) || 0,
         Porcentaje_Inicial_T4: parseFloat(PorcentajeInicialT4) || 0,
+        precio_litro_gasolina: parseFloat(precioLitroGasolina) || 0,
         Porcentaje_Inicial_TG: parseFloat(PorcentajeInicialTG) || 0,
         programacion: programacion,
       };
@@ -351,6 +369,8 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo T4</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo Total</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Consumo TG</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo Consumido Total Gas</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo Consumido Total Gasolina</th>
             </tr>
           </thead>
           <tbody>
@@ -367,6 +387,8 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_t4 ?? ' '}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_total_gas ?? ' '}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos_tg ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido_total_gas ?? ' '}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido_total_gasolina ?? ' '}</td>
             </tr>
           </tbody>  
         </table>
@@ -389,10 +411,12 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
           <thead className="bg-gray-50">
             <tr>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha de Carga</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Litro Gas</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Litros T1</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T2</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T3</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros T4</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Litro Gasolina</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros TG</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
@@ -401,10 +425,12 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
             {(combustibles || []).map((item, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-2 py-1 text-xs text-gray-700">{item.Fecha_Carga ? new Date(item.Fecha_Carga).toISOString().split("T")[0] : "Sin fecha"}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.precio_litro_gas}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T1}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T2}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T3}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_T4}</td>
+                <td className="px-1 py-2 text-xs text-gray-700">{item.precio_litro_gasolina}</td>
                 <td className="px-1 py-2 text-xs text-gray-700">{item.Litros_TG}</td>
                 <td className="px-1 py-2 space-x-2 text-xs text-indigo-600 font-medium">
                   <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
@@ -428,6 +454,18 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
           <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
               <h2 className="text-lg font-bold mb-2">Agregar Porcentajes Iniciales</h2>
+
+              <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Litro Gas</label>
+              <input
+               type="number"
+               step="0.01"
+               className="border rounded px-3 py-2 w-full"
+               value={precioLitroGas}
+               onChange={(e) => setPrecioLitroGas(e.target.value)}
+               placeholder="Precio Litro Gas"
+              />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Porcentaje Tanque 1</label>
@@ -518,6 +556,18 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
                     }
                   }}
                   placeholder="Porcentaje T4"
+                />
+              </div>
+
+              <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Litro Gasolina</label>
+              <input
+               type="number"
+               step="0.01"
+               className="border rounded px-3 py-2 w-full"
+               value={precioLitroGasolina}
+               onChange={(e) => setPrecioLitroGasolina(e.target.value)}
+               placeholder="Precio Litro Gasolina"
                 />
               </div>
 
@@ -763,6 +813,24 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
                 placeholder="Fecha_Carga"
               />
             </div>  
+
+           
+              <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Litro Gas</label>
+              <input
+               type="number"
+               step="0.01"
+               className="border rounded px-3 py-2 w-full"
+               value={itemEditando.precio_litro_gas === 0 ? '' : itemEditando.precio_litro_gas?.toString() ?? ''}
+                onChange={e => {
+                  const value = e.target.value;
+                  const precio_litro_gas = value === '' ? 0 : parseFloat(value);
+                  setItemEditando({ ...itemEditando, precio_litro_gas });
+                }}
+               placeholder="Precio Litro Gas"
+              />
+              </div>
+
                 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros T1</label>
@@ -827,6 +895,21 @@ export default function CombustiblesHibrido({ combustibles, programacion, report
                 placeholder="Litros_T4"
               />
             </div>
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Litro Gasolina</label>
+              <input
+               type="number"
+               step="0.01"
+               className="border rounded px-3 py-2 w-full"
+               value={itemEditando.precio_litro_gasolina === 0 ? '' : itemEditando.precio_litro_gasolina?.toString() ?? ''}
+               onChange={e => {
+                  const value = e.target.value;
+                  const precio_litro_gasolina = value === '' ? 0 : parseFloat(value);
+                  setItemEditando({ ...itemEditando, precio_litro_gasolina });
+                }}
+               placeholder="Precio Litro Gasolina"
+                />
+              </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Litros TG</label>

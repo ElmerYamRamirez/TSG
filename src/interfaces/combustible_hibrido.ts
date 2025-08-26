@@ -9,5 +9,7 @@ export interface CombustibleHibrido{
   Litros_T3: number;
   Litros_T4: number;
   Litros_TG: number;
+  precio_litro_gas: number;
+  precio_litro_gasolina: number;
   programacion: number;
 }

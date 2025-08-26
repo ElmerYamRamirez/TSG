@@ -62,3 +62,9 @@ export * from './adelantos/get-adelantos-pagination'
 export * from './adelantos/update-adelanto-by-id'
 export * from './adelantos/delete-adelanto-by-id'
 export * from './adelantos/create-adelanto-by-id'
+export * from './adelantos/get-adelantos';
+export * from './prestamos/get-prestamos';
+export * from './programaciones/get-programaciones-by-week';
+export * from './sueldos/get-sueldos-all';
+export * from './sueldos/get-sueldos-filtro';
+export * from './sueldos/get-sueldos-pagination';
