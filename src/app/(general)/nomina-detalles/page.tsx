@@ -1,5 +1,5 @@
 import { getOperadores, getAdelantos, getPrestamos, getProgramacionesByWeek, getSueldosFiltro, getSueldosPagination } from "components/actions";
-import SueldosTable from "components/components/sueldos/sueldos-tabla";
+import NominaTable from "components/components/nomina-detalles/nomina-detalles";
 import Link from "next/link";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; search?: string; desde?: string; hasta?: string }> }) {
@@ -106,8 +106,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   return (
     <div className="px-2 py-2 max-w-7xl mx-auto">
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-indigo-700">Sueldos</h1>
-        <p className="text-sm text-gray-600">Lista de sueldos</p>
+        <h1 className="text-3xl font-bold text-indigo-700">Detalles nómina</h1>
+        <p className="text-sm text-gray-600">Lista de detalles nómina</p>
       </div>
       <div className="flex justify-center mb-4">
         <form className="w-full max-w-4xl flex flex-wrap gap-2 items-end" method="GET">
@@ -138,16 +138,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
 
       {response?.ok === false ? (
-        <p className="text-center text-red-500">Error al cargar las sueldos.</p>
+        <p className="text-center text-red-500">Error al cargar las detalles nomina.</p>
       ) : (
         <>
           {Object.keys(sueldos).length === 0 ? (
             <div className="text-center text-gray-600 mt-6">
-              <p>No se encontraron sueldos que coincidan con la búsqueda.</p>
+              <p>No se encontraron detalles de nomina que coincidan con la búsqueda.</p>
             </div>
           ) : (
             <>
-              <SueldosTable nominas={nominas}/>
+              <NominaTable nomina={nominas}/>
               <div className="flex justify-center mt-4">
                 {page > 1 && (
                   <Link

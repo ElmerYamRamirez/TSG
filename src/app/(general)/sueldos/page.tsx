@@ -1,4 +1,4 @@
-import { getSueldosFiltro } from "components/actions";
+import { getAdelantos, getPrestamos, getProgramacionesByWeek, getSueldosFiltro } from "components/actions";
 import { getSueldosPagination } from "components/actions";
 import { getOperadores} from "components/actions";
 import UserTable from "components/components/sueldos/sueldos-tabla";
@@ -20,6 +20,37 @@ import React from "react";
 
     const operadores = await getOperadores() ?? { ok: false, operadores: [] };
 
+
+  function getLastSaturdayAndThisFriday() {
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0=Domingo, 6=Sábado
+  
+      // Sábado pasado
+      const lastSaturday = new Date(today);
+      lastSaturday.setDate(today.getDate() - ((dayOfWeek + 1) % 7));
+  
+      // Viernes actual
+      const thisFriday = new Date(today);
+      thisFriday.setDate(today.getDate() + ((5 - dayOfWeek + 7) % 7));
+  
+      // Ajustar a horario de México
+      const adjustToMexicoTimezone = (date: Date) => {
+        const offset = -6; // UTC-6 México Central
+        const adjustedDate = new Date(date.getTime() + offset * 60 * 60 * 1000);
+        return adjustedDate.toISOString().split("T")[0];
+      };
+  
+      return {
+        startDate: adjustToMexicoTimezone(lastSaturday),
+        endDate: adjustToMexicoTimezone(thisFriday),
+      };
+    }
+  
+  const { startDate, endDate} = getLastSaturdayAndThisFriday();
+  
+  const programaciones = await getProgramacionesByWeek(startDate, endDate) ?? {ok:false, programacion: []}
+  const adelantos = await getAdelantos() ?? {ok: false, adelantos: []}
+  const prestamos = await getPrestamos() ?? {ok: false, prestamos: []}
   const sueldos = response?.sueldos ?? [];
   const hayMasResultados = sueldos.length === pageSize;
 
@@ -67,7 +98,7 @@ import React from "react";
             </div>
           ) : (
             <>
-              <UserTable sueldos={sueldos} operadores={operadores.operadores}></UserTable>
+              <UserTable sueldos={sueldos} operadores={operadores.operadores} adelantos={adelantos.adelantos} prestamos={prestamos.prestamos} programaciones={programaciones.programacion}></UserTable>
               <div className="flex justify-center mt-4">
                 {page > 1 && (
                   <Link
