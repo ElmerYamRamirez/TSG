@@ -13,7 +13,8 @@ export const updateAdelantoById = async (item: Adelanto) => {
         Comentario = @Comentario,
         Nombre = @Nombre,
         Fecha_Finalizacion = @Fecha_Finalizacion,
-        Fecha_Inicio = @Fecha_Inicio
+        Fecha_Inicio = @Fecha_Inicio,
+        Total_Actual = @Total_Actual
       WHERE uniqueId = @uniqueId AND Bit_Activo = 1
     `;
 
@@ -24,7 +25,8 @@ export const updateAdelantoById = async (item: Adelanto) => {
       { name: 'Comentario', value: item.Comentario ?? null }, 
       { name: 'Nombre', value: item.Nombre ?? null }, 
       { name: 'Fecha_Finalizacion', value: item.Fecha_Finalizacion ?? null }, 
-      { name: 'Fecha_Inicio', value: item.Fecha_Inicio ?? null }
+      { name: 'Fecha_Inicio', value: item.Fecha_Inicio ?? null },
+      { name: 'Total_Actual', value: item.Total_Actual ?? null },
     ];
 
     const response = await executeQuery(query, paramsList);

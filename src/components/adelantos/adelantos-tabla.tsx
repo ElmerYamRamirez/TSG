@@ -159,6 +159,16 @@ export default function UserTable({ adelantos, operadores }: { adelantos: Adelan
               </div>
 
               <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Total Actual</label>
+                <input 
+                  type="number" 
+                  value={itemEditando.Total_Actual ?? ''} 
+                  onChange={e => handleChange('Total_Actual', e.target.value)} 
+                  className="border rounded px-3 py-2 w-full text-xs" 
+                />
+              </div>
+
+              <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={itemEditando.Status ?? ''}

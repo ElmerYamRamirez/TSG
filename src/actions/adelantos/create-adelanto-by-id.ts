@@ -28,7 +28,7 @@ export const createAdelanto = async (item: Adelanto) => {
         @Nombre,
         @Fecha_Finalizacion,
         @Fecha_Inicio,
-        0
+        @Total_Actual
       )
     `;
 
@@ -40,6 +40,7 @@ export const createAdelanto = async (item: Adelanto) => {
       { name: 'Nombre', value: Number(item.Nombre) },
       { name: 'Fecha_Finalizacion', value: item.Fecha_Finalizacion ?? null },
       { name: 'Fecha_Inicio', value: item.Fecha_Inicio ?? null },
+      { name: 'Total_Actual', value: item.Total_Actual ?? null },
     ]);
 
     return { ok: true, message: "Registro creado correctamente" };
