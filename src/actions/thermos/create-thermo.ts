@@ -26,8 +26,8 @@ export const createThermo = async ( item: ThermoI ) => {
                 {name: 'litros', value: item.litros},
                 {name: 'precio_litro', value: item.precio_litro},
                 {name: 'total', value: item.total},
-                {name: 'fecha_inicio', value: item.fecha_inicio = new Date().toISOString()},
-                {name: 'Fecha_final', value: item.Fecha_final = new Date().toISOString()},
+                {name: 'fecha_inicio', value: item.fecha_inicio},
+                {name: 'Fecha_final', value: item.Fecha_final },
                 {name: 'horas_uso_thermo', value: item.horas_uso_thermo},
                 {name: 'programacion', value: item.programacion},
                  ];

@@ -14,7 +14,8 @@ export const getProgramacionesById = async (id:string) => {
             c.Nombre AS cliente_name,
             o.Nombre AS operador_name,
             u.Nombre AS unidad_name,
-            u.combustible AS combustible
+            u.combustible AS combustible,
+            u.Caracteristica 
         FROM 
             Programacion_de_envio pe
         INNER JOIN 

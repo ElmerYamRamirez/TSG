@@ -9,10 +9,7 @@ import { ReporteHibrido } from 'components/interfaces/reporte_hibrido';
 import Thermo from './thermos';
 import {ReporteThermo} from 'components/interfaces/reporte_thermo';
 import { UnidadI } from 'components/interfaces/unidad';
-import { RendimientoThermo } from 'components/interfaces/rendimiento_thermo';
-
-//const esRefrigerado = (programacion.unidad?.Caracteristica ?? '').toLowerCase() === 'refrigerado';
-const tabs = ['Combustible', 'Viáticos', 'Casetas', 'Thermo'];
+///const tabs = ['Combustible', 'Viáticos', 'Casetas', 'Thermo'];
 
 interface ProgramacionI {
   uniqueId: number;
@@ -38,18 +35,24 @@ interface ProgramacionI {
   combustibles: [];
   combustible: string;
   combustible_hibrido:[];
+  Caracteristica: string;
   reporte: ReporteCombustibleI
   reporte_hibrido: ReporteHibrido
   reporte_thermo: ReporteThermo
-  rendimiento_thermo: RendimientoThermo
   unidad?: UnidadI;
 } 
 
 
 export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const [activeTab, setActiveTab] = useState('Combustible');
- 
+ const caracteristica = (programacion.Caracteristica ?? '').toLowerCase().replace(/\s/g, '');
 
+ /////
+  const tabs = ['Combustible', 'Viáticos', 'Casetas'];
+   if (caracteristica === 'refrigerado') {
+    tabs.push('Thermo');
+  }
+//////
   const renderContent = () => {
     switch (activeTab) {
      case 'Combustible':
@@ -68,8 +71,13 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
       case 'Casetas':
         return <Casetas casetas={programacion.casetas} programacion={programacion.uniqueId}></Casetas>;
       case 'Thermo':
-  return (
-    <Thermo thermos={programacion.thermos} programacion={programacion.uniqueId} reporte_thermo={programacion.reporte_thermo} rendimiento_thermo={programacion.rendimiento_thermo} />  );
+        //if (caracteristica === 'refrigerado') {
+        return (
+          <Thermo thermos={programacion.thermos} programacion={programacion.uniqueId} reporte_thermo={programacion.reporte_thermo}  />
+        );
+        //} else {
+        //  return <div className="text-gray-500">La unidad no cuenta con Thermo.</div>;
+       // }
       default:
         return null;
     }

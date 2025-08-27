@@ -13,9 +13,6 @@ export const updateThermoById = async (item: ThermoI) => {
             litros = @litros,
             precio_litro = @precio_litro,
             total = @total,
-            fecha_inicio = @fecha_inicio,
-            Fecha_final = @Fecha_final,
-            horas_uso_thermo = @horas_uso_thermo,
             programacion = @programacion
 
         WHERE uniqueId = @uniqueId
@@ -27,9 +24,6 @@ export const updateThermoById = async (item: ThermoI) => {
             {name: 'litros', value: item.litros},
             {name: 'precio_litro', value: item.precio_litro},
             {name: 'total', value: item.total},
-            {name: 'fecha_inicio', value: item.fecha_inicio = new Date().toISOString()},
-            {name: 'Fecha_final', value: item.Fecha_final = new Date().toISOString()},
-            {name: 'horas_uso_thermo', value: item.horas_uso_thermo},
             {name: 'programacion', value: item.programacion},
             { name: 'uniqueId', value: item.uniqueId }];
 

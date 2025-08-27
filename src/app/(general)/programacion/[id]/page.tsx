@@ -36,9 +36,7 @@ export default async function ProgramacionPage(props: { params : Promise<{id: st
       </div>
 
       <Tabs programacion={{...programacion?.programacion,reporte_hibrido: reporte_hibrido?.reporte_hibrido ?? null,combustible_hibrido: combustible_hibrido?.combustible_hibrido ?? null,
-        thermos: thermo?.thermos ?? [],
-        reporte_thermo: reporte_thermo ?? null
-      }}/>
+         reporte_thermo: reporte_thermo ?? null,thermos: thermo?.thermos ?? null }}/>
     </div>
   );
 };

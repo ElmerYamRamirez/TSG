@@ -11,19 +11,19 @@ export const getReporteThermoById = async (id: string) => {
       FROM PC_Rep_ReportePrueba
       WHERE programacion = @id;
     `;
-    const reporte_hibrido = await executeQuery(query, paramsList);
-
+    const result = await executeQuery(query, paramsList);
+    
 
     return {
       ok: true,
-      reporte_hibrido: reporte_hibrido[0] ?? null,
+      reporte_thermo: result[0] ?? null,
     };
     
   } catch (error) {
     console.error("API Error - reporte_thermo de Rendimiento:", error);
     return {
       ok: false,
-      reporte_hibrido: [],
+      reporte_thermo: [],
     };
   }
 };

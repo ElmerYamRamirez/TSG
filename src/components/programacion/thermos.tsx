@@ -1,59 +1,123 @@
-import { createThermo, updateThermoById} from "components/actions";
-import { deleteThermoById} from "components/actions";
+import { createThermo, updateThermoById, deleteThermoById, getRendimientoThermoByProgramacion, updateRendimientoThermoById, createRendimientoThermo } from "components/actions";
 import { useRouter } from "next/navigation";
-import { useState} from 'react';
+import { useState } from "react";
 import { ThermoI } from "components/interfaces/thermo";
 import { RendimientoThermo } from "components/interfaces/rendimiento_thermo";
 import { ReporteThermo } from "components/interfaces/reporte_thermo";
-import {getRendimientoThermoByProgramacion,updateRendimientoThermoById,createRendimientoThermo} from "components/actions";
 
-export default function CombustiblesThermos({ thermos, programacion, reporte_thermo, rendimiento_thermo}: { thermos: ThermoI[], programacion: number, reporte_thermo: ReporteThermo, rendimiento_thermo: RendimientoThermo }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [itemEditando, setItemEditando] = useState<ThermoI | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+const handleDarDeBaja = async(thermo: ThermoI) => {
+  console.log('Dar de baja:', thermo);
+  // Ejemplo: confirmar y hacer una petición a una API
+  if (confirm(`¿Estás seguro de eliminar: ${thermo.litros}?`)) {
+    //llamar server action to delete
+    const { ok } = await deleteThermoById(thermo.uniqueId) ?? { ok: false, thermos: [] };
+
+    if (!ok) {
+      alert("Hubo un error al eliminar la carga.");
+    }
+  }
+}
+
+const handleCreate = async (thermo: ThermoI) => {
+  //llamar server action to create
+  const { ok, res } = await createThermo(thermo) ?? { ok: false, res: [] }
+  return { ok, res }
+}
+
+const handleEdit = async (thermo: ThermoI) => {
+  const response = await updateThermoById(thermo) ?? { ok: false, res: [] };
+  const thermos = response.res ?? [];
+  return { ok: response.ok, thermos };
+}
+
+const toSQLDateTime = (date: string): string => {
+  if (!date) return "";
+  const d = new Date(date);
+  return d.toISOString().replace("T", " ").slice(0, 19);
+};
+
+const toSQLDateTimeLocal = (date: string): string => {
+  if (!date) return "";
+  const d = new Date(date);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  const ss = "00";
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+};
+
+
+export default function CombustiblesThermos({thermos,programacion,reporte_thermo}: {thermos: ThermoI[];  programacion: number;reporte_thermo: ReporteThermo;}) {
+const [isModalOpen, setIsModalOpen] = useState(false)
+  const [itemEditando, setItemEditando] = useState<ThermoI | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
   const router = useRouter();
+  //const reporte = reporte_thermo ?? {};
 
-  // Estado para el modal de RendimientoThermo
-  const [isRendimientoThermoModalOpen, setIsRendimientoThermoModalOpen] = useState(false);
-  const [litrosIniciales, setLitrosIniciales] = useState<string>(rendimiento_thermo?.litros_iniciales?.toString() ?? '');
-  const [litrosFinales, setLitrosFinales] = useState<string>(rendimiento_thermo?.litros_finales?.toString() ?? '');
 
-  // Abrir modal de rendimiento
-  const abrirModalRendimientoThermo = () => {
-    setLitrosIniciales(rendimiento_thermo?.litros_iniciales?.toString() ?? '');
-    setLitrosFinales(rendimiento_thermo?.litros_finales?.toString() ?? '');
-    setIsRendimientoThermoModalOpen(true);
+  ///consumo total
+  const [horas_uso_thermo, setHorasUsoThermo] = useState('');
+  const [precioLitro, setPrecioLitro] = useState('');
+  const [litrosCargados, setLitrosCargados] = useState('');
+  const [costoCarga, setCostoCarga] = useState('');
+  const [litrosConsumidos, setLitrosConsumidos] = useState('');
+  const [rendimiento, setRendimiento] = useState('');
+  const [costoConsumidoTotal, setCostoConsumidoTotal] = useState('');
+  ////Litros
+  const [isLitrosModalOpen, setIsLitrosModalOpen] = useState(false);
+  const [litrosIniciales, setLitrosIniciales] = useState('');
+  const [litrosFinales, setLitrosFinales] = useState('');
+  const [precioLitroInicial, setPrecioLitroInicial] = useState('');
+ // Fechas
+   const [isFechasModalOpen, setIsFechasModalOpen] = useState(false);
+  const [fechaInicial, setFechaInicial] = useState('');
+  const [fechaFinal, setFechaFinal] = useState('');
+
+//////Modal litros thermo
+const abrirModalLitros = async () => {
+    try {
+      const existente = await getRendimientoThermoByProgramacion(programacion);
+      if (existente) {
+        setLitrosIniciales(existente.litros_iniciales?.toString() ?? '');
+        setLitrosFinales(existente.litros_finales?.toString() ?? '');
+        setPrecioLitroInicial(existente.precio_litro_inicial?.toString() ?? '');
+
+      } else {
+        setLitrosIniciales('');
+        setLitrosFinales('');
+        setPrecioLitroInicial('');
+
+      }
+
+      setIsLitrosModalOpen(true);
+    } catch (error) {
+      console.error("Error al abrir el modal:", error);
+      alert("Error al abrir el modal de litros .");
+    }
   };
 
-  // Guardar rendimiento
-  const guardarRendimientoThermo = async () => {
-    const datos: RendimientoThermo = {
-      ...rendimiento_thermo,
-      uniqueId: rendimiento_thermo?.uniqueId ?? 0,
-      Bit_Activo: 1,
-      Fec_Alta: new Date().toISOString(),
-      litros_iniciales: litrosIniciales === '' ? null : parseFloat(litrosIniciales),
-      litros_finales: litrosFinales === '' ? null : parseFloat(litrosFinales),
-      programacion: programacion,
-    };
+  const abrirModalFechas = async () => {
+  try {
+    const existente = await getRendimientoThermoByProgramacion(programacion);
 
-    let response;
-    if (rendimiento_thermo && rendimiento_thermo.uniqueId) {
-      response = await updateRendimientoThermoById(datos);
-    } else {
-      response = await createRendimientoThermo(datos);
+    if (existente) {
+      if (fechaInicial === '') {
+        setFechaInicial(formatDateTimeLocal(existente.fecha_inicial) ?? '');
+      }
+      if (fechaFinal === '') {
+        setFechaFinal(formatDateTimeLocal(existente.fecha_final) ?? '');
+      }
     }
+    setIsFechasModalOpen(true);
+  } catch (error) {
+    console.error("Error al abrir el modal:", error);
+    alert("Error al abrir el modal de fechas.");
+  }
+};
 
-    if (response.ok) {
-      alert("Rendimiento guardado.");
-      setIsRendimientoThermoModalOpen(false);
-      router.refresh();
-    } else {
-      alert("Error al guardar rendimiento.");
-    }
-  };
-
-  // Modal Combustibles
+  // Modal cargas thermo
   const abrirModalEditar = (item: ThermoI) => {
     setItemEditando(item);
     setIsEditing(true);
@@ -66,128 +130,232 @@ export default function CombustiblesThermos({ thermos, programacion, reporte_the
       litros: 0,
       precio_litro: 0,
       total: 0,
-      fecha_inicio: new Date().toISOString().split("T")[0],
-      Fecha_final: new Date().toISOString().split("T")[0],
-      horas_uso_thermo: 0,
-      programacion: programacion,
+      programacion,
     });
     setIsEditing(false);
     setIsModalOpen(true);
   };
-
-  const handleCreate = async (item: ThermoI) => {
-    return await createThermo(item);
-  };
-
-  const handleEdit = async (item: ThermoI) => {
-    return await updateThermoById(item);
-  };
-
-  const handleDelete = async (item: ThermoI) => {
-    if (confirm(`¿Eliminar carga del ${item.fecha_inicio}?`)) {
-      await deleteThermoById(item.uniqueId);
+  const deleteThermoById = async (item: ThermoI) => {
+      await handleDarDeBaja(item);
       router.refresh();
+    }
+
+    ///Guardar litros thermo
+    const guardarLitros = async () => {
+    try {
+    
+      const existente = await getRendimientoThermoByProgramacion(programacion);
+
+      const datos: RendimientoThermo = {
+        ...existente,
+        uniqueId: existente ? existente.uniqueId : 0,
+        Bit_Activo: 1,
+        Fec_Alta: new Date().toISOString(),
+        ////precio litros 
+       /* precio_litro_gas: parseFloat(precioLitroGas) || 0,*/
+        litros_iniciales: parseFloat(litrosIniciales) || 0,
+        litros_finales: parseFloat(litrosFinales) || 0,
+        precio_litro_inicial: parseFloat(precioLitroInicial) || 0,
+        programacion: programacion,
+      };
+
+      let response;
+
+      if (existente) {
+        response = await updateRendimientoThermoById(datos);
+      } else {
+        response = await createRendimientoThermo(datos);
+      }
+
+      if (response.ok) {
+        alert("Litros guardados.");
+        setIsLitrosModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar litros.");
+      }
+
+    } catch (error) {
+      console.error("Error al guardar litros:", error);
+      alert("Error inesperado.");
     }
   };
 
-  // Guardar Carga de Combustible
-  const guardarCambios = async () => {
-    if (!itemEditando) return;
+  const guardarFechas = async () => {
+    try {
+    
+      const existente = await getRendimientoThermoByProgramacion(programacion);
 
-    let response;
+      const datos: RendimientoThermo = {
+        ...existente,
+        uniqueId: existente ? existente.uniqueId : 0,
+        Bit_Activo: 1,
+        Fec_Alta: new Date().toISOString(),
+        fecha_inicial: toSQLDateTimeLocal(fechaInicial),
+        fecha_final: toSQLDateTimeLocal(fechaFinal),
+        programacion: programacion,
+      };
+
+      let response;
+
+      if (existente) {
+        response = await updateRendimientoThermoById(datos);
+      } else {
+        response = await createRendimientoThermo(datos);
+      }
+
+      if (response.ok) {
+        alert("Fechas guardadas.");
+        setIsFechasModalOpen(false);
+        router.refresh();
+      } else {
+        alert("Error al guardar horas.");
+      }
+
+    } catch (error) {
+      console.error("Error al guardar horas:", error);
+      alert("Error inesperado.");
+    }
+  };
+///////Guardar cambios thermo
+    const guardarCambios = async () => {
+    if (!itemEditando) return
+
     if (isEditing) {
-      response = await handleEdit(itemEditando);
-    } else {
-      response = await handleCreate(itemEditando);
-    }
+      //call server action to edit
+      const responce = await handleEdit(itemEditando);
 
-    if (response && response.ok) {
-      router.refresh();
+      if (responce.ok) {
+        router.refresh()
+      } else {
+        alert('Error al guardar')
+      }
+
     } else {
-      alert('Error al guardar');
+      //call server action to create
+      console.log(itemEditando)
+      const responce = await handleCreate(itemEditando);
+
+      if (responce.ok) {
+        router.refresh()
+      } else {
+        alert('Error al guardar')
+      }
     }
-    setIsModalOpen(false);
+    setIsModalOpen(false)
+  }
+////Horas
+  const formatFecha = (fecha: string) => {
+    if (!fecha) return "Sin fecha";
+   const d = new Date(fecha);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+   return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const formatDateTimeLocal = (date: string | null | undefined) => {
+    if (!date) return "";
+   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(date)) return date;
+   const d = new Date(date);
+   const tzOffset = d.getTimezoneOffset() * 60000;
+   return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
+    <div className="p-4 bg-white rounded-lg shadow">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-lg font-bold text-gray-800 mb-2">Reporte Thermo</h3>
         <div className="flex space-x-2">
-          <button
-            className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
-            onClick={abrirModalRendimientoThermo}
-          >
-            <span>Editar Litros Iniciales/Finales</span>
-          </button>
-        </div>
+           
+        <button
+          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={abrirModalLitros}
+        >
+          <span>Agregar Litros</span>
+        </button>
+        <button
+          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          onClick={abrirModalFechas}
+        >
+          <span>Agregar Fechas</span>
+        </button>
+      </div>
       </div>
 
-      {/* Tabla de RendimientoThermo */}
+      {/* Reporte thermo */}
       <div className="overflow-x-auto mb-6">
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Iniciales</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Finales</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Horas Uso Thermo</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Litro</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Cargados</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo cargas</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Consumidos</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio por Litro</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha Inicial</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha Final</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Horas de Uso</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo por Litro</th>
+              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo Consumido total</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rendimiento</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo consumido total</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="px-2 py-1 text-xs text-gray-700">{rendimiento_thermo?.litros_iniciales ?? ''}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{rendimiento_thermo?.litros_finales ?? ''}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.litros_iniciales ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.litros_finales ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.litros_consumidos ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.precio_litro_inicial ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte_thermo.fecha_inicial) ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte_thermo.fecha_final) ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.horas_uso_thermo ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.costo_por_litro ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.costo_consumido ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.rendimiento ?? ""}</td>
             </tr>
           </tbody>
         </table>
       </div>
-    <div className="border-t border-gray-300 my-4"></div>
+      
 
-     <div className="flex items-center justify-between mb-1">
-        <h3 className="text-lg font-bold text-gray-800 mb-2">Listado de Cargas Hibrido</h3>
+      {/* Listado cargas */}
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-md font-semibold text-gray-700">Cargas Thermos</h3>
         <button
-          className="bg-emerald-500 text-white px-4 py-1 rounded hover:bg-emerald-600 flex items-center space-x-1"
+          className="bg-emerald-500 text-white px-3 py-1 rounded-md text-sm hover:bg-emerald-600"
           onClick={abrirModalCrear}
         >
-          <span>Agregar</span>
+          Agregar
         </button>
       </div>
 
-      {/* Tabla de cargas */}
-      <div className="overflow-x-auto mb-10">
-        <table className="min-w-full divide-y divide-gray-300">
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-fixed divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha Inicio</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha Final</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio Litro</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Total</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Horas Uso</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
+              <th className="px-15 py-2 text-left text-xs font-semibold text-gray-900">Litros</th>
+              <th className="px-15 py-2 text-left text-xs font-semibold text-gray-900">Precio</th>
+              <th className="px-15 py-2 text-left text-xs font-semibold text-gray-900">Total</th>
+              <th className="px-20 py-2 text-left text-xs font-semibold text-gray-900">Acciones</th>
             </tr>
           </thead>
-          <tbody>
-            {(thermos || []).map((item, index) => (
-              <tr key={index}>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.fecha_inicio ? new Date(item.fecha_inicio).toLocaleDateString() : ''}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.Fecha_final ? new Date(item.Fecha_final).toLocaleDateString() : ''}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.litros}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.precio_litro}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.total}</td>
-                <td className="px-2 py-1 text-xs text-gray-700">{item.horas_uso_thermo}</td>
-                <td className="px-2 py-1 space-x-2 text-xs text-indigo-600 font-medium">
-                  <button className="bg-blue-500 text-white px-1 rounded hover:bg-blue-600" onClick={() => abrirModalEditar(item)}>
+          <tbody className="bg-white divide-y divide-gray-200 space-x-2 ">
+            {(thermos || []).map((item) => (
+              <tr key={item.uniqueId}>
+                <td className="px-16 py-2 text-xs text-gray-700">{item.litros}</td>
+                <td className="px-16 py-2 text-xs text-gray-700">{item.precio_litro}</td>
+                <td className="px-16 py-2 text-xs text-gray-700">{item.total}</td>
+                <td className="px-20 py-2 space-x-2 flex">
+                  <button
+                    className="bg-blue-500 text-white px-2 py-0.5 text-xs rounded hover:bg-blue-600"
+                    onClick={() => abrirModalEditar(item)}
+                  >
                     Editar
                   </button>
                   <button
-                    onClick={() => handleDelete(item)}
-                    className="bg-red-100 hover:bg-red-200 px-1 text-red-500 border border-red-400 rounded">
+                    onClick={() => deleteThermoById(item)}
+                    className="bg-red-100 px-2 py-0.5 text-xs text-red-600 border border-red-400 rounded hover:bg-red-200"
+                  >
                     Eliminar
                   </button>
                 </td>
@@ -197,141 +365,173 @@ export default function CombustiblesThermos({ thermos, programacion, reporte_the
         </table>
       </div>
 
-      {/* Modal RendimientoThermo */}
-      {isRendimientoThermoModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
-            <h2 className="text-lg font-bold mb-2">Editar Litros Iniciales y Finales</h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Litros Iniciales</label>
+{/* Modal Litros */}
+        {isLitrosModalOpen && (
+          <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+              <h2 className="text-lg font-bold mb-2">Agregar Litros</h2>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Litros iniciales</label>
+                <input
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={litrosIniciales}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setLitrosIniciales(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setLitrosIniciales(val);
+                    }
+                  }}
+                  placeholder="Litros iniciales"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Litros finales</label>
+                <input
+                  type="number"
+                  className="border rounded px-3 py-2 w-full"
+                  value={litrosFinales}
+                  min={0}
+                  max={100}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setLitrosFinales(val);
+                      return;
+                    }
+                    const numVal = Number(val);
+                    if (numVal >= 0 && numVal <= 100) {
+                      setLitrosFinales(val);
+                    }
+                  }}
+                  placeholder="Litros finales"
+                />
+              </div>
+              <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Litro</label>
               <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={litrosIniciales}
-                onChange={e => setLitrosIniciales(e.target.value)}
-                placeholder="Litros Iniciales"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Litros Finales</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={litrosFinales}
-                onChange={e => setLitrosFinales(e.target.value)}
-                placeholder="Litros Finales"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => setIsRendimientoThermoModalOpen(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={guardarRendimientoThermo}
-              >
-                Guardar
-              </button>
+               type="number"
+               step="0.01"
+               className="border rounded px-3 py-2 w-full"
+               value={precioLitroInicial}
+               onChange={(e) => setPrecioLitroInicial(e.target.value)}
+               placeholder="Precio Litro "
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                  onClick={() => setIsLitrosModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={guardarLitros}
+                >
+                  Guardar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal de edición */}
+
+{/* Modal Horas */}
+        {isFechasModalOpen && (
+          <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
+              <h2 className="text-lg font-bold mb-2">Agregar Fechas</h2>
+              <div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicial</label>
+                  <input
+                    type="datetime-local"
+                    className="border rounded px-3 py-2 w-full"
+                    value={fechaInicial}
+                    onChange={(e) => setFechaInicial(e.target.value)}
+                  />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Final</label>
+                <input
+                  type="datetime-local"
+                  className="border rounded px-3 py-2 w-full"
+                  value={fechaFinal}
+                  onChange={(e) => setFechaFinal(e.target.value)}
+                />
+              </div>
+
+
+              <div className="flex justify-end space-x-2">
+                <button
+                  className="px-4 py-2 bg-gray-300 rounded text-gray-800 hover:bg-gray-400"
+                  onClick={() => setIsFechasModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={guardarFechas}
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+          </div>
+        )}
+
+      {/* Modal de edicion */}
       {isModalOpen && itemEditando && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-full max-w-md space-y-4">
             <h2 className="text-lg font-bold mb-2">{isEditing ? 'Editar Carga Thermo' : 'Agregar Carga Thermo'}</h2>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
-              <input
-                type="date"
-                className="border rounded px-3 py-2 w-full"
-                value={itemEditando.fecha_inicio}
-                 onChange={(e) =>
-            setItemEditando({ ...itemEditando, fecha_inicio: e.target.value })
-          }
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Final</label>
-              <input
-                type="date"
-                className="border rounded px-3 py-2 w-full"
-                value={itemEditando.Fecha_final}
-                 onChange={(e) =>
-            setItemEditando({ ...itemEditando, Fecha_final: e.target.value })
-          }
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Litros</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
+              <label>Litros</label>
+              <input type="number" className="border rounded px-3 py-2 w-full"
                 value={itemEditando.litros}
-                onChange={(e) => { const litros = parseFloat(e.target.value) || 0; setItemEditando({  ...itemEditando,litros, total: litros * itemEditando.precio_litro, }); }}
+                onChange={(e) => {
+                  const litros = parseFloat(e.target.value) || 0;
+                  setItemEditando({ ...itemEditando, litros, total: litros * itemEditando.precio_litro });
+                }}
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Litro</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
+              <label>Precio Litro</label>
+              <input type="number" className="border rounded px-3 py-2 w-full"
                 value={itemEditando.precio_litro}
                 onChange={(e) => {
-            const precio_litro = parseFloat(e.target.value) || 0;
-            setItemEditando({
-              ...itemEditando,
-              precio_litro,
-              total: itemEditando.litros * precio_litro,
-            });
-          }}
+                  const precio_litro = parseFloat(e.target.value) || 0;
+                  setItemEditando({ ...itemEditando, precio_litro, total: itemEditando.litros * precio_litro });
+                }}
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={itemEditando.total}
-                readOnly
-              />
+              <label>Total</label>
+              <input type="number" className="border rounded px-3 py-2 w-full" value={itemEditando.total} readOnly />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Horas Uso Thermo</label>
-              <input
-                type="number"
-                className="border rounded px-3 py-2 w-full"
-                value={itemEditando.horas_uso_thermo}
-                onChange={(e) =>
-            setItemEditando({
-              ...itemEditando,
-              horas_uso_thermo: parseInt(e.target.value) || 0,
-            })
-          }
-              />
-            </div>
+
             <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
-              >
-                Cancelar
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={guardarCambios}
-              >
-                {isEditing ? 'Guardar' : 'Crear'}
-              </button>
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+              <button onClick={guardarCambios} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{isEditing ? 'Guardar' : 'Crear'}</button>
             </div>
           </div>
         </div>
-        )}
+      )}
     </div>
   );
 }

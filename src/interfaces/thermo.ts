@@ -6,8 +6,5 @@ export interface ThermoI{
   litros: number;
   precio_litro: number;
   total: number;
-  fecha_inicio: string;
-  Fecha_final: string;
-  horas_uso_thermo: number;
   programacion: number;
 }

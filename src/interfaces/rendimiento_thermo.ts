@@ -5,5 +5,8 @@ export interface RendimientoThermo {
   Fec_Alta?: string;
   litros_iniciales?: number | null;
   litros_finales?: number | null;
+  precio_litro_inicial?: number | null;
+  fecha_inicial?: string ;
+  fecha_final?: string ;
   programacion: number | null;
 }
