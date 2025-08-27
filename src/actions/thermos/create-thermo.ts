@@ -7,7 +7,7 @@ export const createThermo = async ( item: ThermoI ) => {
     try {
 
         const query = `
-        INSERT INTO carga_thermo ( uniqueId, Bit_Activo, Fec_Alta, litros, precio_litro, total, fecha_inicio, Fecha_final, horas_uso_thermo, programacion )
+        INSERT INTO carga_thermo ( uniqueId, Bit_Activo, Fec_Alta, litros, precio_litro, total, programacion )
         VALUES(
             (SELECT ISNULL(MAX(uniqueId), 0) + 1 FROM carga_thermo),
             1,
@@ -15,9 +15,6 @@ export const createThermo = async ( item: ThermoI ) => {
             @litros,
             @precio_litro,
             @total,
-            @fecha_inicio,
-            @Fecha_final,
-            @horas_uso_thermo,
             @programacion
             )
         `;
@@ -26,9 +23,6 @@ export const createThermo = async ( item: ThermoI ) => {
                 {name: 'litros', value: item.litros},
                 {name: 'precio_litro', value: item.precio_litro},
                 {name: 'total', value: item.total},
-                {name: 'fecha_inicio', value: item.fecha_inicio},
-                {name: 'Fecha_final', value: item.Fecha_final },
-                {name: 'horas_uso_thermo', value: item.horas_uso_thermo},
                 {name: 'programacion', value: item.programacion},
                  ];
                 

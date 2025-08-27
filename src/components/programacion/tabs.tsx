@@ -71,13 +71,7 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
       case 'Casetas':
         return <Casetas casetas={programacion.casetas} programacion={programacion.uniqueId}></Casetas>;
       case 'Thermo':
-        //if (caracteristica === 'refrigerado') {
-        return (
-          <Thermo thermos={programacion.thermos} programacion={programacion.uniqueId} reporte_thermo={programacion.reporte_thermo}  />
-        );
-        //} else {
-        //  return <div className="text-gray-500">La unidad no cuenta con Thermo.</div>;
-       // }
+        return <Thermo thermos={programacion.thermos} programacion={programacion.uniqueId} reporte_thermo={programacion.reporte_thermo}/>;
       default:
         return null;
     }

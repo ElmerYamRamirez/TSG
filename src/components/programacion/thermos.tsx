@@ -30,12 +30,6 @@ const handleEdit = async (thermo: ThermoI) => {
   return { ok: response.ok, thermos };
 }
 
-const toSQLDateTime = (date: string): string => {
-  if (!date) return "";
-  const d = new Date(date);
-  return d.toISOString().replace("T", " ").slice(0, 19);
-};
-
 const toSQLDateTimeLocal = (date: string): string => {
   if (!date) return "";
   const d = new Date(date);
@@ -48,23 +42,13 @@ const toSQLDateTimeLocal = (date: string): string => {
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 };
 
-
-export default function CombustiblesThermos({thermos,programacion,reporte_thermo}: {thermos: ThermoI[];  programacion: number;reporte_thermo: ReporteThermo;}) {
+export default function CombustiblesThermos({ thermos, programacion, reporte_thermo}: {thermos: ThermoI[], programacion: number, reporte_thermo: ReporteThermo }) {
 const [isModalOpen, setIsModalOpen] = useState(false)
   const [itemEditando, setItemEditando] = useState<ThermoI | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter();
-  //const reporte = reporte_thermo ?? {};
+  const reporte = reporte_thermo ?? {};
 
-
-  ///consumo total
-  const [horas_uso_thermo, setHorasUsoThermo] = useState('');
-  const [precioLitro, setPrecioLitro] = useState('');
-  const [litrosCargados, setLitrosCargados] = useState('');
-  const [costoCarga, setCostoCarga] = useState('');
-  const [litrosConsumidos, setLitrosConsumidos] = useState('');
-  const [rendimiento, setRendimiento] = useState('');
-  const [costoConsumidoTotal, setCostoConsumidoTotal] = useState('');
   ////Litros
   const [isLitrosModalOpen, setIsLitrosModalOpen] = useState(false);
   const [litrosIniciales, setLitrosIniciales] = useState('');
@@ -302,16 +286,16 @@ const abrirModalLitros = async () => {
           </thead>
           <tbody>
             <tr>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.litros_iniciales ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.litros_finales ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.litros_consumidos ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.precio_litro_inicial ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte_thermo.fecha_inicial) ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte_thermo.fecha_final) ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.horas_uso_thermo ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.costo_por_litro ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.costo_consumido ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte_thermo.rendimiento ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_iniciales ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_finales ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio_litro_inicial ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte.fecha_inicial) ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte.fecha_final) ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.horas_uso_thermo ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_por_litro ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento ?? ""}</td>
             </tr>
           </tbody>
         </table>

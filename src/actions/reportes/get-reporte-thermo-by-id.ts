@@ -11,12 +11,12 @@ export const getReporteThermoById = async (id: string) => {
       FROM PC_Rep_ReportePrueba
       WHERE programacion = @id;
     `;
-    const result = await executeQuery(query, paramsList);
+    const reporte_thermo = await executeQuery(query, paramsList);
     
 
     return {
       ok: true,
-      reporte_thermo: result[0] ?? null,
+      reporte_thermo: reporte_thermo[0] ?? null,
     };
     
   } catch (error) {

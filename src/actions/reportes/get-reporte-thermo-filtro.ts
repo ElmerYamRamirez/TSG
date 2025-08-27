@@ -29,7 +29,7 @@ export const getReporteThermoFiltro = async (
 
     const query = `
       SELECT *
-      FROM PC_Rep_RendimientosNew
+      FROM PC_Rep_ReportePrueba
       WHERE 
         (unidad LIKE @searchTerm OR FORMAT(Fecha_programada, 'dd/MM/yy') LIKE @searchTerm)
         ${dateFilter}

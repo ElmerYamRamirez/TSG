@@ -21,10 +21,10 @@ export const updateThermoById = async (item: ThermoI) => {
         const paramsList = [
             { name: 'Bit_Activo', value: item.Bit_Activo || 1 },
             { name: 'Fec_Alta', value: item.Fec_Alta || new Date().toISOString() },
-            {name: 'litros', value: item.litros},
-            {name: 'precio_litro', value: item.precio_litro},
-            {name: 'total', value: item.total},
-            {name: 'programacion', value: item.programacion},
+            { name: 'litros', value: item.litros},
+            { name: 'precio_litro', value: item.precio_litro},
+            { name: 'total', value: item.total},
+            { name: 'programacion', value: item.programacion},
             { name: 'uniqueId', value: item.uniqueId }];
 
         const responce = await executeQuery(query, paramsList);

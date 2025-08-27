@@ -13,8 +13,8 @@ export default async function ProgramacionPage(props: { params : Promise<{id: st
   const programacion = await getProgramacionesById(id);
   const reporte_hibrido = await getReporteHibridoById(id);
   const combustible_hibrido = await getCombustibleHibridoById(id);
-  const thermo = await getThermoById(id);
   const reporte_thermo = await getReporteThermoById(id);
+  const thermos = await getThermoById(id);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -36,7 +36,7 @@ export default async function ProgramacionPage(props: { params : Promise<{id: st
       </div>
 
       <Tabs programacion={{...programacion?.programacion,reporte_hibrido: reporte_hibrido?.reporte_hibrido ?? null,combustible_hibrido: combustible_hibrido?.combustible_hibrido ?? null,
-         reporte_thermo: reporte_thermo ?? null,thermos: thermo?.thermos ?? null }}/>
+         reporte_thermo: reporte_thermo?.reporte_thermo ?? null,thermos: thermos?.thermos ?? null }}/>
     </div>
   );
 };
