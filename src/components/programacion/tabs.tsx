@@ -6,15 +6,17 @@ import Combustibles from './combustibles';
 import CombustiblesDual from './combustible_hibrido';
 import { ReporteCombustibleI } from 'components/interfaces/reporteCombustible';
 import { ReporteHibrido } from 'components/interfaces/reporte_hibrido';
-
-const tabs = ['Combustible', 'Viáticos', 'Casetas'];
+import Thermo from './thermos';
+import {ReporteThermo} from 'components/interfaces/reporte_thermo';
+import { UnidadI } from 'components/interfaces/unidad';
+///const tabs = ['Combustible', 'Viáticos', 'Casetas', 'Thermo'];
 
 interface ProgramacionI {
   uniqueId: number;
   Bit_Activo: boolean;
   Usu_Alta: number;
   Fec_Alta: string;
-  Cliente: number;
+  Cliente: number;  
   Operador: number;
   Unidad: number;
   Comentario: string;
@@ -27,20 +29,30 @@ interface ProgramacionI {
   nombre_destino: string;
   cliente_name: string;
   operador_name: string;
+  thermos:[]
   viaticos:[]
   casetas:[]
   combustibles: [];
   combustible: string;
   combustible_hibrido:[];
+  Caracteristica: string;
   reporte: ReporteCombustibleI
   reporte_hibrido: ReporteHibrido
+  reporte_thermo: ReporteThermo
+  unidad?: UnidadI;
 } 
 
 
 export default function Tabs({programacion}:{programacion: ProgramacionI}){
   const [activeTab, setActiveTab] = useState('Combustible');
- 
+ const caracteristica = (programacion.Caracteristica ?? '').toLowerCase().replace(/\s/g, '');
 
+ /////
+  const tabs = ['Combustible', 'Viáticos', 'Casetas'];
+   if (caracteristica === 'refrigerado') {
+    tabs.push('Thermo');
+  }
+//////
   const renderContent = () => {
     switch (activeTab) {
      case 'Combustible':
@@ -58,6 +70,8 @@ export default function Tabs({programacion}:{programacion: ProgramacionI}){
         return <Viaticos viaticos={programacion.viaticos} programacion={programacion.uniqueId}></Viaticos>;
       case 'Casetas':
         return <Casetas casetas={programacion.casetas} programacion={programacion.uniqueId}></Casetas>;
+      case 'Thermo':
+        return <Thermo thermos={programacion.thermos} programacion={programacion.uniqueId} reporte_thermo={programacion.reporte_thermo}/>;
       default:
         return null;
     }

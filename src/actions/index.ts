@@ -57,6 +57,17 @@ export * from './sueldos/create-sueldo-by-codigo'
 export * from './reportes/get-reportehibrido-pagination';
 export * from './reportes/get-reportehibrido';
 export * from './reportes/get-reportehibrido-filtro';
+export * from './reportes/get-reporte-thermo-by-id';
+export * from './reportes/get-reporte-thermo-pagination';
+export * from './reportes/get-reporte-thermo-filtro';
+export * from './reportes/get-reporte-thermo';
+export * from './thermos/create-thermo';
+export * from './thermos/update-thermo-by-id';
+export * from './thermos/get-thermo-by-id';
+export * from './thermos/delete-thermo-by-id';
+export * from './rendimientos/create-rendimiento-thermo';
+export * from './rendimientos/get-rendimiento-thermo-by-id';
+export * from './rendimientos/update-rendimiento-thermo-by-id';
 export * from './adelantos/get-adelantos-filtro'
 export * from './adelantos/get-adelantos-pagination'
 export * from './adelantos/update-adelanto-by-id'
