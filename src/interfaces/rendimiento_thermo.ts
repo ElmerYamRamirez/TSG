@@ -6,7 +6,7 @@ export interface RendimientoThermo {
   litros_iniciales?: number | null;
   litros_finales?: number | null;
   precio_litro_inicial?: number | null;
-  fecha_inicial?: string ;
-  fecha_final?: string ;
+  fecha_inicial?: string | null;
+  fecha_final?: string | null;
   programacion: number | null;
 }

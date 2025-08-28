@@ -164,8 +164,8 @@ const abrirModalLitros = async () => {
         uniqueId: existente ? existente.uniqueId : 0,
         Bit_Activo: 1,
         Fec_Alta: new Date().toISOString(),
-        fecha_inicial: toSQLDateTimeLocal(fechaInicial),
-        fecha_final: toSQLDateTimeLocal(fechaFinal),
+        fecha_inicial: fechaInicial ? new Date(fechaInicial).toISOString() : undefined,
+        fecha_final: fechaFinal ? new Date(fechaFinal).toISOString() : undefined,
         programacion: programacion,
       };
 
@@ -226,7 +226,7 @@ const formatDateTimeLocal = (dateString: string | null | undefined): string => {
 };
 
 const formatDateTime = (dateString: string | undefined): string => {
-  if (!dateString) return "";
+  if (!dateString) return "Sin fecha";
 
   const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
@@ -238,11 +238,6 @@ const formatDateTime = (dateString: string | undefined): string => {
   };
 
   return new Date(dateString).toLocaleString("es-MX", options); 
-};
-
-const toSQLDateTimeLocal = (date: string | null | undefined): string | undefined => {
-  if (!date || date.trim() === "") return undefined;
-  return date.replace("T", " ") + ":00";
 };
 
   return (
