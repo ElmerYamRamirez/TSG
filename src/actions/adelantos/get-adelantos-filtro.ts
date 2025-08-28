@@ -2,7 +2,7 @@
 
 import { executeQuery } from "components/app/lib/connection";
 
-export const getSueldosFiltro = async (
+export const getAdelantosFiltro = async (
   page: number,
   pageSize = 15,
   searchTerm = ""
@@ -16,23 +16,22 @@ export const getSueldosFiltro = async (
       { name: "pageSize", value: pageSize },
       { name: "searchTerm", value: search },
     ];
-    
+
     const query = `
       SELECT 
-          Su.*,
-          O.Nombre AS operador_name
+        Ad.*,
+        O.Nombre AS operador_name
       FROM 
-          Sueldos Su
+        Adelanto Ad
       LEFT JOIN 
-          Operador O ON Su.Empleado = O.uniqueId
+        Operador O ON Ad.Nombre = O.uniqueId
       WHERE 
-          (
-            CAST(Su.codigo AS VARCHAR) LIKE @searchTerm
-            OR CAST(Su.Empleado AS VARCHAR) LIKE @searchTerm
-            OR O.Nombre LIKE @searchTerm
-          )
-          AND Su.Bit_Activo = 1
-      ORDER BY Su.Fec_Alta DESC
+        (
+          CAST(Ad.Nombre AS VARCHAR) LIKE @searchTerm
+          OR O.Nombre LIKE @searchTerm
+        )
+        AND Ad.Bit_Activo = 1
+      ORDER BY Ad.Fec_Alta DESC
       OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
     `;
 
@@ -40,14 +39,14 @@ export const getSueldosFiltro = async (
 
     return {
       ok: true,
-      sueldos: reportes
+      adelantos: reportes
     };
 
   } catch (error) {
     console.error("API Error:", error);
     return {
       ok: false,
-      sueldos: []
+      adelantos: []
     };
   }
 };

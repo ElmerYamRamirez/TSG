@@ -57,7 +57,6 @@ export * from './sueldos/create-sueldo-by-codigo'
 export * from './reportes/get-reportehibrido-pagination';
 export * from './reportes/get-reportehibrido';
 export * from './reportes/get-reportehibrido-filtro';
-//////////
 export * from './reportes/get-reporte-thermo-by-id';
 export * from './reportes/get-reporte-thermo-pagination';
 export * from './reportes/get-reporte-thermo-filtro';
@@ -69,3 +68,14 @@ export * from './thermos/delete-thermo-by-id';
 export * from './rendimientos/create-rendimiento-thermo';
 export * from './rendimientos/get-rendimiento-thermo-by-id';
 export * from './rendimientos/update-rendimiento-thermo-by-id';
+export * from './adelantos/get-adelantos-filtro'
+export * from './adelantos/get-adelantos-pagination'
+export * from './adelantos/update-adelanto-by-id'
+export * from './adelantos/delete-adelanto-by-id'
+export * from './adelantos/create-adelanto-by-id'
+export * from './adelantos/get-adelantos';
+export * from './prestamos/get-prestamos';
+export * from './programaciones/get-programaciones-by-week';
+export * from './sueldos/get-sueldos-all';
+export * from './sueldos/get-sueldos-filtro';
+export * from './sueldos/get-sueldos-pagination';

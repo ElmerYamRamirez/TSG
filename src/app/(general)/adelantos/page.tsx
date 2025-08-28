@@ -1,7 +1,7 @@
-import { getAdelantos, getPrestamos, getProgramacionesByWeek, getSueldosFiltro } from "components/actions";
-import { getSueldosPagination } from "components/actions";
+import { getAdelantosFiltro } from "components/actions";
+import { getAdelantosPagination } from "components/actions";
 import { getOperadores} from "components/actions";
-import UserTable from "components/components/sueldos/sueldos-tabla";
+import UserTable from "components/components/adelantos/adelantos-tabla";
 import Link from "next/link";
 import React from "react";
 
@@ -15,50 +15,19 @@ import React from "react";
 
     const response =
      searchTerm || desde || hasta
-    ? await getSueldosFiltro(page, pageSize, searchTerm)
-    : await getSueldosPagination(page, pageSize);
+    ? await getAdelantosFiltro(page, pageSize, searchTerm)
+    : await getAdelantosPagination(page, pageSize);
 
     const operadores = await getOperadores() ?? { ok: false, operadores: [] };
 
-
-  function getLastSaturdayAndThisFriday() {
-      const today = new Date();
-      const dayOfWeek = today.getDay(); // 0=Domingo, 6=Sábado
-  
-      // Sábado pasado
-      const lastSaturday = new Date(today);
-      lastSaturday.setDate(today.getDate() - ((dayOfWeek + 1) % 7));
-  
-      // Viernes actual
-      const thisFriday = new Date(today);
-      thisFriday.setDate(today.getDate() + ((5 - dayOfWeek + 7) % 7));
-  
-      // Ajustar a horario de México
-      const adjustToMexicoTimezone = (date: Date) => {
-        const offset = -6; // UTC-6 México Central
-        const adjustedDate = new Date(date.getTime() + offset * 60 * 60 * 1000);
-        return adjustedDate.toISOString().split("T")[0];
-      };
-  
-      return {
-        startDate: adjustToMexicoTimezone(lastSaturday),
-        endDate: adjustToMexicoTimezone(thisFriday),
-      };
-    }
-  
-  const { startDate, endDate} = getLastSaturdayAndThisFriday();
-  
-  const programaciones = await getProgramacionesByWeek(startDate, endDate) ?? {ok:false, programacion: []}
-  const adelantos = await getAdelantos() ?? {ok: false, adelantos: []}
-  const prestamos = await getPrestamos() ?? {ok: false, prestamos: []}
-  const sueldos = response?.sueldos ?? [];
-  const hayMasResultados = sueldos.length === pageSize;
+  const adelantos = response?.adelantos ?? [];
+  const hayMasResultados = adelantos.length === pageSize;
 
   return (
     <div className="px-2 py-2 max-w-7xl mx-auto">
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-indigo-700">Sueldos</h1>
-        <p className="text-sm text-gray-600">Lista de sueldos</p>
+        <h1 className="text-3xl font-bold text-indigo-700">Adelantos</h1>
+        <p className="text-sm text-gray-600">Lista de adelantos</p>
       </div>
       <div className="flex justify-center mb-4">
         <form className="w-full max-w-4xl flex flex-wrap gap-2 items-end" method="GET">
@@ -66,7 +35,7 @@ import React from "react";
             type="text"
             name="search"
             defaultValue={searchTerm}
-            placeholder="Buscar por codigo o empleado"
+            placeholder="Buscar por empleado"
             className="border border-gray-300 rounded px-4 py-2 flex-grow min-w-[200px]"
             
           />
@@ -78,7 +47,7 @@ import React from "react";
           </button>
           {(searchTerm || desde || hasta) && (
             <Link
-              href="/sueldos"
+              href="/adelantos"
               className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
             >
               Limpiar
@@ -89,16 +58,16 @@ import React from "react";
 
 
       {response?.ok === false ? (
-        <p className="text-center text-red-500">Error al cargar los sueldos.</p>
+        <p className="text-center text-red-500">Error al cargar los adelantos.</p>
       ) : (
         <>
-          {sueldos.length === 0 ? (
+          {adelantos.length === 0 ? (
             <div className="text-center text-gray-600 mt-6">
-              <p>No se encontraron sueldos que coincidan con la búsqueda.</p>
+              <p>No se encontraron adelantos que coincidan con la búsqueda.</p>
             </div>
           ) : (
             <>
-              <UserTable sueldos={sueldos} operadores={operadores.operadores} adelantos={adelantos.adelantos} prestamos={prestamos.prestamos} programaciones={programaciones.programacion}></UserTable>
+              <UserTable adelantos={adelantos} operadores={operadores.operadores}></UserTable>
               <div className="flex justify-center mt-4">
                 {page > 1 && (
                   <Link

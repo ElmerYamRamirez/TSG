@@ -15,9 +15,33 @@ export async function GET(
       );
     }
 
+    const hoy = new Date();
+    const diaSemana = hoy.getDay();
+    const diasHastaViernes = (5 - diaSemana + 7) % 7;
+    const fechaFinCorte = new Date(hoy);
+    fechaFinCorte.setDate(hoy.getDate() + diasHastaViernes);
+    const fechaFinCorteStr = fechaFinCorte.toISOString().split("T")[0];
+
+    await executeQuery(
+      `UPDATE Adelanto
+       SET Status = 'DESCONTADO'
+       WHERE nombre = @id
+         AND Status = 'PENDIENTE'
+         AND Fecha_Finalizacion IS NOT NULL
+         AND Fecha_Finalizacion <= @FechaFinCorte`,
+      [
+        { name: "id", value: id },
+        { name: "FechaFinCorte", value: fechaFinCorteStr }
+      ]
+    );
+
     const adelantos = await executeQuery(
-      'SELECT * FROM Adelanto WHERE nombre = @id and Status = \'pendiente\' ORDER BY Fec_Alta DESC', 
-      [{ name: 'id', value: id }]
+      `SELECT *
+       FROM Adelanto
+       WHERE nombre = @id
+         AND Status IN ('PENDIENTE', 'RECURRENTE')
+       ORDER BY Fec_Alta DESC`,
+      [{ name: "id", value: id }]
     );
 
     if (!adelantos || adelantos.length === 0) {
@@ -45,35 +69,43 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    console.log('PUT Request - ID:', id, 'Body:', body);
+    console.log("PUT Request - ID:", id, "Body:", body);
 
     if (!id || isNaN(Number(id))) {
       return NextResponse.json(
-        { message: 'ID de adelanto inválido' },
+        { message: "ID de adelanto inválido" },
         { status: 400 }
       );
     }
 
+    const fechaActual = new Date(); // Se puede usar new Date().toISOString() si quieren UTC
+
     const updateQuery = `
       UPDATE Adelanto
-      SET Status = 'DESCONTADO'
-      WHERE uniqueId = @id
+      SET 
+          Total_Actual = ISNULL(Total_Actual, 0) + Cantidad,
+          Status = CASE 
+                      WHEN Fecha_Finalizacion <= @fechaActual THEN 'DESCONTADO' 
+                      ELSE Status 
+                  END
+      WHERE uniqueId = @id;
     `;
 
     const result = await executeQuery(updateQuery, [
-      { name: 'id', value: id }
+      { name: "id", value: id },
+      { name: "fechaActual", value: fechaActual },
     ]);
 
-    console.log('Update result:', result);
+    console.log("Update result:", result);
 
     return NextResponse.json(
-      { success: true, message: 'Adelanto actualizado' },
+      { success: true, message: "Adelanto descontado y Total_Actual actualizado" },
       { status: 200 }
     );
   } catch (error) {
-    console.error('PUT Error:', error);
+    console.error("PUT Error:", error);
     return NextResponse.json(
-      { success: false, message: 'Error al actualizar adelanto' },
+      { success: false, message: "Error al actualizar adelanto" },
       { status: 500 }
     );
   }
