@@ -30,17 +30,6 @@ const handleEdit = async (thermo: ThermoI) => {
   return { ok: response.ok, thermos };
 }
 
-const toSQLDateTimeLocal = (date: string): string => {
-  if (!date) return "";
-  const d = new Date(date);
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-  const ss = "00";
-  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
-};
 
 export default function CombustiblesThermos({ thermos, programacion, reporte_thermo}: {thermos: ThermoI[], programacion: number, reporte_thermo: ReporteThermo }) {
 const [isModalOpen, setIsModalOpen] = useState(false)
@@ -228,23 +217,33 @@ const abrirModalLitros = async () => {
     }
     setIsModalOpen(false)
   }
-////Horas
-  const formatFecha = (fecha: string) => {
-    if (!fecha) return "Sin fecha";
-   const d = new Date(fecha);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-   return `${yyyy}-${mm}-${dd}`;
+////HORAS
+const formatDateTimeLocal = (dateString: string | null | undefined): string => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16); 
+};
+
+const formatDateTime = (dateString: string | undefined): string => {
+  if (!dateString) return "";
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   };
 
-  const formatDateTimeLocal = (date: string | null | undefined) => {
-    if (!date) return "";
-   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(date)) return date;
-   const d = new Date(date);
-   const tzOffset = d.getTimezoneOffset() * 60000;
-   return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-  };
+  return new Date(dateString).toLocaleString("es-MX", options); 
+};
+
+const toSQLDateTimeLocal = (date: string | null | undefined): string | undefined => {
+  if (!date || date.trim() === "") return undefined;
+  return date.replace("T", " ") + ":00";
+};
 
   return (
     <div className="p-4 bg-white rounded-lg shadow">
@@ -290,8 +289,8 @@ const abrirModalLitros = async () => {
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_finales ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio_litro_inicial ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte.fecha_inicial) ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{formatFecha(reporte.fecha_final) ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{formatDateTime(reporte.fecha_inicial) ?? ""}</td>
+              <td className="px-2 py-1 text-xs text-gray-700">{formatDateTime(reporte.fecha_final) ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.horas_uso_thermo ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_por_litro ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido ?? ""}</td>
