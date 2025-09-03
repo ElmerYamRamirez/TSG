@@ -10,4 +10,5 @@ export interface Prestamo {
     uniqueId: string;
     Usu_Alta: string;
     Comentario: string;
+    operador_name:string;
 }
