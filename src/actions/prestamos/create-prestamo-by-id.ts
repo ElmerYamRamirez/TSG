@@ -19,20 +19,19 @@ export const createPrestamo = async (item: Prestamo) => {
         @Nombre,
         @Status,
         @Comentario
-        
-        
+         
       )
     `;
 
     await executeQuery(queryInsert, [
       { name: 'Fec_Alta', value: item.Fec_Alta ?? new Date().toISOString() },
-      { name: 'Descuento_por_semana', value: item.Descuento_por_semana ?? null },
-      { name: 'Monto_de_prestamo', value: item.Monto_de_prestamo ?? null },
-      { name: 'Numero_de_pagos', value: item.Numero_de_pagos ?? null },
-      { name: 'Saldo', value: item.Saldo ?? null },
+      { name: 'Descuento_por_semana', value: item.Descuento_por_semana ?? 0 },
+      { name: 'Monto_de_prestamo', value: item.Monto_de_prestamo },
+      { name: 'Numero_de_pagos', value: item.Numero_de_pagos ?? 0 },
+      { name: 'Saldo', value: item.Saldo},
       { name: 'Nombre', value: Number(item.Nombre) },
-      { name: 'Status', value: item.Status ?? null },
-      { name: 'Comentario', value: item.Comentario ?? null },
+      { name: 'Status', value: item.Status },
+      { name: 'Comentario', value: item.Comentario ?? "" },
       
     ]);
 

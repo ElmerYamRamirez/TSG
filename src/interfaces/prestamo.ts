@@ -1,6 +1,6 @@
 export interface Prestamo {
     Bit_Activo: number;
-    Descuento_por_semana: number;
+    Descuento_por_semana: number ;
     Fec_Alta: string;
     Monto_de_prestamo: number;
     Nombre: string;

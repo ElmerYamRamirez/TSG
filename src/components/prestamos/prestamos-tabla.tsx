@@ -51,18 +51,21 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
     router.refresh();
   };
 
-  const formatDate = (date: string | null) => {
-    if (!date) return "";
-    const d = new Date(date);
-    const day = String(d.getUTCDate()).padStart(2, "0");
-    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-    const year = String(d.getUTCFullYear()).slice(-2);
-    return `${day}/${month}/${year}`;
-  };
-
   const handleChange = (field: keyof Prestamo, value: Prestamo[keyof Prestamo]) => {
-    setItemEditando(prev => prev ? { ...prev, [field]: value === '' ? null : value } : null);
-  };
+    setItemEditando(prev => {
+        if (!prev) return null;
+
+        const updated = { ...prev, [field]: value === '' ? null : value };
+
+        const monto = Number(updated.Monto_de_prestamo) || 0;
+        const pagos = Number(updated.Numero_de_pagos) || 0;
+        const descuento = Number(updated.Descuento_por_semana) || 0;
+
+        updated.Saldo = monto - (pagos * descuento);
+
+        return updated;
+    });
+    };
 
   return (
     <>
@@ -86,9 +89,9 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
           <thead className="bg-gray-50">
             <tr>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Empleado</th>
-              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Monto de Prestamo</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Descuento por Semana</th>
-              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Numero de Pagos</th>
+              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Monto de Prestamo</th>
+              <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Pagos Realizados</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Saldo</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Status</th>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Comentario</th>
@@ -100,8 +103,8 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
             {prestamos.map((prestamo, index) => (
               <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-1 py-1 text-xs">{prestamo.operador_name}</td>
-                <td className="px-1 py-1 text-xs">{prestamo.Monto_de_prestamo}</td>
                 <td className="px-1 py-1 text-xs">{prestamo.Descuento_por_semana}</td>
+                <td className="px-1 py-1 text-xs">{prestamo.Monto_de_prestamo}</td>
                 <td className="px-1 py-1 text-xs">{prestamo.Numero_de_pagos}</td>
                 <td className="px-1 py-1 text-xs">{prestamo.Saldo}</td>
                 <td className="px-1 py-1 text-xs">{prestamo.Status}</td>
@@ -147,17 +150,7 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
                   )}
                 </select>
               </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Saldo</label>
-                <input 
-                  type="number" 
-                  value={itemEditando.Saldo ?? ''} 
-                  onChange={e => handleChange('Saldo', e.target.value)} 
-                  className="border rounded px-3 py-2 w-full text-xs" 
-                />
-              </div>
-
+              
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Descuento por Semana</label>
                 <input 
@@ -165,29 +158,6 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
                   value={itemEditando.Descuento_por_semana ?? ''} 
                   onChange={e => handleChange('Descuento_por_semana', e.target.value)} 
                   className="border rounded px-3 py-2 w-full text-xs" 
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                <select
-                  value={itemEditando.Status ?? ''}
-                  onChange={e => handleChange('Status', e.target.value)}
-                  className="border rounded px-3 py-2 w-full text-xs"
-                >
-                  <option value="">Selecciona un Status</option>
-                  <option value="PENDIENTE">PENDIENTE</option>
-                  <option value="DESCONTADO">PAGADO</option>
-                  <option value="DESCONTADO">EN VIGOR</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Comentario</label>
-                <textarea 
-                  value={itemEditando.Comentario ?? ''} 
-                  onChange={e => handleChange('Comentario', e.target.value)} 
-                  className="border p-2 w-full rounded text-sm" 
                 />
               </div>
 
@@ -208,6 +178,40 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
                   value={itemEditando.Numero_de_pagos ?? ''} 
                   onChange={e => handleChange('Numero_de_pagos', e.target.value)} 
                   className="border rounded px-3 py-2 w-full text-xs" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Saldo</label>
+                <input
+                    type="number"
+                    className="border rounded px-3 py-2 w-full text-xs bg-gray-100 cursor-not-allowed"
+                    value={itemEditando?.Saldo ?? 0}
+                    readOnly
+                    placeholder="Saldo calculado automáticamente"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={itemEditando.Status ?? ''}
+                  onChange={e => handleChange('Status', e.target.value)}
+                  className="border rounded px-3 py-2 w-full text-xs"
+                >
+                  <option value="">Selecciona un Status</option>
+                  <option value="PENDIENTE">PENDIENTE</option>
+                  <option value="EN VIGOR">EN VIGOR</option>
+                  <option value="PAGADO">PAGADO</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Comentario</label>
+                <textarea 
+                  value={itemEditando.Comentario ?? ''} 
+                  onChange={e => handleChange('Comentario', e.target.value)} 
+                  className="border p-2 w-full rounded text-sm" 
                 />
               </div>
 
