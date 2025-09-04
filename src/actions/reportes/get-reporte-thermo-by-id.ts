@@ -8,7 +8,7 @@ export const getReporteThermoById = async (id: string) => {
 
     const query = `
       SELECT *
-      FROM PC_Rep_ReportePrueba
+      FROM PC_Rep_ReporteThermo
       WHERE programacion = @id;
     `;
     const reporte_thermo = await executeQuery(query, paramsList);

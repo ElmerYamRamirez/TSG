@@ -269,12 +269,9 @@ const formatDateTime = (dateString: string | undefined): string => {
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Iniciales</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Finales</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Litros Consumidos</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Precio por Litro</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha Inicial</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Fecha Final</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Horas de Uso</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo por Litro</th>
-              <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Costo Consumido total</th>
               <th className="px-1 py-2 text-left text-xs font-semibold text-gray-900">Rendimiento</th>
             </tr>
           </thead>
@@ -283,12 +280,9 @@ const formatDateTime = (dateString: string | undefined): string => {
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_iniciales ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_finales ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.litros_consumidos ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte.precio_litro_inicial ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{formatDateTime(reporte.fecha_inicial) ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{formatDateTime(reporte.fecha_final) ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.horas_uso_thermo ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_por_litro ?? ""}</td>
-              <td className="px-2 py-1 text-xs text-gray-700">{reporte.costo_consumido ?? ""}</td>
               <td className="px-2 py-1 text-xs text-gray-700">{reporte.rendimiento ?? ""}</td>
             </tr>
           </tbody>
