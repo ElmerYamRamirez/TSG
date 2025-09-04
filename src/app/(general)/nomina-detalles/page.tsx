@@ -89,6 +89,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
     return {
       idNomina: p.uniqueId,
+      codigo: p.codigo,  
       nombre: operador[0].Nombre ?? '',
       totalViajes,
       totalPrestamos,
@@ -100,6 +101,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       deposito1,
       deposito2,
       total,
+      cuenta: operador[0].cuenta ?? ''
     };
   });
 

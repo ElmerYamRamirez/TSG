@@ -20,7 +20,9 @@ export const getSueldosFiltro = async (
     const query = `
       SELECT 
           Su.*,
-          O.Nombre AS operador_name
+          O.Nombre AS operador_name,
+          O.cuenta AS operador_cuenta,
+          Su.codigo AS codigo_empleado
       FROM 
           Sueldos Su
       LEFT JOIN 

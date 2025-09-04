@@ -13,7 +13,9 @@ export const getSueldosPagination = async (page: number, pageSize: number = 15) 
     const query = `
       SELECT 
         Su.*,
-        O.Nombre AS operador_name
+        O.Nombre AS operador_name,
+        O.cuenta AS operador_cuenta,    
+        Su.codigo AS codigo_empleado 
       FROM 
         Sueldos Su
       LEFT JOIN
