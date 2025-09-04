@@ -1,25 +1,22 @@
 'use server';
 import { executeQuery } from "components/app/lib/connection";
-import { ConfiguracionTanquesI } from "components/interfaces/configuracion_tanques";
-export const getConfiguracionTanquesById = async (unidadId: number) => {
-  try {
-    const query = `
-      SELECT *
-      FROM configuracion_tanques
-      WHERE unidad = @unidad
-    `;
-    const paramsList = [{ name: 'unidad', value: unidadId }];
-    const result = await executeQuery(query, paramsList);
 
-    if (result && result.length > 0) {
-        return result[0] as ConfiguracionTanquesI;
+export const getConfiguracionTanquesById = async (id: number) => {
+    try {
+        const query = `
+        SELECT *
+        FROM configuracion_tanques
+        WHERE uniqueId = @id
+        `;
+        const paramsList = [{ name: 'id', value: id }];
+        const configuracionTanques = await executeQuery(query, paramsList)
+
+        console.log(configuracionTanques);
+        return {
+            ok: true,
+            configuracionTanques: configuracionTanques,
+        };
+    } catch (error) {
+        console.error("API Error:", error);
     }
-            
-            return null;
-            
-        } catch (error) {
-            console.error("Error al obtener rendimiento:", error);
-            return null;
-        }
 };
-
