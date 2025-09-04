@@ -17,13 +17,13 @@ export const updateConfiguracionTanqueById = async (item: ConfiguracionTanquesI)
     `;
 
     const paramsList = [
-  { name: 'id', value: item.uniqueId ?? 0 },
-  { name: 'litros_maximos_t1', value: item.litros_maximos_t1  },
-  { name: 'litros_maximos_t2', value: item.litros_maximos_t2  },
-  { name: 'litros_maximos_t3', value: item.litros_maximos_t3  },
-  { name: 'litros_maximos_t4', value: item.litros_maximos_t4  },
-  { name: 'litros_maximos_tg', value: item.litros_maximos_tg  }
-];
+      { name: 'id', value: item.uniqueId ?? 0 },
+      { name: 'litros_maximos_t1', value: item.litros_maximos_t1 },
+      { name: 'litros_maximos_t2', value: item.litros_maximos_t2 },
+      { name: 'litros_maximos_t3', value: item.litros_maximos_t3 },
+      { name: 'litros_maximos_t4', value: item.litros_maximos_t4 },
+      { name: 'litros_maximos_tg', value: item.litros_maximos_tg }
+    ];
 
     const result = await executeQuery(query, paramsList);
 
