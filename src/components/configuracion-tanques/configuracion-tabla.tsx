@@ -87,7 +87,7 @@ export default function ConfiguracionTable({ configuracionTanques, unidades }: {
             Agregar Configuración Tanque
           </button>
         </div>
-        <table className="table-auto mx-auto divide-y divide-gray-300">
+        <table className="table-auto mx-auto divide-y divide-gray-300 w-full">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-12 py-1 text-left text-xs font-semibold text-gray-900">Unidad</th>
