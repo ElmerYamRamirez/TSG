@@ -86,7 +86,7 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
       </div>
 
       <div className="overflow-x-auto">
-        <table className="table-auto mx-auto divide-y divide-gray-300">
+        <table className="table-auto mx-auto divide-y divide-gray-300 w-full">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-1 py-1 text-left text-xs font-semibold text-gray-900">Empleado</th>
