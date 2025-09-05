@@ -5,12 +5,15 @@ import { Prestamo } from "components/interfaces/prestamo";
 import { OperadorI } from "components/interfaces/operador";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Select from "react-select";
 
 export default function UserTable({ prestamos, operadores }: { prestamos: Prestamo[], operadores: OperadorI[] }) {
   const [itemEditando, setItemEditando] = useState<Prestamo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+  const [inputValue, setInputValue] = useState("");
+
 
   const handleCreate = async (item: Prestamo) => await createPrestamo(item) ?? { ok: false };
   
@@ -34,13 +37,11 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
 
   const guardarCambios = async () => {
     if (!itemEditando) return;
-    const response = isEditing 
-      ? await handleEdit(itemEditando) 
-      : await handleCreate(itemEditando);
-
+    const response = isEditing ? await handleEdit(itemEditando) 
+      : await handleCreate(itemEditando)
     if (response.ok) {
-      router.refresh();
-      setIsModalOpen(false);
+   router.refresh();
+  setIsModalOpen(false);
     } else {
       alert('Hubo un error al guardar');
     }
@@ -137,18 +138,30 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
               
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
-                <select
-                  value={itemEditando.Nombre ?? ''}
-                  onChange={e => handleChange('Nombre', parseInt(e.target.value, 10))}
-                  className="border rounded px-3 py-2 w-full text-xs"
-                >
-                  <option value="">Selecciona un Empleado</option>
-                  {operadores.map(op => 
-                    <option key={op.uniqueId} value={op.uniqueId}>
-                      {op.Nombre}
-                    </option>
-                  )}
-                </select>
+                <Select
+                  options={operadores.map(op => ({
+                    value: op.uniqueId,
+                    label: op.Nombre,
+                  }))}
+                  value={
+                    operadores
+                      .map(op => ({ value: op.uniqueId, label: op.Nombre }))
+                      .find(option => option.value === Number(itemEditando?.Nombre)) || null
+                  }
+                  onChange={(selectedOption) =>
+                    handleChange("Nombre", selectedOption ? selectedOption.value : "")
+                  }
+                  placeholder="Busca un Empleado..."
+                  isSearchable
+                  isClearable
+                  inputValue={inputValue}
+                  onInputChange={(value) => setInputValue(value)}
+                  filterOption={(option, rawInput) =>
+                    option.label.toLowerCase().includes(rawInput.toLowerCase())
+                  }
+                  noOptionsMessage={() => "No se encontró ningún empleado"}
+                  className="text-xs"
+                />
               </div>
               
               <div>
@@ -236,3 +249,4 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
     </>
   );
 }
+

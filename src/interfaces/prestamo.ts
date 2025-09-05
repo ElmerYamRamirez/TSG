@@ -3,7 +3,7 @@ export interface Prestamo {
     Descuento_por_semana: number ;
     Fec_Alta: string;
     Monto_de_prestamo: number;
-    Nombre: string;
+    Nombre: number;
     Numero_de_pagos: number;
     Saldo: number;
     Status: string;
