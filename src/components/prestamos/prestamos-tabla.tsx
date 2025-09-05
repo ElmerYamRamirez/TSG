@@ -146,7 +146,7 @@ export default function UserTable({ prestamos, operadores }: { prestamos: Presta
                   value={
                     operadores
                       .map(op => ({ value: op.uniqueId, label: op.Nombre }))
-                      .find(option => option.value === Number(itemEditando?.Nombre)) || null
+                      .find(option => option.value === Number(itemEditando?.Nombre))
                   }
                   onChange={(selectedOption) =>
                     handleChange("Nombre", selectedOption ? selectedOption.value : "")
