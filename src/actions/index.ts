@@ -82,3 +82,8 @@ export * from './programaciones/get-programaciones-by-week';
 export * from './sueldos/get-sueldos-all';
 export * from './sueldos/get-sueldos-filtro';
 export * from './sueldos/get-sueldos-pagination';
+export * from './prestamos/get-prestamos-filtro';
+export * from './prestamos/get-prestamos-pagination';
+export * from './prestamos/update-prestamo-by-id'
+export * from './prestamos/delete-prestamo-by-id'
+export * from './prestamos/create-prestamo-by-id'
